@@ -30,6 +30,8 @@ public class User implements UserDetails {
     private String password;
     @Column(name = "verification_code")
     private String verificationCode;
+    @Column(name = "role")
+    private int role;
     @Column(name = "verification_expiration")
     private LocalDateTime verificationCodeExpiresAt;
     private boolean enabled;
