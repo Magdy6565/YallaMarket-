@@ -60,6 +60,8 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     // User must provide a valid JWT (Bearer Token)
                     .requestMatchers("/api/users/**").authenticated() // Assuming user update is also protected
 
+                    .requestMatchers("/api/vendor/orders/**").authenticated()
+
                     // Require authentication for any other request not explicitly permitted above
                     .anyRequest().authenticated() // This is the default for everything else
             )
