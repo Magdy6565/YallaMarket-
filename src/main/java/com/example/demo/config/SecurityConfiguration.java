@@ -44,28 +44,36 @@ public class SecurityConfiguration {
 //
 //        return http.build();
 //    }
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+            .csrf(csrf -> csrf.disable()) // Disable CSRF
+            .authorizeHttpRequests(authorize -> authorize
+                    // Permit authentication endpoints (login, signup, etc.)
+                    .requestMatchers("/auth/**").permitAll()
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(authorize -> authorize
-                        // Permit authentication endpoints
-                        .requestMatchers("/auth/**").permitAll()
-                        // ** Permit your product endpoints for testing **
-                        .requestMatchers("/api/vendors/**").permitAll() // Temporarily allow all for testing
-                        // *********************************************
-                        // Require authentication for any other request
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                    // Require authentication for the new product endpoints
+                    // User must provide a valid JWT (Bearer Token)
+                    .requestMatchers("/api/my-products/**").authenticated()
 
-        return http.build();
-    }
+                    // Require authentication for the user update endpoint
+                    // User must provide a valid JWT (Bearer Token)
+                    .requestMatchers("/api/users/**").authenticated() // Assuming user update is also protected
+
+                    // Require authentication for any other request not explicitly permitted above
+                    .anyRequest().authenticated() // This is the default for everything else
+            )
+            .sessionManagement(session -> session
+                    // Configure session management to be stateless (typical for JWT APIs)
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            // Set the custom AuthenticationProvider
+            .authenticationProvider(authenticationProvider)
+            // Add the JWT filter before the standard UsernamePasswordAuthenticationFilter
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+    return http.build();
+}
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

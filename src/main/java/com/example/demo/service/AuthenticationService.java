@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
+import java.math.BigDecimal; // Import BigDecimal for rating
+
 
 @Service
 public class AuthenticationService {
@@ -35,11 +37,22 @@ public class AuthenticationService {
     }
 
     public User signup(RegisterUserDto input) {
-        User user = new User(input.getUsername(), input.getEmail(), passwordEncoder.encode(input.getPassword()));
-        user.setVerificationCode(generateVerificationCode());
+        User user = new User(); // Use the default constructor
+        user.setUsername(input.getUsername());
+        user.setEmail(input.getEmail());
+        user.setPassword(passwordEncoder.encode(input.getPassword()));
+        // Set the new fields from the input DTO
+        user.setAddress(input.getAddress());
+        user.setContactInfo(input.getContactInfo());
+        String rawVerificationCode = generateVerificationCode();
+        String hashedVerificationCode = passwordEncoder.encode(rawVerificationCode);
+        user.setVerificationCode(hashedVerificationCode);
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
         user.setEnabled(false);
-        sendVerificationEmail(user);
+        user.setRating(BigDecimal.ZERO);
+        user.setDeletedAt(null);
+        user.setRole(input.getRole());
+        sendVerificationEmail(user , rawVerificationCode);
         return userRepository.save(user);
     }
 
@@ -62,23 +75,58 @@ public class AuthenticationService {
 
     public void verifyUser(VerifyUserDto input) {
         Optional<User> optionalUser = userRepository.findByEmail(input.getEmail());
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            if (user.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
-                throw new RuntimeException("Verification code has expired");
-            }
-            if (user.getVerificationCode().equals(input.getVerificationCode())) {
-                user.setEnabled(true);
-                user.setVerificationCode(null);
-                user.setVerificationCodeExpiresAt(null);
-                userRepository.save(user);
-            } else {
-                throw new RuntimeException("Invalid verification code");
-            }
-        } else {
+
+        if (optionalUser.isEmpty()) {
+            // User not found by email
             throw new RuntimeException("User not found");
         }
+
+        User user = optionalUser.get();
+
+        // Check if the user is already enabled (optional, but good practice)
+        if (user.isEnabled()) {
+            // User is already verified, perhaps return a specific status or message
+            // For now, we'll just let it proceed or you could throw a different exception
+            System.out.println("User with email " + input.getEmail() + " is already verified.");
+            return; // Or throw new RuntimeException("User already verified");
+        }
+
+
+        // Check if the verification code has expired
+        if (user.getVerificationCodeExpiresAt() == null || user.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
+            // Code has expired
+            // You might want to trigger sending a new code here instead of just throwing
+            throw new RuntimeException("Verification code has expired");
+        }
+
+        // --- Correct comparison using PasswordEncoder.matches() ---
+
+        // Get the raw code submitted by the user from the DTO
+        String submittedRawCode = input.getVerificationCode();
+
+        // Get the hashed code stored in the database
+        String storedHashedCode = user.getVerificationCode();
+
+        // Use passwordEncoder.matches() to compare the raw submitted code with the stored hash
+        // This method handles hashing the submittedRawCode and comparing it securely
+        boolean codeMatches = passwordEncoder.matches(submittedRawCode, storedHashedCode);
+
+
+        if (codeMatches) {
+            // If the codes match and haven't expired, enable the user
+            user.setEnabled(true);
+            user.setVerificationCode(null); // Clear the verification code after successful verification
+            user.setVerificationCodeExpiresAt(null); // Clear the expiry time
+            userRepository.save(user); // Save the updated user state
+
+            // Verification successful - method completes without throwing
+        } else {
+            // If the codes don't match
+            // You might want to log failed attempts here
+            throw new RuntimeException("Invalid verification code");
+        }
     }
+
 
     public void resendVerificationCode(String email) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
@@ -87,18 +135,21 @@ public class AuthenticationService {
             if (user.isEnabled()) {
                 throw new RuntimeException("Account is already verified");
             }
-            user.setVerificationCode(generateVerificationCode());
+//            user.setVerificationCode(generateVerificationCode());
             user.setVerificationCodeExpiresAt(LocalDateTime.now().plusHours(1));
-            sendVerificationEmail(user);
+            String rawVerificationCode = generateVerificationCode();
+            String hashedVerificationCode = passwordEncoder.encode(rawVerificationCode);
+            user.setVerificationCode(hashedVerificationCode);
+            sendVerificationEmail(user , rawVerificationCode);
             userRepository.save(user);
         } else {
             throw new RuntimeException("User not found");
         }
     }
 
-    private void sendVerificationEmail(User user) { //TODO: Update with company logo
+    private void sendVerificationEmail(User user , String vcode) { //TODO: Update with company logo
         String subject = "Account Verification";
-        String verificationCode = "VERIFICATION CODE " + user.getVerificationCode();
+        String verificationCode = "VERIFICATION CODE " + vcode;
         String htmlMessage = "<html>"
                 + "<body style=\"font-family: Arial, sans-serif;\">"
                 + "<div style=\"background-color: #f5f5f5; padding: 20px;\">"

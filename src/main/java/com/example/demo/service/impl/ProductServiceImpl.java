@@ -25,14 +25,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional // Ensure atomicity
-    public Product addProduct(Integer vendorId, ProductRequest productRequest) {
+    public Product addProduct(Long userId, ProductRequest productRequest) { // Parameter is Long userId
         Product product = new Product();
-        System.out.println("Hello inside add product");
         product.setName(productRequest.getName());
         product.setDescription(productRequest.getDescription());
         product.setPrice(productRequest.getPrice());
         product.setQuantity(productRequest.getQuantity());
-        product.setVendorId(vendorId); // Assign the vendor ID
+        product.setVendorId(userId); // Assign the User's ID to the vendorId field
         product.setCategory(productRequest.getCategory());
         product.setDeletedAt(null); // Ensure it's not marked as deleted on creation
 
@@ -41,8 +40,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public Optional<Product> updateProduct(Long productId, Integer vendorId, ProductRequest productRequest) {
-        Optional<Product> existingProductOptional = productRepository.findByProductIdAndVendorIdAndDeletedAtIsNull(productId, vendorId);
+    public Optional<Product> updateProduct(Long productId, Long userId, ProductRequest productRequest) { // Parameter is Long userId
+        // Call the repository method that uses the vendorId column
+        Optional<Product> existingProductOptional = productRepository.findByProductIdAndVendorIdAndDeletedAtIsNull(productId, userId);
 
         if (existingProductOptional.isPresent()) {
             Product existingProduct = existingProductOptional.get();
@@ -51,22 +51,25 @@ public class ProductServiceImpl implements ProductService {
             existingProduct.setPrice(productRequest.getPrice());
             existingProduct.setQuantity(productRequest.getQuantity());
             existingProduct.setCategory(productRequest.getCategory());
+            // vendorId (User ID) should not be changed during update
 
             return Optional.of(productRepository.save(existingProduct));
         } else {
-            return Optional.empty(); // Product not found or not belonging to the vendor/already deleted
+            return Optional.empty(); // Product not found or not belonging to the user/already deleted
         }
     }
 
     @Override
-    public List<Product> getAllProductsForVendor(Integer vendorId) {
-        return productRepository.findByVendorIdAndDeletedAtIsNull(vendorId);
+    public List<Product> getAllProductsForUser(Long userId) { // Parameter is Long userId
+        // Call the repository method that uses the vendorId column
+        return productRepository.findByVendorIdAndDeletedAtIsNull(userId);
     }
 
     @Override
     @Transactional
-    public boolean deleteProduct(Long productId, Integer vendorId) {
-        Optional<Product> productOptional = productRepository.findByProductIdAndVendorIdAndDeletedAtIsNull(productId, vendorId);
+    public boolean deleteProduct(Long productId, Long userId) { // Parameter is Long userId
+        // Call the repository method that uses the vendorId column
+        Optional<Product> productOptional = productRepository.findByProductIdAndVendorIdAndDeletedAtIsNull(productId, userId);
 
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
@@ -74,29 +77,33 @@ public class ProductServiceImpl implements ProductService {
             productRepository.save(product);
             return true; // Deletion successful
         } else {
-            return false; // Product not found or not belonging to the vendor/already deleted
+            return false; // Product not found or not belonging to the user/already deleted
         }
     }
 
     @Override
-    public List<Product> filterProductsForVendor(Integer vendorId, ProductFilterRequest filterRequest) {
+    public List<Product> filterProductsForUser(Long userId, ProductFilterRequest filterRequest) { // Parameter is Long userId
         Integer quantity = filterRequest.getQuantity();
         String category = filterRequest.getCategory();
 
         if (quantity != null && category != null && !category.trim().isEmpty()) {
-            return productRepository.findByVendorIdAndQuantityGreaterThanEqualAndCategoryAndDeletedAtIsNull(vendorId, quantity, category);
+            // Call the repository method that uses the vendorId column
+            return productRepository.findByVendorIdAndQuantityGreaterThanEqualAndCategoryAndDeletedAtIsNull(userId, quantity, category);
         } else if (quantity != null) {
-            return productRepository.findByVendorIdAndQuantityGreaterThanEqualAndDeletedAtIsNull(vendorId, quantity);
+            // Call the repository method that uses the vendorId column
+            return productRepository.findByVendorIdAndQuantityGreaterThanEqualAndDeletedAtIsNull(userId, quantity);
         } else if (category != null && !category.trim().isEmpty()) {
-            return productRepository.findByVendorIdAndCategoryAndDeletedAtIsNull(vendorId, category);
+            // Call the repository method that uses the vendorId column
+            return productRepository.findByVendorIdAndCategoryAndDeletedAtIsNull(userId, category);
         } else {
-            // If no filters are provided, return all non-deleted products for the vendor
-            return getAllProductsForVendor(vendorId);
+            // If no filters are provided, return all non-deleted products for the user
+            return getAllProductsForUser(userId);
         }
     }
 
     @Override
-    public Optional<Product> getProductByIdForVendor(Long productId, Integer vendorId) {
-        return productRepository.findByProductIdAndVendorIdAndDeletedAtIsNull(productId, vendorId);
+    public Optional<Product> getProductByIdForUser(Long productId, Long userId) { // Parameter is Long userId
+        // Call the repository method that uses the vendorId column
+        return productRepository.findByProductIdAndVendorIdAndDeletedAtIsNull(productId, userId);
     }
 }

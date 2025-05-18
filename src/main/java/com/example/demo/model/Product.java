@@ -30,8 +30,9 @@ public class Product {
     @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "vendor_id", nullable = false)
-    private Integer vendorId; // Assuming vendor_id in Product maps to an Integer
+    // This column is named 'vendor_id' in the database, but stores the User's ID
+    @Column(name = "vendor_id", nullable = false) // Keep the column name as 'vendor_id'
+    private Long vendorId; // Use Long type to match User.id
 
     @Column(name = "category")
     private String category;
@@ -39,63 +40,11 @@ public class Product {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt; // Using soft delete
 
-    // Getters and Setters
-    public Long getProductId() {
-        return productId;
-    }
-
-
-
-    public String getName() {
-        return name;
-    }
-
-
-
-    public String getDescription() {
-        return description;
-    }
-
-
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-        if (this.quantity == null) {
-            this.quantity = 0; // Ensure default 0 if not provided
-        }
-    }
-
-    public Integer getVendorId() {
-        return vendorId;
-    }
-
-
-    public String getCategory() {
-        return category;
-    }
-
-
-    public LocalDateTime getDeletedAt() {
-        return deletedAt;
-    }
-
-
-
     // Optional: Add constructors
     public Product() {
     }
 
-    public Product(String name, String description, BigDecimal price, Integer quantity, Integer vendorId, String category) {
+    public Product(String name, String description, BigDecimal price, Integer quantity, Long vendorId, String category) {
         this.name = name;
         this.description = description;
         this.price = price;

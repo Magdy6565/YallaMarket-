@@ -10,13 +10,22 @@ import java.util.Optional;
 /**
  * Repository interface for managing Product entities.
  * Leverages Spring Data JPA for database operations.
+ * Products are associated with a User via the 'vendor_id' column which stores the User's ID.
  */
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    List<Product> findByVendorIdAndDeletedAtIsNull(Integer vendorId);
-    Optional<Product> findByProductIdAndVendorIdAndDeletedAtIsNull(Long productId, Integer vendorId);
-    List<Product> findByVendorIdAndQuantityGreaterThanEqualAndDeletedAtIsNull(Integer vendorId, Integer quantity);
-    List<Product> findByVendorIdAndCategoryAndDeletedAtIsNull(Integer vendorId, String category);
-    List<Product> findByVendorIdAndQuantityGreaterThanEqualAndCategoryAndDeletedAtIsNull(Integer vendorId, Integer quantity, String category);
 
+
+    List<Product> findByVendorIdAndDeletedAtIsNull(Long userId); // Use findByVendorId, parameter is Long userId
+
+    Optional<Product> findByProductIdAndVendorIdAndDeletedAtIsNull(Long productId, Long userId); // Use findByVendorId, parameter is Long userId
+
+    List<Product> findByVendorIdAndQuantityGreaterThanEqualAndDeletedAtIsNull(Long userId, Integer quantity); // Use findByVendorId, parameter is Long userId
+
+    List<Product> findByVendorIdAndCategoryAndDeletedAtIsNull(Long userId, String category); // Use findByVendorId, parameter is Long userId
+
+    List<Product> findByVendorIdAndQuantityGreaterThanEqualAndCategoryAndDeletedAtIsNull(Long userId, Integer quantity, String category); // Use findByVendorId, parameter is Long userId
+
+    // Note: Soft delete is handled in the Service layer by updating the 'deletedAt' field.
+    // The 'deletedAtIsNull' condition is added to find methods to exclude soft-deleted items.
 }
