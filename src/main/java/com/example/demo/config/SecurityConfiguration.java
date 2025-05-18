@@ -52,9 +52,12 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         // Permit authentication endpoints
                         .requestMatchers("/auth/**").permitAll()
-                        // ** Permit your product endpoints for testing **
+                        // Permit dashboard endpoints for testing
+                        .requestMatchers("/api/dashboard/**").permitAll()
+                        // Permit test data endpoint for testing
+                        .requestMatchers("/api/test-data/**").permitAll()
+                        // Permit product endpoints for testing
                         .requestMatchers("/api/vendors/**").permitAll() // Temporarily allow all for testing
-                        // *********************************************
                         // Require authentication for any other request
                         .anyRequest().authenticated()
                 )

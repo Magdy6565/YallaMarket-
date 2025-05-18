@@ -67,10 +67,27 @@ public class User implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
-    }
-
-    @Override
+    }    @Override
     public boolean isEnabled() {
         return enabled;
+    }
+    
+    /**
+     * Check if the user has a specific role
+     * 
+     * @param role The role to check
+     * @return true if the user has the role, false otherwise
+     */
+    public boolean hasRole(UserRole role) {
+        return this.role == role.getValue();
+    }
+    
+    /**
+     * Get the user's role as an enum
+     * 
+     * @return The user's role as a UserRole enum
+     */
+    public UserRole getUserRole() {
+        return UserRole.fromValue(this.role);
     }
 }
