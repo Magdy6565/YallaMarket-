@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.math.BigDecimal; // Import BigDecimal for rating
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -20,74 +21,100 @@ import java.util.List;
 //UserDetails --> integrates spring security
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Changed from AUTO, assuming SERIAL in DB
     private Long id;
     @Column(unique = true, nullable = false)
     private String username;
     @Column(unique = true, nullable = false)
-    private String email;
+    private String email; // Assuming this is the contact email
     @Column(nullable = false)
-    private String password;
+    private String password; // This should store password_hash
+    @Column(name = "jwt_token") // Assuming this column exists based on schema comment
+    private String jwtToken;
+    @Column(name = "role")
+    private int role; // Assuming role is stored as an integer
     @Column(name = "verification_code")
     private String verificationCode;
-    @Column(name = "role")
-    private int role;
     @Column(name = "verification_expiration")
     private LocalDateTime verificationCodeExpiresAt;
     private boolean enabled;
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "contact_info")
+    private String contactInfo;
+
+    @Column(name = "rating")
+    private BigDecimal rating;
+
+    @Column(name = "deleted_at") // Assuming this exists based on schema comment
+    private LocalDateTime deletedAt;
+
+
     //------------------------------
 
-    //constructor for creating an unverified user
-    public User(String username, String email, String password) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
+    // constructor for creating a user (updated to include new fields if needed, or use setters)
+    // Default constructor is required by JPA
+    public User() {
     }
-    //default constructor
-    public User(){
+
+    // You can add other constructors as needed, e.g., for registration
+    public User(String username, String email, String password, int role, String address, String contactInfo) {
+        this.username = username;
+        this.email = email; // Using email for the email column
+        this.password = password; // Assuming this is the hashed password
+        this.role = role;
+        this.address = address;
+        this.contactInfo = contactInfo;
+        this.enabled = true; // Assuming enabled by default or handle separately
+        this.rating = BigDecimal.ZERO; // Assuming default rating is 0.0 or handle separately
+        // vendorId, storeId, deletedAt, verification fields would be set separately or be nullable
     }
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        // You would typically return authorities based on the 'role' field here
+        // For example, using a simple mapping or enum
+        return List.of(); // Placeholder - Implement actual role-based authorities
     }
 
-    //TODO: add proper boolean checks
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        // UserDetails requires getUsername, but your DB has both username and email.
+        // You might need to decide which one is used for Spring Security login,
+        // or provide a custom UserDetailsService.
+        // Returning the 'username' field from your entity here.
+        return this.username;
+    }
+
+
+    // TODO: add proper boolean checks based on deletedAt and enabled
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return deletedAt == null; // Account is non-expired if not soft deleted
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return true; // Implement locking logic if needed
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
-    }    @Override
+        return true; // Implement credential expiration logic if needed
+    }
+
+    @Override
     public boolean isEnabled() {
-        return enabled;
+        return enabled && (deletedAt == null); // Account is enabled if 'enabled' is true AND not soft deleted
     }
-    
-    /**
-     * Check if the user has a specific role
-     * 
-     * @param role The role to check
-     * @return true if the user has the role, false otherwise
-     */
-    public boolean hasRole(UserRole role) {
-        return this.role == role.getValue();
-    }
-    
-    /**
-     * Get the user's role as an enum
-     * 
-     * @return The user's role as a UserRole enum
-     */
-    public UserRole getUserRole() {
-        return UserRole.fromValue(this.role);
-    }
+
+    // Lombok's @Getter and @Setter handle the rest of the methods.
+    // If you remove Lombok, you'll need to manually add getters/setters for all fields.
 }

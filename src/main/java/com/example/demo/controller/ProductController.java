@@ -3,109 +3,158 @@ package com.example.demo.controller;
 import com.example.demo.dto.ProductFilterRequest;
 import com.example.demo.dto.ProductRequest;
 import com.example.demo.model.Product;
+import com.example.demo.model.User; // Import your User model
 import com.example.demo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid; // For using validation annotations
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger; // Import the Logger class
-import org.slf4j.LoggerFactory; // Import the LoggerFactory class
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+// Import Spring Security classes
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+
 
 @RestController
-@RequestMapping("/api/vendors/{vendorId}/products") // Base path including vendor ID
+// Keep the base path /api/my-products (or /api/products)
+@RequestMapping("/api/my-products")
 public class ProductController {
 
-    private final ProductService productService;
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+
+    private final ProductService productService;
 
     @Autowired
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
 
+    // Helper method to get the user ID from the authenticated user
+    // This method correctly gets the User's ID (Long)
+    private Long getAuthenticatedUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new IllegalStateException("User is not authenticated");
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof User) {
+            User authenticatedUser = (User) principal;
+            if (authenticatedUser.getId() == null) {
+                throw new IllegalStateException("Authenticated user has no ID");
+            }
+            return authenticatedUser.getId(); // Return the user's ID (Long)
+        } else {
+            throw new IllegalStateException("Authenticated principal is not a recognized User type");
+        }
+    }
+
+
     // Add a product
-    // POST /api/vendors/{vendorId}/products
+    // POST /api/my-products
     @PostMapping
-    public ResponseEntity<Product> addProduct(
-            @PathVariable Integer vendorId,
-            @Valid @RequestBody ProductRequest productRequest) {
+    public ResponseEntity<Product> addProduct(@Valid @RequestBody ProductRequest productRequest) {
 
-        // --- Add this log line here ---
-        logger.info("Received POST request to add product for vendorId: {}", vendorId);
-        logger.debug("Product Request Body: {}", productRequest); // Optional: log the body
+        logger.info("We enetred add product NOWWOWOWO");
+        Long userId = getAuthenticatedUserId(); // Get userId (Long) from authenticated user
+        logger.info("Received POST request to add product for userId (stored as vendorId): {}", userId);
+        logger.debug("Product Request Body: {}", productRequest);
 
-        Product newProduct = productService.addProduct(vendorId, productRequest);
+        // Pass the userId (Long) to the service
+        Product newProduct = productService.addProduct(userId, productRequest);
 
-        // --- Add this log line before returning ---
         logger.info("Product added successfully with ID: {}", newProduct.getProductId());
-
 
         return new ResponseEntity<>(newProduct, HttpStatus.CREATED); // Should return 201 Created
     }
 
     // Edit an existing product
-    // PUT /api/vendors/{vendorId}/products/{productId}
+    // PUT /api/my-products/{productId}
     @PutMapping("/{productId}")
     public ResponseEntity<Product> updateProduct(
-            @PathVariable Integer vendorId,
             @PathVariable Long productId,
             @Valid @RequestBody ProductRequest productRequest) {
 
-        Optional<Product> updatedProduct = productService.updateProduct(productId, vendorId, productRequest);
+        Long userId = getAuthenticatedUserId(); // Get userId (Long) from authenticated user
+        logger.info("Received PUT request to update product {} for userId (stored as vendorId): {}", productId, userId);
+
+        // Pass the userId (Long) to the service
+        Optional<Product> updatedProduct = productService.updateProduct(productId, userId, productRequest);
 
         return updatedProduct.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.notFound().build()); // 404 if not found or not owned
     }
 
-    // Show all products for a vendor
-    // GET /api/vendors/{vendorId}/products
+    // Show all products for a user
+    // GET /api/my-products
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProductsForVendor(@PathVariable Integer vendorId) {
-        List<Product> products = productService.getAllProductsForVendor(vendorId);
+    public ResponseEntity<List<Product>> getAllProductsForUser() {
+        Long userId = getAuthenticatedUserId(); // Get userId (Long) from authenticated user
+        logger.info("Received GET request for all products for userId (stored as vendorId): {}", userId);
+
+        // Pass the userId (Long) to the service
+        List<Product> products = productService.getAllProductsForUser(userId);
         return ResponseEntity.ok(products);
     }
 
-    // Get a single product by ID for a vendor
-    // GET /api/vendors/{vendorId}/products/{productId}
+    // Get a single product by ID for a user
+    // GET /api/my-products/{productId}
     @GetMapping("/{productId}")
-    public ResponseEntity<Product> getProductByIdForVendor(
-            @PathVariable Integer vendorId,
+    public ResponseEntity<Product> getProductByIdForUser(
             @PathVariable Long productId) {
-        Optional<Product> product = productService.getProductByIdForVendor(productId, vendorId);
+
+        Long userId = getAuthenticatedUserId(); // Get userId (Long) from authenticated user
+        logger.info("Received GET request for product {} for userId (stored as vendorId): {}", productId, userId);
+
+        // Pass the userId (Long) to the service
+        Optional<Product> product = productService.getProductByIdForUser(productId, userId);
         return product.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.notFound().build()); // 404 if not found or not owned
     }
 
 
     // Delete a certain product (soft delete)
-    // DELETE /api/vendors/{vendorId}/products/{productId}
+    // DELETE /api/my-products/{productId}
     @DeleteMapping("/{productId}")
     public ResponseEntity<Void> deleteProduct(
-            @PathVariable Integer vendorId,
             @PathVariable Long productId) {
-        boolean deleted = productService.deleteProduct(productId, vendorId);
+
+        Long userId = getAuthenticatedUserId(); // Get userId (Long) from authenticated user
+        logger.info("Received DELETE request for product {} for userId (stored as vendorId): {}", productId, userId);
+
+        // Pass the userId (Long) to the service
+        boolean deleted = productService.deleteProduct(productId, userId);
 
         if (deleted) {
             return ResponseEntity.noContent().build(); // 204 No Content
         } else {
-            return ResponseEntity.notFound().build(); // 404 Not Found (or product not owned by vendor)
+            return ResponseEntity.notFound().build(); // 404 Not Found (or not owned/already deleted)
         }
     }
 
     // Filter products
-    // GET /api/vendors/{vendorId}/products/filter
+    // GET /api/my-products/filter
     // Parameters can be quantity={value} and/or category={value}
     @GetMapping("/filter")
     public ResponseEntity<List<Product>> filterProducts(
-            @PathVariable Integer vendorId,
-            @ModelAttribute ProductFilterRequest filterRequest) { // Use @ModelAttribute for query params
-        List<Product> filteredProducts = productService.filterProductsForVendor(vendorId, filterRequest);
+            @ModelAttribute ProductFilterRequest filterRequest) {
+
+        Long userId = getAuthenticatedUserId(); // Get userId (Long) from authenticated user
+        logger.info("Received GET filter request for userId (stored as vendorId): {}", userId);
+        logger.debug("Filter criteria: Quantity={}, Category={}", filterRequest.getQuantity(), filterRequest.getCategory());
+
+        // Pass the userId (Long) to the service
+        List<Product> filteredProducts = productService.filterProductsForUser(userId, filterRequest);
         return ResponseEntity.ok(filteredProducts);
     }
 }

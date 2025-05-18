@@ -7,17 +7,21 @@ import com.example.demo.model.Product;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Interface for the Product Service, defining the business operations related to Products.
+ * Products are associated with a User via the 'vendor_id' column which stores the User's ID.
+ */
 public interface ProductService {
 
-    Product addProduct(Integer vendorId, ProductRequest productRequest);
+    Product addProduct(Long userId, ProductRequest productRequest); // Parameter is Long userId
 
-    Optional<Product> updateProduct(Long productId, Integer vendorId, ProductRequest productRequest);
+    Optional<Product> updateProduct(Long productId, Long userId, ProductRequest productRequest); // Parameter is Long userId
 
-    List<Product> getAllProductsForVendor(Integer vendorId);
+    List<Product> getAllProductsForUser(Long userId); // Parameter is Long userId
 
-    boolean deleteProduct(Long productId, Integer vendorId);
+    boolean deleteProduct(Long productId, Long userId); // Parameter is Long userId
 
-    List<Product> filterProductsForVendor(Integer vendorId, ProductFilterRequest filterRequest);
+    List<Product> filterProductsForUser(Long userId, ProductFilterRequest filterRequest); // Parameter is Long userId
 
-    Optional<Product> getProductByIdForVendor(Long productId, Integer vendorId);
+    Optional<Product> getProductByIdForUser(Long productId, Long userId); // Parameter is Long userId
 }

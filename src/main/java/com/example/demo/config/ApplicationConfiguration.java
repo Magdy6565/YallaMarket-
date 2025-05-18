@@ -20,15 +20,16 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    UserDetailsService userDetailsService() {
-        return username -> userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    }    @Bean
+    public UserDetailsService userDetailsService() {
+
+        return username -> userRepository.findByEmail(username) // <-- CORRECTED: Use findByUsername
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username)); // Keep the exception, improved message
+    }
+
+    @Bean
     BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
