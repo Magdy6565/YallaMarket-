@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YallaMarket - Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>YallaMarket</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active">
+                        <a href="#"><i class="fas fa-chart-line"></i> Dashboard</a>
+                    </li>
+                    
+                    <!-- Vendor-specific menu items -->
+                    <li th:if="${userRole == 'vendor'}">
+                        <a href="#"><i class="fas fa-box"></i> My Products</a>
+                    </li>
+                    <li th:if="${userRole == 'vendor'}">
+                        <a href="#"><i class="fas fa-shopping-cart"></i> Orders Received</a>
+                    </li>
+                    <li th:if="${userRole == 'vendor'}">
+                        <a href="#"><i class="fas fa-truck"></i> Shipments</a>
+                    </li>
+                    
+                    <!-- Retail Store-specific menu items -->
+                    <li th:if="${userRole == 'retailStore'}">
+                        <a href="#"><i class="fas fa-store"></i> Vendors</a>
+                    </li>
+                    <li th:if="${userRole == 'retailStore'}">
+                        <a href="#"><i class="fas fa-shopping-cart"></i> My Orders</a>
+                    </li>
+                    <li th:if="${userRole == 'retailStore'}">
+                        <a href="#"><i class="fas fa-dolly"></i> Deliveries</a>
+                    </li>
+                    
+                    <!-- Common menu items -->
+                    <li>
+                        <a href="#"><i class="fas fa-credit-card"></i> Payments</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fas fa-bell"></i> Notifications</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fas fa-user"></i> Profile</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                
+                <div class="header-user">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    
+                    <div class="user-profile">
+                        <img src="https://via.placeholder.com/40" alt="User Profile">
+                        <span th:text="${username}">User</span>
+                    </div>
+                </div>
+            </header>
+            
+            <div class="dashboard-content">
+                <h1>Dashboard <span th:if="${userRole == 'vendor'}" class="role-badge vendor">Vendor</span>
+                     <span th:if="${userRole == 'retailStore'}" class="role-badge retail">Retail Store</span></h1>
+                
+                <!-- Vendor Dashboard Stats -->
+                <div th:if="${userRole == 'vendor'}" class="stat-cards">
+                    <div class="stat-card">
+                        <div class="stat-card-icon products">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>Total Products</h3>
+                            <p th:text="${dashboardData.totalProducts}">0</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-icon orders">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>Orders Received</h3>
+                            <p th:text="${dashboardData.ordersReceived}">0</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-icon revenue">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>Total Revenue</h3>
+                            <p th:text="${'$' + dashboardData.totalRevenue}">$0.00</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-icon payments">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>Total Payments</h3>
+                            <p th:text="${'$' + dashboardData.totalPaymentsReceived}">$0.00</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Retail Store Dashboard Stats -->
+                <div th:if="${userRole == 'retailStore'}" class="stat-cards">
+                    <div class="stat-card">
+                        <div class="stat-card-icon orders">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>Orders Placed</h3>
+                            <p th:text="${dashboardData.ordersPlaced}">0</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-icon payments">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>Total Payments Made</h3>
+                            <p th:text="${'$' + dashboardData.totalPaymentsMade}">$0.00</p>
+                        </div>
+                    </div>
+                    
+                    <!-- You can add more cards for retail store if needed -->
+                </div>
+                  <div class="charts-container">
+                    <!-- Delivery Status Chart for Retail Store -->
+                    <div th:if="${userRole == 'retailStore'}" class="chart-card">
+                        <h3>Delivery Status</h3>
+                        <div class="delivery-status-chart">
+                            <div th:each="status : ${dashboardData.deliveryStatusBreakdown}" class="status-item">
+                                <div class="status-info">
+                                    <span class="status-name" th:text="${status.status}">STATUS</span>
+                                    <span class="status-count" th:text="${status.count}">0</span>
+                                </div>
+                                <div class="status-progress">
+                                    <!-- Calculate percentage for progress bar width -->
+                                    <div class="progress-bar" th:style="'width: ' + ${status.count * 20 + 5} + '%'"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Notifications for Vendor -->
+                    <div th:if="${userRole == 'vendor'}" class="chart-card">
+                        <h3>Recent Notifications</h3>
+                        <div class="notifications-list">
+                            <div th:each="notification : ${dashboardData.recentNotifications}" 
+                                 th:class="${notification.isRead ? 'notification-item read' : 'notification-item unread'}">
+                                <div class="notification-header">
+                                    <h4 th:text="${notification.title}">Notification Title</h4>
+                                    <span th:text="${#temporals.format(notification.createdAt, 'MMM dd, yyyy')}">Date</span>
+                                </div>
+                                <p th:text="${notification.message}">Notification message goes here.</p>
+                            </div>
+                            
+                            <div th:if="${dashboardData.recentNotifications.isEmpty()}" class="no-data">
+                                <p>No recent notifications.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Top Selling Products for Retail Store -->
+                    <div th:if="${userRole == 'retailStore'}" class="chart-card">
+                        <h3>Top Selling Products</h3>
+                        <div class="top-products">
+                            <div th:each="product : ${dashboardData.topSellingProducts}" class="product-item">
+                                <div class="product-info">
+                                    <span class="product-name" th:text="${product.name}">Product Name</span>
+                                    <span class="product-quantity" th:text="${product.quantity + ' units'}">0 units</span>
+                                </div>
+                                <div class="product-progress">
+                                    <!-- Calculating percentage based on quantity divided by max quantity in list -->
+                                    <div class="progress-bar" th:style="'width: ' + ${product.quantity * 100 / (dashboardData.topSellingProducts[0].quantity > 0 ? dashboardData.topSellingProducts[0].quantity : 1)} + '%'"></div>
+                                </div>
+                            </div>
+                            
+                            <div th:if="${dashboardData.topSellingProducts.isEmpty()}" class="no-data">
+                                <p>No products data available.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                  <div class="recent-orders">
+                    <div class="section-header">
+                        <h3 th:if="${userRole == 'vendor'}">Recent Orders Received</h3>
+                        <h3 th:if="${userRole == 'retailStore'}">Recent Orders Placed</h3>
+                        <a href="#" class="view-all">View All</a>
+                    </div>
+                    
+                    <div class="order-table-container">
+                        <table class="order-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th th:if="${userRole == 'vendor'}">Retail Store</th>
+                                    <th th:if="${userRole == 'retailStore'}">Vendor</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- We'll need to fetch recent orders in our controller and add them to the model -->
+                                <!-- This is a placeholder for demonstration -->
+                                <tr>
+                                    <td>#1001</td>
+                                    <td th:if="${userRole == 'vendor'}">Grocery Mart</td>
+                                    <td th:if="${userRole == 'retailStore'}">Fresh Foods Inc.</td>
+                                    <td>May 18, 2025</td>
+                                    <td>$205.75</td>
+                                    <td><span class="status-badge confirmed">Confirmed</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#1002</td>
+                                    <td th:if="${userRole == 'vendor'}">Corner Shop</td>
+                                    <td th:if="${userRole == 'retailStore'}">Organic Farms Co.</td>
+                                    <td>May 15, 2025</td>
+                                    <td>$95.50</td>
+                                    <td><span class="status-badge shipped">Shipped</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#1003</td>
+                                    <td th:if="${userRole == 'vendor'}">Mini Market</td>
+                                    <td th:if="${userRole == 'retailStore'}">Healthy Foods Ltd.</td>
+                                    <td>Apr 20, 2025</td>
+                                    <td>$150.00</td>
+                                    <td><span class="status-badge delivered">Delivered</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
