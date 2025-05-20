@@ -21,7 +21,10 @@ public class Order {
     private Long orderId;
 
     @Column(name = "user_id", nullable = false)
-    private Integer userId; // Foreign key to RetailStores
+    private Integer userId; // Foreign key to RetailStores or general User who placed order
+
+    @Column(name = "vendor_id") // Added vendor_id
+    private Integer vendorId; // Foreign key to User (Vendor)
 
     @Column(name = "order_date", nullable = false)
     private LocalDate orderDate; // DATE type
@@ -29,6 +32,14 @@ public class Order {
 
     @Column(name = "status", nullable = false)
     private String status; // Maps to order_status enum in DB (e.g., 'pending', 'approved', 'denied')
+
+    @Enumerated(EnumType.STRING) // Store enum as string
+    @Column(name = "delivery_status") // Define the database column name
+    private DeliveryStatus deliveryStatus; // New field for delivery status
+
+    @Enumerated(EnumType.STRING) // Store enum as string
+    @Column(name = "payment_status") // Define the database column name
+    private PaymentStatus paymentStatus; // New field for payment status
 
     @Column(name = "total_amount")
     private BigDecimal totalAmount;

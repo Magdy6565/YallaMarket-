@@ -80,10 +80,10 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public RetailStoreDashboardResponse getRetailStoreDashboard(Long retailStoreId) {
         // Count orders placed
-        long ordersPlaced = orderRepository.countByRetailStoreId(retailStoreId);
+        long ordersPlaced = orderRepository.countByUserId(retailStoreId.intValue()); // Changed to countByUserId and cast to Integer
         
         // Get delivery status breakdown
-        List<OrderDeliveryStatusDto> deliveryStatusList = getDeliveryStatusBreakdown(retailStoreId);
+        List<OrderDeliveryStatusDto> deliveryStatusList = getDeliveryStatusBreakdown(retailStoreId.intValue()); // Changed to use intValue()
         
         // Calculate total payments made
         BigDecimal totalPaymentsMade = calculateTotalPaymentsMade(retailStoreId);
@@ -98,7 +98,7 @@ public class DashboardServiceImpl implements DashboardService {
                 topSellingProducts
         );
     }
-      private List<OrderDeliveryStatusDto> getDeliveryStatusBreakdown(Long retailStoreId) {
+      private List<OrderDeliveryStatusDto> getDeliveryStatusBreakdown(Integer retailStoreId) { // Changed parameter to Integer
         List<OrderDeliveryStatusDto> result = new ArrayList<>();
         
         // Get all statuses
@@ -106,14 +106,14 @@ public class DashboardServiceImpl implements DashboardService {
         
         // For each status, count orders
         for (DeliveryStatus status : allStatuses) {
-            long count = orderRepository.countByRetailStoreIdAndDeliveryStatus(retailStoreId, status);
+            long count = orderRepository.countByUserIdAndDeliveryStatus(retailStoreId, status); // Changed to countByUserIdAndDeliveryStatus
             result.add(new OrderDeliveryStatusDto(status.name(), count));
         }
         
         return result;
     }    private BigDecimal calculateTotalPaymentsMade(Long retailStoreId) {
         // Get all orders for the retail store
-        List<Order> orders = orderRepository.findByRetailStoreIdOrderByCreatedAtDesc(retailStoreId);
+        List<Order> orders = orderRepository.findByUserIdOrderByOrderDateDesc(retailStoreId.intValue()); // Changed to findByUserIdOrderByOrderDateDesc and cast to Integer
         
         // Extract order IDs
         List<Long> orderIds = orders.stream()
@@ -161,4 +161,3 @@ public class DashboardServiceImpl implements DashboardService {
   //"username": "admin_test",
   //"email": "admin_test@example.com",
   //"password": "adminpassword123",
-  

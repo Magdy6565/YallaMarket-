@@ -64,6 +64,26 @@ public class UserService {
     }
     
     /**
+     * Get all active vendors
+     * @return List of active vendors
+     */
+    public List<UserListDTO> getAllActiveVendors() {
+        return userRepository.findAllActiveByRole(UserRole.VENDOR.getValue()).stream()
+                .map(this::convertToUserListDTO)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Get all vendors, including soft-deleted ones
+     * @return List of all vendors
+     */
+    public List<UserListDTO> getAllVendorsIncludingDeleted() {
+        return userRepository.findAllByRole(UserRole.VENDOR.getValue()).stream() // Assuming you add findAllByRole to UserRepository
+                .map(this::convertToUserListDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Soft delete a user by setting the deletedAt timestamp
      * @param userId The ID of the user to delete
      * @return true if the user was deleted, false if not found

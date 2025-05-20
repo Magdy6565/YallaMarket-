@@ -13,29 +13,29 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     
     // Find orders by vendor ID
-    List<Order> findByVendorIdOrderByCreatedAtDesc(Integer vendorId);
+    List<Order> findByVendorIdOrderByOrderDateDesc(Integer vendorId); // Changed CreatedAt to OrderDate
     
-    // Find orders by retail store ID
-    List<Order> findByRetailStoreIdOrderByCreatedAtDesc(Long retailStoreId);
+    // Find orders by retail store ID (now userId)
+    List<Order> findByUserIdOrderByOrderDateDesc(Integer userId); // Changed field and OrderBy
     
     // Count orders by vendor ID
     long countByVendorId(Integer vendorId);
     
-    // Count orders by retail store ID
-    long countByRetailStoreId(Long retailStoreId);
+    // Count orders by retail store ID (now userId)
+    long countByUserId(Integer userId);
     
     // Calculate total revenue for a vendor
-    @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.vendorId = :vendorId AND o.paymentStatus = 'COMPLETED'")
+    @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.vendorId = :vendorId AND o.paymentStatus = com.example.demo.model.PaymentStatus.COMPLETED") // Added fully qualified enum
     BigDecimal calculateTotalRevenueForVendor(@Param("vendorId") Integer vendorId);
     
     // Find orders by vendor ID and payment status
     List<Order> findByVendorIdAndPaymentStatus(Integer vendorId, com.example.demo.model.PaymentStatus paymentStatus);
     
-    // Find orders by retail store ID and payment status
-    List<Order> findByRetailStoreIdAndPaymentStatus(Long retailStoreId, com.example.demo.model.PaymentStatus paymentStatus);
-      // Find orders by retail store ID and delivery status
-    List<Order> findByRetailStoreIdAndDeliveryStatus(Long retailStoreId, com.example.demo.model.DeliveryStatus deliveryStatus);
+    // Find orders by retail store ID (now userId) and payment status
+    List<Order> findByUserIdAndPaymentStatus(Integer userId, com.example.demo.model.PaymentStatus paymentStatus);
+      // Find orders by retail store ID (now userId) and delivery status
+    List<Order> findByUserIdAndDeliveryStatus(Integer userId, com.example.demo.model.DeliveryStatus deliveryStatus);
     
-    // Count orders by retail store ID and delivery status
-    long countByRetailStoreIdAndDeliveryStatus(Long retailStoreId, com.example.demo.model.DeliveryStatus deliveryStatus);
+    // Count orders by retail store ID (now userId) and delivery status
+    long countByUserIdAndDeliveryStatus(Integer userId, com.example.demo.model.DeliveryStatus deliveryStatus);
 }
