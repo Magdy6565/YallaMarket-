@@ -64,6 +64,12 @@ public class ProductServiceImpl implements ProductService {
         // Call the repository method that uses the vendorId column
         return productRepository.findByVendorIdAndDeletedAtIsNull(userId);
     }
+    
+    @Override
+    public List<Product> getAllProducts() {
+        // Return all non-deleted products regardless of vendor
+        return productRepository.findByDeletedAtIsNull();
+    }
 
     @Override
     @Transactional

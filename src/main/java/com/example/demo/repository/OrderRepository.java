@@ -33,7 +33,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     
     // Find orders by retail store ID and payment status
     List<Order> findByRetailStoreIdAndPaymentStatus(Long retailStoreId, com.example.demo.model.PaymentStatus paymentStatus);
-    
-    // Find orders by retail store ID and delivery status
+      // Find orders by retail store ID and delivery status
     List<Order> findByRetailStoreIdAndDeliveryStatus(Long retailStoreId, com.example.demo.model.DeliveryStatus deliveryStatus);
+    
+    // Count orders by retail store ID and delivery status
+    long countByRetailStoreIdAndDeliveryStatus(Long retailStoreId, com.example.demo.model.DeliveryStatus deliveryStatus);
 }

@@ -49,19 +49,16 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
     http
             .csrf(csrf -> csrf.disable()) // Disable CSRF
             .authorizeHttpRequests(authorize -> authorize
-                    // Permit authentication endpoints (login, signup, etc.)
+                    // Permit all endpoints for testing purposes
                     .requestMatchers("/auth/**").permitAll()
-
-                    // Require authentication for the new product endpoints
-                    // User must provide a valid JWT (Bearer Token)
-                    .requestMatchers("/api/my-products/**").authenticated()
-
-                    // Require authentication for the user update endpoint
-                    // User must provide a valid JWT (Bearer Token)
-                    .requestMatchers("/api/users/**").authenticated() // Assuming user update is also protected
-
-                    // Require authentication for any other request not explicitly permitted above
-                    .anyRequest().authenticated() // This is the default for everything else
+                    // Permit all admin functionality endpoints
+                    .requestMatchers("/api/user-management/**").permitAll()
+                    .requestMatchers("/api/dashboard/**").permitAll()
+                    .requestMatchers("/api/products/**").permitAll()
+                    .requestMatchers("/api/my-products/**").permitAll()
+                    .requestMatchers("/api/users/**").permitAll()
+                    // Still permit all other endpoints (you can remove this if needed)
+                    .anyRequest().permitAll()
             )
             .sessionManagement(session -> session
                     // Configure session management to be stateless (typical for JWT APIs)

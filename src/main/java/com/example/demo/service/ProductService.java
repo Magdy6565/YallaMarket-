@@ -18,6 +18,8 @@ public interface ProductService {
     Optional<Product> updateProduct(Long productId, Long userId, ProductRequest productRequest); // Parameter is Long userId
 
     List<Product> getAllProductsForUser(Long userId); // Parameter is Long userId
+    
+    List<Product> getAllProducts(); // Method to get all products regardless of vendor
 
     boolean deleteProduct(Long productId, Long userId); // Parameter is Long userId
 

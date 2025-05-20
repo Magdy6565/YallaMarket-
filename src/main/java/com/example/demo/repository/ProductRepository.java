@@ -15,6 +15,8 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
+    // Add method to find all non-deleted products
+    List<Product> findByDeletedAtIsNull();
 
     List<Product> findByVendorIdAndDeletedAtIsNull(Long userId); // Use findByVendorId, parameter is Long userId
 

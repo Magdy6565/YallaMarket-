@@ -44,12 +44,11 @@ public class DashboardServiceImpl implements DashboardService {
     }
     
     @Override
-    public VendorDashboardResponse getVendorDashboard(Integer vendorId) {
-        // Get vendor's user ID (assuming it matches the vendorId for simplicity)
+    public VendorDashboardResponse getVendorDashboard(Integer vendorId) {        // Get vendor's user ID (assuming it matches the vendorId for simplicity)
         Long userId = Long.valueOf(vendorId);
         
         // Count total products for vendor
-        long totalProducts = productRepository.findByVendorIdAndDeletedAtIsNull(vendorId).size();
+        long totalProducts = productRepository.findByVendorIdAndDeletedAtIsNull(userId).size();
         
         // Count orders received
         long ordersReceived = orderRepository.countByVendorId(vendorId);
@@ -99,8 +98,7 @@ public class DashboardServiceImpl implements DashboardService {
                 topSellingProducts
         );
     }
-    
-    private List<OrderDeliveryStatusDto> getDeliveryStatusBreakdown(Long retailStoreId) {
+      private List<OrderDeliveryStatusDto> getDeliveryStatusBreakdown(Long retailStoreId) {
         List<OrderDeliveryStatusDto> result = new ArrayList<>();
         
         // Get all statuses
@@ -108,14 +106,12 @@ public class DashboardServiceImpl implements DashboardService {
         
         // For each status, count orders
         for (DeliveryStatus status : allStatuses) {
-            long count = orderRepository.findByRetailStoreIdAndDeliveryStatus(retailStoreId, status).size();
+            long count = orderRepository.countByRetailStoreIdAndDeliveryStatus(retailStoreId, status);
             result.add(new OrderDeliveryStatusDto(status.name(), count));
         }
         
         return result;
-    }
-    
-    private BigDecimal calculateTotalPaymentsMade(Long retailStoreId) {
+    }    private BigDecimal calculateTotalPaymentsMade(Long retailStoreId) {
         // Get all orders for the retail store
         List<Order> orders = orderRepository.findByRetailStoreIdOrderByCreatedAtDesc(retailStoreId);
         
@@ -152,8 +148,7 @@ public class DashboardServiceImpl implements DashboardService {
                 if (product != null) {
                     productName = product.getName();
                 }
-            } catch (Exception e) {
-                // Ignore if product no longer exists
+            } catch (Exception e) {            // Ignore if product no longer exists
             }
             
             topProducts.add(new TopSellingProductDto(productId, productName, quantity));
@@ -162,3 +157,8 @@ public class DashboardServiceImpl implements DashboardService {
         return topProducts;
     }
 }
+ //{
+  //"username": "admin_test",
+  //"email": "admin_test@example.com",
+  //"password": "adminpassword123",
+  

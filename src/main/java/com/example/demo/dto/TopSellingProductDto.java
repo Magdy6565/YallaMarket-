@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class TopSellingProductDto {
     private Long productId;
     private String productName;
-    private int quantitySold;
+    private int quantity;
 }

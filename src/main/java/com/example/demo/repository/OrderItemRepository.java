@@ -23,8 +23,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
             "GROUP BY oi.product_id " +
             "ORDER BY total_quantity DESC " +
             "LIMIT :limit", nativeQuery = true)
-    List<Object[]> findTopSellingProductsForVendor(@Param("vendorId") Integer vendorId, @Param("limit") int limit);
-      // Find top-selling products for a retail store
+    List<Object[]> findTopSellingProductsForVendor(@Param("vendorId") Integer vendorId, @Param("limit") int limit);      // Find top-selling products for a retail store
     @Query(value = "SELECT oi.product_id, SUM(oi.quantity) as total_quantity " +
             "FROM order_items oi " +
             "JOIN orders o ON oi.order_id = o.order_id " +
