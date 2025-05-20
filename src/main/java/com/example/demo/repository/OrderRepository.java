@@ -23,5 +23,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT o FROM Order o WHERE UPPER(o.status) = UPPER(:orderStatusValue)")
     List<VendorOrderDetailsDto> findOrdersBySpecificStatus(@Param("orderStatusValue") String orderStatusValue);
 
+    //Dool 3l4an el vendor statistics 3ayzeen no orders w sum el floos
+    @Query("SELECT COUNT(DISTINCT o.id) FROM Order o JOIN o.orderItems oi JOIN oi.product p WHERE p.vendorId = :vendorId AND o.deletedAt IS NULL")
+    Long countOrdersByProductVendorId(@Param("vendorId") Long vendorId);
 
+    @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.id IN " +
+            "(SELECT DISTINCT oi.order.id FROM OrderItem oi JOIN oi.product p WHERE p.vendorId = :vendorId) " +
+            "AND o.deletedAt IS NULL")
+    Double sumRevenueByProductVendorId(@Param("vendorId") Long vendorId);
 }

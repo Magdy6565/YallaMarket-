@@ -29,4 +29,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT DISTINCT p.category FROM Product p WHERE p.category IS NOT NULL")
     List<String> findDistinctCategories();
+
+    // 3ayzha dee 3l4an el vendor statisticss
+    Long countByVendorId(Long vendorId);
 }

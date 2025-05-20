@@ -45,11 +45,11 @@ document.addEventListener("DOMContentLoaded", function () {
     changePasswordBtn.addEventListener("click", showChangePasswordModal);
   }
 
-  // Ensure this is uncommented if you have a Notification Settings button in your HTML
-  const notificationSettingsBtn = document.getElementById("notificationSettingsBtn");
-  if (notificationSettingsBtn) {
-    notificationSettingsBtn.addEventListener("click", showNotificationSettingsModal);
-  }
+//  // Ensure this is uncommented if you have a Notification Settings button in your HTML
+//  const notificationSettingsBtn = document.getElementById("notificationSettingsBtn");
+//  if (notificationSettingsBtn) {
+//    notificationSettingsBtn.addEventListener("click", showNotificationSettingsModal);
+//  }
 });
 
 /**
@@ -97,34 +97,92 @@ async function fetchUserProfileAndDisplay() {
     document.getElementById("profile-contactInfo").textContent = userData.contactInfo || "N/A";
     document.getElementById("profile-address").textContent = userData.address || "N/A";
 
-    // Format 'createdAt' for "Member Since"
-    if (userData.createdAt) {
-      const date = new Date(userData.createdAt); // Assuming ISO 8601 string
-      document.getElementById("profile-memberSince").textContent = new Intl.DateTimeFormat('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      }).format(date);
-    } else {
-      document.getElementById("profile-memberSince").textContent = "N/A";
+try {
+    // Fetch data from the endpoint. No 'localhost' prefix needed if served from the same domain.
+    const url = `/api/vendor/stats/${currentUserId}`;
+
+    // Add Authorization header if your endpoint is secured (assuming JWT is stored in localStorage)
+    const token = localStorage.getItem('jwtToken');
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
+    const response = await fetch(url, { headers });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || `HTTP error! status: ${response.status}`);
     }
 
-    // --- Populate Account Statistics ---
-    // Use fallback to 0 or 0.00 if these fields are not present in the /users/me response
-    const totalProducts = userData.totalProducts !== undefined ? userData.totalProducts : 0;
-    const totalOrders = userData.totalOrders !== undefined ? userData.totalOrders : 0;
-    const totalRevenue = userData.totalRevenue !== undefined ? userData.totalRevenue : 0.00;
-    const rating = userData.rating !== undefined ? userData.rating : 0.0; // Rating IS in your sample response
+    // Parse the JSON response from the backend
+    const backendData = await response.json();
 
-    document.getElementById("stats-totalProducts").textContent = totalProducts;
-    document.getElementById("stats-totalOrders").textContent = totalOrders;
-    document.getElementById("stats-totalRevenue").textContent = `$${totalRevenue.toFixed(2)}`;
-    document.getElementById("stats-rating").textContent = `${rating.toFixed(1)}/5`;
+    // Map backend DTO properties to frontend variables, with fallbacks
+    const totalProducts = backendData.totalProductsListed !== undefined ? backendData.totalProductsListed : 0;
+    const totalOrders = backendData.totalOrdersReceived !== undefined ? backendData.totalOrdersReceived : 0;
+    const totalRevenue = backendData.totalRevenue !== undefined ? backendData.totalRevenue : 0.00;
+    const rating = backendData.rating !== undefined ? backendData.rating : 0.0; // Assuming 'rating' might come from backend later
+
+    // Update HTML elements with the fetched data
+    // Ensure these IDs exist in your HTML (e.g., in your 'stats.html' page)
+    const statsTotalProductsElement = document.getElementById("stats-totalProducts");
+    if (statsTotalProductsElement) {
+        statsTotalProductsElement.textContent = totalProducts;
+    } else {
+        console.warn("Element with ID 'stats-totalProducts' not found.");
+    }
+
+    const statsTotalOrdersElement = document.getElementById("stats-totalOrders");
+    if (statsTotalOrdersElement) {
+        statsTotalOrdersElement.textContent = totalOrders;
+    } else {
+        console.warn("Element with ID 'stats-totalOrders' not found.");
+    }
+
+    const statsTotalRevenueElement = document.getElementById("stats-totalRevenue");
+    if (statsTotalRevenueElement) {
+        statsTotalRevenueElement.textContent = `$${totalRevenue.toFixed(2)}`;
+    } else {
+        console.warn("Element with ID 'stats-totalRevenue' not found.");
+    }
+
+    const statsRatingElement = document.getElementById("stats-rating");
+    if (statsRatingElement) {
+        statsRatingElement.textContent = `${rating.toFixed(1)}/5`;
+    } else {
+        console.warn("Element with ID 'stats-rating' not found.");
+    }
 
     // Adjust labels based on role (assuming 'role' 1 is 'vendor' and others are 'customer')
-    const isVendor = userData.role === 1;
-    document.getElementById("stats-ordersLabel").textContent = isVendor ? 'Orders Received' : 'Orders Placed';
-    document.getElementById("stats-revenueLabel").textContent = isVendor ? 'Total Revenue' : 'Total Spent';
+    // This part assumes 'role' is available in backendData or determined otherwise.
+    // If 'role' is not in backendData, you'll need to fetch user role separately.
+    const isVendor = backendData.role === 1; // Adjust this logic if 'role' is not directly in backendData
+    const statsOrdersLabelElement = document.getElementById("stats-ordersLabel");
+    if (statsOrdersLabelElement) {
+        statsOrdersLabelElement.textContent = isVendor ? 'Orders Received' : 'Orders Placed';
+    } else {
+        console.warn("Element with ID 'stats-ordersLabel' not found.");
+    }
+
+    const statsRevenueLabelElement = document.getElementById("stats-revenueLabel");
+    if (statsRevenueLabelElement) {
+        statsRevenueLabelElement.textContent = isVendor ? 'Total Revenue' : 'Total Spent';
+    } else {
+        console.warn("Element with ID 'stats-revenueLabel' not found.");
+    }
+
+} catch (error) {
+    console.error("Error fetching vendor statistics:", error);
+    // You might want to display an error message on the page here,
+    // e.g., by targeting a specific error div or the main container.
+    const statsContainer = document.querySelector(".products-container"); // Assuming this is your main container
+    if (statsContainer) {
+        statsContainer.innerHTML = `<div class="error-message">Failed to load statistics: ${error.message || "Please try again later."}</div>`;
+    }
+}
+
+
+
+
+
 
   } catch (error) {
     console.error("Critical error loading user profile:", error);
@@ -134,7 +192,7 @@ async function fetchUserProfileAndDisplay() {
     document.getElementById("profile-email").textContent = "Failed to load profile. Please ensure you are logged in and refresh.";
     document.getElementById("profile-contactInfo").textContent = "";
     document.getElementById("profile-address").textContent = "";
-    document.getElementById("profile-memberSince").textContent = "";
+//    document.getElementById("profile-memberSince").textContent = "";
 
     // Clear stats or show error
     document.getElementById("stats-totalProducts").textContent = "N/A";
@@ -145,7 +203,7 @@ async function fetchUserProfileAndDisplay() {
     // Optionally disable edit buttons if data couldn't load
     if (document.getElementById("editProfileBtn")) document.getElementById("editProfileBtn").disabled = true;
     if (document.getElementById("changePasswordBtn")) document.getElementById("changePasswordBtn").disabled = true;
-    if (document.getElementById("notificationSettingsBtn")) document.getElementById("notificationSettingsBtn").disabled = true;
+//    if (document.getElementById("notificationSettingsBtn")) document.getElementById("notificationSettingsBtn").disabled = true;
   }
 }
 
