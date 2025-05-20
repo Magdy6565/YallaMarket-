@@ -53,7 +53,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .requestMatchers("/auth/**").permitAll()
                     
                     // Permit web resources and Thymeleaf views for login
-                    .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**").permitAll()
+                    .requestMatchers("/", "/register","/error","/vendor-orders/**" ,"/edit-product/**","/add-product" ,"/verify" ,"/login", "/css/**", "/js/**", "/images/**").permitAll()
                     
                     // Require authentication for products pages
                     .requestMatchers("/products", "/products/**").authenticated()

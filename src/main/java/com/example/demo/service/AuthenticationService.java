@@ -37,6 +37,11 @@ public class AuthenticationService {
     }
 
     public User signup(RegisterUserDto input) {
+        // Check if email already exists
+        if (userRepository.findByEmail(input.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
+
         User user = new User(); // Use the default constructor
         user.setUsername(input.getUsername());
         user.setEmail(input.getEmail());

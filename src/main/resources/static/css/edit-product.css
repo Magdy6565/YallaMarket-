@@ -1,0 +1,62 @@
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+.edit-product-container {
+  background: #fff;
+  max-width: 420px;
+  margin: 40px auto;
+  padding: 32px 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.edit-product-container h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #3e8ed0;
+}
+.form-group {
+  margin-bottom: 18px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  color: #333;
+}
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+.form-actions {
+  text-align: center;
+}
+.save-btn {
+  background: #3e8ed0;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-size: 1em;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.save-btn:hover {
+  background: #2566a6;
+}
+.success-message {
+  color: #388e3c;
+  display: block;
+  margin-top: 10px;
+}
+.error-message {
+  color: #d32f2f;
+  display: block;
+  margin-top: 10px;
+}

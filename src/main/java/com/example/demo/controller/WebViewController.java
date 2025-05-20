@@ -37,7 +37,26 @@ public class WebViewController {
         }
         return "login";
     }
-    
+//    user enter register --> go to register webpage
+    @GetMapping("/register")
+    public String register() {
+        // If user is already logged in, redirect to products page
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
+            return "redirect:/login";
+        }
+        return "register";
+    }
+    @GetMapping("/verify")
+    public String verify() {
+        // If user is already logged in, redirect to products page
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
+            return "redirect:/login";
+        }
+        return "verify";
+    }
+
     /**
      * Display the products page
      * 
@@ -97,6 +116,96 @@ public class WebViewController {
         } else {
             return "redirect:/products";
         }
+    }
+    
+    /**
+     * Display the edit product page
+     * @param productId The ID of the product
+     * @param model The model to add attributes to
+     * @return The edit-product view or redirect to login/products
+     */
+    @GetMapping("/error")
+    public String showError() {
+        // Check if user is authenticated
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAuthenticated = authentication != null &&
+                authentication.isAuthenticated() &&
+                !authentication.getName().equals("anonymousUser");
+        if (!isAuthenticated) {
+            return "redirect:/login";
+        }
+        return "error";
+    }
+    
+    /**
+     * Display the edit product page (with path variable)
+     * @param productId The ID of the product
+     * @param model The model to add attributes to
+     * @return The edit-product view or redirect to login/products
+     */
+    @GetMapping("/edit-product/{productId}")
+    public String editProductPageWithPath(@PathVariable Long productId, Model model) {
+        // Check if user is authenticated
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAuthenticated = authentication != null &&
+                authentication.isAuthenticated() &&
+                !authentication.getName().equals("anonymousUser");
+        if (!isAuthenticated) {
+            return "redirect:/login";
+        }
+        model.addAttribute("productId", productId);
+        return "edit-product";
+    }
+    
+    /**
+     * Display the add product page
+     * @param model The model to add attributes to
+     * @return The add-product view or redirect to login
+     */
+    @GetMapping("/add-product")
+    public String addProductPage(Model model) {
+        // Check if user is authenticated
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAuthenticated = authentication != null &&
+                authentication.isAuthenticated() &&
+                !authentication.getName().equals("anonymousUser");
+        if (!isAuthenticated) {
+            return "redirect:/login";
+        }
+        return "add-product";
+    }
+    
+    /**
+     * Display the vendor orders page
+     */
+    @GetMapping("/vendor-orders")
+    public String vendorOrdersPage(Model model) {
+        // Check if user is authenticated
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAuthenticated = authentication != null &&
+                authentication.isAuthenticated() &&
+                !authentication.getName().equals("anonymousUser");
+        if (!isAuthenticated) {
+            return "redirect:/login";
+        }
+        return "vendor-orders";
+    }
+
+    /**
+     * Display the vendor order details page
+     */
+    @GetMapping("/vendor-orders/{orderId}")
+    public String vendorOrderDetailsPage(@PathVariable Long orderId, Model model) {
+        // Check if user is authenticated
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAuthenticated = authentication != null &&
+                authentication.isAuthenticated() &&
+                !authentication.getName().equals("anonymousUser");
+        if (!isAuthenticated) {
+            return "redirect:/login";
+        }
+        model.addAttribute("orderId", orderId);
+        return "vendor-order-details";
     }
     
     /**
