@@ -1,4 +1,40 @@
 document.addEventListener("DOMContentLoaded", function () {
+ // Mobile menu toggle
+  const menuToggle = document.getElementById("menuToggle");
+  const navbarLinks = document.getElementById("navbarLinks");
+  if (menuToggle && navbarLinks) {
+    menuToggle.addEventListener("click", function () {
+      navbarLinks.classList.toggle("active");
+    });
+  }
+
+    // User menu dropdown functionality
+    const userMenu = document.getElementById('userMenu');
+    const userMenuButton = userMenu ? userMenu.querySelector('.user-menu-button') : null;
+
+    if (userMenuButton) {
+        userMenuButton.addEventListener('click', function() {
+            userMenu.classList.toggle('open');
+        });
+
+        // Close the dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!userMenu.contains(event.target)) {
+                userMenu.classList.remove('open');
+            }
+        });
+    }
+
+    // Close dropdowns when clicking outside
+    window.addEventListener("click", function (e) {
+      if (!userMenu.contains(e.target)) {
+        const dropdown = userMenu.querySelector(".user-menu-dropdown");
+        if (dropdown) {
+          dropdown.classList.remove("show");
+        }
+      }
+    });
+
   const ordersList = document.getElementById("ordersList");
 
   fetch("/api/vendor/orders")

@@ -247,15 +247,19 @@
   <div class="navbar-container">
     <a href="/" class="navbar-logo">YallaMarket</a>
 
+    <!-- Mobile menu toggle button -->
     <button class="menu-toggle" id="menuToggle">
       <i class="fas fa-bars"></i>
     </button>
 
+    <!-- Navigation Links -->
     <ul class="navbar-links" id="navbarLinks">
-      <li><a href="/products">My Products</a></li>
-      <li><a href="/vendor-orders" class="active">Orders</a></li> <li><a href="/stats">Stats</a></li>
+      <li><a href="/products" class="active">My Products</a></li>
+      <li><a href="/vendor-orders">Orders</a></li>
+      <li><a href="/stats">Refunds</a></li>
     </ul>
 
+    <!-- User Menu -->
     <div class="user-menu" id="userMenu">
       <button class="user-menu-button">
         <span>My Account</span>
@@ -263,7 +267,6 @@
       </button>
       <div class="user-menu-dropdown">
         <a href="/profile"><i class="fas fa-user"></i> Profile</a>
-        <a href="/settings"><i class="fas fa-cog"></i> Settings</a>
         <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
       </div>
     </div>
@@ -280,6 +283,32 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
+    // Mobile menu toggle functionality
+    const menuToggle = document.getElementById('menuToggle');
+    const navbarLinks = document.getElementById('navbarLinks');
+
+    if (menuToggle && navbarLinks) {
+        menuToggle.addEventListener('click', function() {
+            navbarLinks.classList.toggle('active');
+        });
+    }
+
+    // User menu dropdown functionality
+    const userMenu = document.getElementById('userMenu');
+    const userMenuButton = userMenu ? userMenu.querySelector('.user-menu-button') : null;
+
+    if (userMenuButton) {
+        userMenuButton.addEventListener('click', function() {
+            userMenu.classList.toggle('open');
+        });
+
+        // Close the dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!userMenu.contains(event.target)) {
+                userMenu.classList.remove('open');
+            }
+        });
+    }
       // Get orderId from URL path (e.g., /vendor-orders/6)
       const pathParts = window.location.pathname.split("/");
       const orderId = pathParts[pathParts.length - 1]; // Gets the last part of the URL
@@ -380,10 +409,11 @@
                               <label for="statusSelect">Change Status:</label>
                               <select id="statusSelect">
                                   <option value="1">Pending</option>
-                                  <option value="2">Processing</option>
+                                  <option value="2">Approved</option>
                                   <option value="3">Shipped</option>
                                   <option value="4">Delivered</option>
                                   <option value="5">Cancelled</option>
+                                  <option value="6">Denied</option>
                               </select>
                           </div>
                           <div class="status-update-actions">

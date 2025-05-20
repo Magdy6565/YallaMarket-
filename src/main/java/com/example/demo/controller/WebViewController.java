@@ -136,7 +136,7 @@ public class WebViewController {
         }
         return "error";
     }
-    
+
     /**
      * Display the edit product page (with path variable)
      * @param productId The ID of the product
@@ -228,6 +228,22 @@ public class WebViewController {
         }
     }
     
+    /**
+     * Display the profile page
+     */
+    @GetMapping("/profile")
+    public String profilePage(Model model) {
+        // Check if user is authenticated
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAuthenticated = authentication != null &&
+                authentication.isAuthenticated() &&
+                !authentication.getName().equals("anonymousUser");
+        if (!isAuthenticated) {
+            return "redirect:/login";
+        }
+        return "profile";
+    }
+
     /**
      * Helper method to get user ID from authentication
      * 

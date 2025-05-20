@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YallaMarket - Profile</title>
+  <link rel="stylesheet" th:href="@{/css/products.css}" />
+  <link rel="stylesheet" th:href="@{/css/profile.css}" />
+  <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-container">
+    <a href="/" class="navbar-logo">YallaMarket</a>
+
+    <button class="menu-toggle" id="menuToggle">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <ul class="navbar-links" id="navbarLinks">
+      <li><a href="/products">My Products</a></li>
+      <li><a href="/vendor-orders">Orders</a></li>
+      <li><a href="/stats">Refunds</a></li>
+    </ul>
+
+    <div class="user-menu" id="userMenu">
+      <button class="user-menu-button">
+        <span>My Account</span>
+        <i class="fas fa-chevron-down"></i>
+      </button>
+      <div class="user-menu-dropdown">
+        <a href="/profile" class="active"
+        ><i class="fas fa-user"></i> Profile</a
+        >
+        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="profile-container">
+    <div class="profile-header">
+      <div class="profile-avatar">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      <div class="profile-info">
+        <h1 id="profile-username">Loading...</h1>
+        <span class="role-badge" id="profile-role"></span>
+      </div>
+    </div>
+
+    <div class="profile-content">
+      <div class="profile-section">
+        <h2><i class="fas fa-info-circle"></i> Basic Information</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Email</label>
+            <p id="profile-email">Loading...</p>
+          </div>
+          <div class="info-item">
+            <label>Contact Info</label>
+            <p id="profile-contactInfo">Loading...</p>
+          </div>
+          <div class="info-item">
+            <label>Address</label>
+            <p id="profile-address">Loading...</p>
+          </div>
+          <div class="info-item">
+            <label>Member Since</label>
+            <p id="profile-memberSince">Loading...</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <h2><i class="fas fa-chart-line"></i> Account Statistics</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon products">
+              <i class="fas fa-box"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Total Products</h3>
+              <p id="stats-totalProducts">0</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orders">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="stats-ordersLabel">Orders</h3>
+              <p id="stats-totalOrders">0</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon revenue">
+              <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="stats-revenueLabel">Revenue</h3>
+              <p id="stats-totalRevenue">$0.00</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon rating">
+              <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Rating</h3>
+              <p id="stats-rating">0.0/5</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <h2><i class="fas fa-cog"></i> Account Settings</h2>
+        <div class="settings-buttons">
+          <button id="editProfileBtn" class="btn">
+            <i class="fas fa-user-edit"></i> Edit Profile
+          </button>
+          <button id="changePasswordBtn" class="btn">
+            <i class="fas fa-lock"></i> Change Password
+          </button>
+          <button id="notificationSettingsBtn" class="btn">
+            <i class="fas fa-bell"></i> Notification Settings
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:src="@{/js/profile.js}"></script>
+</body>
+</html>

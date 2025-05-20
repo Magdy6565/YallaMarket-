@@ -157,4 +157,9 @@ public class ProductController {
         List<Product> filteredProducts = productService.filterProductsForUser(userId, filterRequest);
         return ResponseEntity.ok(filteredProducts);
     }
+    @GetMapping("/categories")
+    public ResponseEntity<List<String>> getDistinctCategories() {
+        List<String> categories = productService.getDistinctCategories();
+        return ResponseEntity.ok(categories);
+    }
 }

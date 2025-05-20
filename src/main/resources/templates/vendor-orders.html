@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vendor Orders</title>
   <link rel="stylesheet" href="/css/products.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
 <body>
 <nav class="navbar">
@@ -20,7 +22,7 @@
     <ul class="navbar-links" id="navbarLinks">
       <li><a href="/products" class="active">My Products</a></li>
       <li><a href="/vendor-orders">Orders</a></li>
-      <li><a href="/stats">Stats</a></li>
+      <li><a href="/stats">Refunds</a></li>
     </ul>
 
     <!-- User Menu -->
@@ -31,18 +33,19 @@
       </button>
       <div class="user-menu-dropdown">
         <a href="/profile"><i class="fas fa-user"></i> Profile</a>
-        <a href="/settings"><i class="fas fa-cog"></i> Settings</a>
         <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
       </div>
     </div>
   </div>
 </nav>
+
+
+
+
 <div class="products-container">
   <h2>Vendor Orders</h2>
   <div class="products-list" id="ordersList"></div>
-  <!--      <div class="back-link">-->
-  <!--        <a href="/dashboard" class="back-btn">&larr; Back to Dashboard</a>-->
-  <!--      </div>-->
+
 </div>
 <script src="/js/vendor-orders.js"></script>
 <style>

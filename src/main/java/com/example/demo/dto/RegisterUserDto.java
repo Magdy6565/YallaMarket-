@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 @Setter
 @Getter
 

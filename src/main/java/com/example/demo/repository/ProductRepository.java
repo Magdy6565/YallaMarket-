@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  * Repository interface for managing Product entities.
@@ -26,6 +27,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByVendorIdAndQuantityGreaterThanEqualAndCategoryAndDeletedAtIsNull(Long userId, Integer quantity, String category); // Use findByVendorId, parameter is Long userId
 
-    // Note: Soft delete is handled in the Service layer by updating the 'deletedAt' field.
-    // The 'deletedAtIsNull' condition is added to find methods to exclude soft-deleted items.
+    @Query("SELECT DISTINCT p.category FROM Product p WHERE p.category IS NOT NULL")
+    List<String> findDistinctCategories();
 }

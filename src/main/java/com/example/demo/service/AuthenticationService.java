@@ -10,7 +10,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import com.example.demo.exception.DuplicateEmailException;
+import com.example.demo.exception.DuplicateUsernameException; // Import if you add this
+import com.example.demo.exception.DuplicateContactInfoException; // Import if you add this
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
@@ -37,9 +39,17 @@ public class AuthenticationService {
     }
 
     public User signup(RegisterUserDto input) {
-        // Check if email already exists
         if (userRepository.findByEmail(input.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+            // Changed from RuntimeException to DuplicateEmailException
+            throw new DuplicateEmailException("The email address '" + input.getEmail() + "' is already registered.");
+        }
+
+        // Add similar checks for username and contactInfo if they are unique
+        if (userRepository.findByUsername(input.getUsername()).isPresent()) {
+            throw new DuplicateUsernameException("The username '" + input.getUsername() + "' is already taken.");
+        }
+        if (userRepository.findByContactInfo(input.getContactInfo()).isPresent()) {
+            throw new DuplicateContactInfoException("The contact information '" + input.getContactInfo() + "' is already in use.");
         }
 
         User user = new User(); // Use the default constructor
