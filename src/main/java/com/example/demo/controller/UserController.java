@@ -7,7 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*; // Import all annotation types
-
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import java.util.concurrent.TimeUnit;
 import jakarta.validation.Valid; // Import validation annotation
 
 import java.util.List; // Import List
@@ -34,7 +38,11 @@ public class UserController {
     public ResponseEntity<User> authenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) authentication.getPrincipal();
-        return ResponseEntity.ok(currentUser);
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noCache().noStore().mustRevalidate()) // Prevents caching
+                .header("Pragma", "no-cache") // For HTTP/1.0 backwards compatibility
+                .header("Expires", "0") // For HTTP/1.0 backwards compatibility
+                .body(currentUser);
     }
 
     // Endpoint to get all users (from old controller)

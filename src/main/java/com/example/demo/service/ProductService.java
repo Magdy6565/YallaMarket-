@@ -26,7 +26,7 @@ public interface ProductService {
 
     Optional<Product> getProductByIdForUser(Long productId, Long userId); // Parameter is Long userId
 
-    List<String> getAllCategories();
+    List<String> getDistinctCategories();
 
     List<ProductWithVendorDTO> findProductsByCategoryAndVendors(String category, List<Long> vendorIds);
 }

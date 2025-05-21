@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found - YallaMarket</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/css/error.css">
+    <link rel="stylesheet" href=/css/products.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-container">
+        <a href="/" class="navbar-logo">YallaMarket</a>
+
+        <!-- Mobile menu toggle button -->
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Navigation Links -->
+        <ul class="navbar-links" id="navbarLinks">
+            <li><a href="/products" class="active">My Products</a></li>
+            <li><a href="/vendor-orders">Orders</a></li>
+            <li><a href="/stats">Stats</a></li>
+        </ul>
+
+        <!-- User Menu -->
+        <div class="user-menu" id="userMenu">
+            <button class="user-menu-button">
+                <span>My Account</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="user-menu-dropdown">
+                <a href="/profile"><i class="fas fa-user"></i> Profile</a>
+                <a href="/settings"><i class="fas fa-cog"></i> Settings</a>
+                <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="error-container">
+    <h1>404 - Page Not Found</h1>
+    <p>Oops! The page you're looking for doesn't exist or has been moved.</p>
+    <p>Please check the URL or use the navigation above to find what you're looking for.</p>
+    <a href="/" class="home-button">Go to Homepage</a>
+</div>
+
+<script src="/js/navbar.js"></script>
+</body>
+</html>

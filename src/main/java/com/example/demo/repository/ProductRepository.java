@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,8 +29,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByVendorIdAndQuantityGreaterThanEqualAndCategoryAndDeletedAtIsNull(Long userId, Integer quantity, String category); // Use findByVendorId, parameter is Long userId
 
-    // Note: Soft delete is handled in the Service layer by updating the 'deletedAt' field.
-    // The 'deletedAtIsNull' condition is added to find methods to exclude soft-deleted items.
+    // 3ayzha dee 3l4an el vendor statisticss
+    Long countByVendorId(Long vendorId);
 
     @Query("SELECT DISTINCT p.category FROM Product p WHERE p.category IS NOT NULL AND p.deletedAt IS NULL")
     List<String> findDistinctCategories();
@@ -40,17 +39,17 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findByProductIdAndAvailableQuantity(@Param("productId") Long productId, @Param("quantityRequested") Integer quantityRequested);
 
     @Query("""
-            SELECT new com.example.demo.dto.ProductWithVendorDTO(
-                p.productId, p.name, p.description, p.price, p.quantity, p.category,
-                u.id, u.username, u.email, u.address, u.rating
-            )
-            FROM Product p
-            JOIN User u ON p.vendorId = u.id
-            WHERE p.category = :category
-            AND p.deletedAt IS NULL
-            AND u.deletedAt IS NULL
-            AND (:vendorIds IS NULL OR p.vendorId IN :vendorIds)
-        """)
+                SELECT new com.example.demo.dto.ProductWithVendorDTO(
+                    p.productId, p.name, p.description, p.price, p.quantity, p.category,
+                    u.id, u.username, u.email, u.address, u.rating
+                )
+                FROM Product p
+                JOIN User u ON p.vendorId = u.id
+                WHERE p.category = :category
+                AND p.deletedAt IS NULL
+                AND u.deletedAt IS NULL
+                AND (:vendorIds IS NULL OR p.vendorId IN :vendorIds)
+            """)
     List<ProductWithVendorDTO> findProductsWithVendorDetails(
             @Param("category") String category,
             @Param("vendorIds") List<Long> vendorIds

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YallaMarket - Order Details</title>
+  <link rel="stylesheet" th:href="@{/css/products.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Define CSS Variables if not already in products.css or a global style */
+    :root {
+        --primary-color: #007bff; /* Example primary color */
+        --dark-color: #343a40; /* Example dark color */
+        --light-color: #f8f9fa; /* Example light background color */
+        --error-color: #dc3545; /* Example error color */
+        --success-color: #28a745; /* Example success color */
+        --border-radius: 8px; /* Example border radius */
+        --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Example box shadow */
+        --transition: all 0.3s ease; /* Example transition */
+    }
+
+    /* General Container Styling */
+    .container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    /* Order Details Container Styling (based on product-detail-container) */
+    .order-detail-container {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 2rem;
+        margin-top: 2rem;
+    }
+
+    .order-detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+    }
+
+    .order-detail-title h2 {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+        color: var(--dark-color);
+    }
+
+    .order-detail-status {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        color: white;
+        background-color: #6c757d; /* Default status color (grey) */
+        font-weight: 600;
+    }
+
+    /* Status-specific colors */
+    .order-detail-status.pending { background-color: #ffc107; color: #343a40; } /* Yellow */
+    .order-detail-status.processing { background-color: var(--primary-color); } /* Blue */
+    .order-detail-status.shipped { background-color: #17a2b8; } /* Info Blue */
+    .order-detail-status.delivered { background-color: var(--success-color); } /* Green */
+    .order-detail-status.cancelled { background-color: var(--error-color); } /* Red */
+
+
+    .order-detail-total {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .order-detail-info {
+        margin-top: 2rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    .order-items-section h3, .status-update-section h3 {
+        margin-bottom: 1rem;
+        color: var(--dark-color);
+    }
+
+    .order-items-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .order-items-list li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #eee;
+        font-size: 1rem;
+        color: #555;
+    }
+
+    .order-items-list li:last-child {
+        border-bottom: none;
+    }
+
+    .status-update-section {
+        background-color: var(--light-color);
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+    }
+
+    .meta-item {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        color: #555;
+    }
+
+    .meta-item i {
+        margin-right: 0.8rem;
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        width: 25px; /* Fixed width for icon alignment */
+        text-align: center;
+    }
+
+    .meta-label {
+        font-weight: 600;
+        margin-right: 0.5rem;
+        color: var(--dark-color);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.6rem;
+        font-weight: 600;
+        color: var(--dark-color);
+    }
+
+    .form-group select {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid #ced4da;
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        background-color: white;
+        transition: border-color var(--transition);
+    }
+
+    .form-group select:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .status-update-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .btn {
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: var(--transition);
+        text-decoration: none; /* For anchor tags styled as buttons */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn i {
+        margin-right: 0.5rem;
+    }
+
+    .save-btn {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .save-btn:hover {
+        background-color: #0056b3; /* Darker shade on hover */
+    }
+
+    .back-btn {
+        background-color: #6c757d; /* Grey button */
+        color: white;
+        padding: 0.75rem 1.25rem; /* Slightly smaller padding */
+        margin-bottom: 1rem; /* Space below the button */
+    }
+
+    .back-btn:hover {
+        background-color: #5a6268; /* Darker grey on hover */
+    }
+
+    .success-message {
+        color: var(--success-color);
+        font-weight: 600;
+        margin-left: 1rem;
+    }
+
+    .error-message {
+        color: var(--error-color);
+        font-weight: 600;
+        margin-left: 1rem;
+    }
+
+    .loading-message {
+        text-align: center;
+        padding: 2rem;
+        font-style: italic;
+        color: #6c757d;
+    }
+
+    /* Media Queries for Responsiveness */
+    @media (max-width: 768px) {
+        .order-detail-info {
+            grid-template-columns: 1fr; /* Stack columns on smaller screens */
+        }
+        .order-detail-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .order-detail-total {
+            margin-top: 0.5rem;
+        }
+        .status-update-actions {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        .success-message, .error-message {
+            margin-left: 0;
+            margin-top: 0.5rem;
+        }
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-container">
+    <a href="/" class="navbar-logo">YallaMarket</a>
+
+    <!-- Mobile menu toggle button -->
+    <button class="menu-toggle" id="menuToggle">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Navigation Links -->
+    <ul class="navbar-links" id="navbarLinks">
+      <li><a href="/products" class="active">My Products</a></li>
+      <li><a href="/vendor-orders">Orders</a></li>
+      <li><a href="/stats">Refunds</a></li>
+    </ul>
+
+    <!-- User Menu -->
+    <div class="user-menu" id="userMenu">
+      <button class="user-menu-button">
+        <span>My Account</span>
+        <i class="fas fa-chevron-down"></i>
+      </button>
+      <div class="user-menu-dropdown">
+        <a href="/profile"><i class="fas fa-user"></i> Profile</a>
+        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <a href="/vendor-orders" class="btn back-btn">
+    <i class="fas fa-arrow-left"></i> Back to Orders
+  </a>
+
+  <div id="orderDetails"></div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Mobile menu toggle functionality
+    const menuToggle = document.getElementById('menuToggle');
+    const navbarLinks = document.getElementById('navbarLinks');
+
+    if (menuToggle && navbarLinks) {
+        menuToggle.addEventListener('click', function() {
+            navbarLinks.classList.toggle('active');
+        });
+    }
+
+    // User menu dropdown functionality
+    const userMenu = document.getElementById('userMenu');
+    const userMenuButton = userMenu ? userMenu.querySelector('.user-menu-button') : null;
+
+    if (userMenuButton) {
+        userMenuButton.addEventListener('click', function() {
+            userMenu.classList.toggle('open');
+        });
+
+        // Close the dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!userMenu.contains(event.target)) {
+                userMenu.classList.remove('open');
+            }
+        });
+    }
+      // Get orderId from URL path (e.g., /vendor-orders/6)
+      const pathParts = window.location.pathname.split("/");
+      const orderId = pathParts[pathParts.length - 1]; // Gets the last part of the URL
+
+      const orderDetailsDiv = document.getElementById("orderDetails");
+
+      // Define a mapping for status strings to select option values
+      const statusValueMap = {
+          "pending": "1",
+          "processing": "2",
+          "shipped": "3",
+          "delivered": "4",
+          "cancelled": "5",
+          "approved": "2" // Assuming "approved" maps to "Processing"
+      };
+
+      // Function to fetch and display order details
+      function fetchOrderDetails() {
+          orderDetailsDiv.innerHTML = '<div class="loading-message">Loading order details...</div>'; // Show loading
+
+          fetch(`/api/vendor/orders/${orderId}`)
+          .then((res) => {
+              if (!res.ok) {
+              // If response is not OK, throw an error to be caught by the .catch block
+              return res.text().then(text => { throw new Error(text || `HTTP error! status: ${res.status}`); });
+              }
+              return res.json();
+          })
+          .then((order) => {
+              // Format total amount to 2 decimal places if available
+              const formattedTotal = order.totalAmount !== null ? order.totalAmount.toFixed(2) : "N/A";
+              // Format orderDate to a more readable format if it's a string, otherwise use as is
+              const orderDate = order.orderDate ? new Date(order.orderDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "N/A";
+
+              // Determine status class for styling
+              const statusClass = order.status ? order.status.toLowerCase().replace(/\s/g, '-') : 'N/A';
+
+
+              let html = `
+              <div class="order-detail-container">
+                  <div class="order-detail-header">
+                      <div class="order-detail-title">
+                          <h2>Order #${order.orderId}</h2>
+                          <span class="order-detail-status ${statusClass}" id="orderStatus">${order.status || "N/A"}</span>
+                      </div>
+                      <div class="order-detail-total">Total: $${formattedTotal}</div>
+                  </div>
+
+                  <div class="order-detail-info">
+                      <div class="order-items-section">
+                          <h3>Order Items</h3>
+                          <ul class="order-items-list">
+                              ${
+                              // Check if orderItems exists and has length, then map
+                              order.orderItems && order.orderItems.length > 0
+                                  ? order.orderItems
+                                      .map(
+                                          (item) => `
+                                          <li>
+                                              <strong>${item.productName || "N/A"}</strong>
+                                          </li>
+                                          <li>
+                                          <strong>Category: ${item.productCategory || "N/A"}</strong>
+                                          </li>                                          <li>
+                                          <strong>Quantity: ${item.quantity || 0}</strong>
+                                          </li>
+                                          `
+                                      )
+                                      .join("")
+                                  : "<li>No items in this order.</li>"
+                              }
+                          </ul>
+                      </div>
+
+                      <div class="status-update-section">
+                          <h3>Order Details</h3>
+                          <div class="meta-item">
+                              <i class="fas fa-calendar-alt"></i>
+                              <span class="meta-label">Order Date:</span>
+                              <span>${orderDate}</span>
+                          </div>
+<!--                          <div class="meta-item">-->
+<!--                              <i class="fas fa-user"></i>-->
+<!--                              <span class="meta-label">Customer:</span>-->
+<!--                              <span>${order.customerName || "N/A"}</span>-->
+<!--                          </div>-->
+<!--                          <div class="meta-item">-->
+<!--                              <i class="fas fa-envelope"></i>-->
+<!--                              <span class="meta-label">Email:</span>-->
+<!--                              <span>${order.customerEmail || "N/A"}</span>-->
+<!--                          </div>-->
+<!--                          <div class="meta-item">-->
+<!--                              <i class="fas fa-map-marker-alt"></i>-->
+<!--                              <span class="meta-label">Shipping Address:</span>-->
+<!--                              <span>${order.shippingAddress || "N/A"}</span>-->
+<!--                          </div>-->
+                          <div class="form-group">
+                              <label for="statusSelect">Change Status:</label>
+                              <select id="statusSelect">
+                                  <option value="1">Pending</option>
+                                  <option value="2">Approved</option>
+                                  <option value="3">Shipped</option>
+                                  <option value="4">Delivered</option>
+                                  <option value="5">Cancelled</option>
+                                  <option value="6">Denied</option>
+                              </select>
+                          </div>
+                          <div class="status-update-actions">
+                              <button id="changeStatusBtn" class="btn save-btn">Update Status</button>
+                              <span class="success-message" id="statusSuccess"></span>
+                              <span class="error-message" id="statusError"></span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              `;
+              orderDetailsDiv.innerHTML = html;
+
+              // Set the selected value of the status dropdown based on current order status
+              const currentStatusValue = statusValueMap[order.status.toLowerCase()] || "1";
+              const statusSelect = document.getElementById("statusSelect");
+              if (statusSelect) {
+                  statusSelect.value = currentStatusValue;
+              }
+
+              // Attach event listener to the update status button
+              const changeStatusBtn = document.getElementById("changeStatusBtn");
+              if (changeStatusBtn) {
+                  changeStatusBtn.onclick = function () {
+                      const newStatusText = statusSelect.options[statusSelect.selectedIndex].text;
+                      const newStatusClass = newStatusText.toLowerCase().replace(/\s/g, '-'); // Get class for new status
+
+                      document.getElementById("statusSuccess").textContent = "";
+                      document.getElementById("statusError").textContent = "";
+
+                      fetch(`/api/vendor/orders/${orderId}/status`, {
+                          method: "PUT",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ status: newStatusText.toLowerCase() }) // Send the status text as lowercase
+                      })
+                      .then((res) => {
+                          if (res.ok) {
+                              const orderStatusSpan = document.getElementById("orderStatus");
+                              orderStatusSpan.textContent = newStatusText;
+                              // Update the class for dynamic styling
+                              orderStatusSpan.className = `order-detail-status ${newStatusClass}`;
+                              document.getElementById("statusSuccess").textContent = "Status updated successfully!";
+                          } else {
+                              return res.text().then((text) => {
+                                  let errorMessage = "Failed to update status.";
+                                  try {
+                                      const errorData = JSON.parse(text);
+                                      errorMessage = errorData.message || errorData.error || text;
+                                  } catch (e) {
+                                      errorMessage = text;
+                                  }
+                                  throw new Error(errorMessage);
+                              });
+                          }
+                      })
+                      .catch((err) => {
+                          console.error("Error updating status:", err);
+                          document.getElementById("statusError").textContent = err.message || "Failed to update status.";
+                      });
+                  };
+              }
+          })
+          .catch((error) => {
+              console.error("Error loading order details:", error);
+              orderDetailsDiv.innerHTML = `<div class="error-message">Failed to load order details: ${error.message || error}.</div>`;
+          });
+      }
+
+      // Initial fetch when the page loads
+      if (orderId && !isNaN(orderId)) { // Ensure orderId is a valid number
+          fetchOrderDetails();
+      } else {
+          orderDetailsDiv.innerHTML = '<div class="error-message">Invalid order ID provided.</div>';
+      }
+  });
+
+  // Toggle mobile navigation menu (from your reference)
+  document.getElementById('menuToggle').addEventListener('click', function() {
+      const navbarLinks = document.getElementById('navbarLinks');
+      navbarLinks.classList.toggle('active');
+  });
+
+  // Toggle user menu dropdown (from your reference)
+  document.getElementById('userMenu').addEventListener('click', function() {
+      const userMenuDropdown = this.querySelector('.user-menu-dropdown');
+      userMenuDropdown.classList.toggle('show');
+  });
+
+  // Close user menu if clicked outside (from your reference)
+  window.addEventListener('click', function(event) {
+      const userMenu = document.getElementById('userMenu');
+      if (userMenu && !userMenu.contains(event.target) && userMenu.querySelector('.user-menu-dropdown').classList.contains('show')) {
+          userMenu.querySelector('.user-menu-dropdown').classList.remove('show');
+      }
+  });
+</script>
+</body>
+</html>

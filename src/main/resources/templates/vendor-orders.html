@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vendor Orders</title>
+  <link rel="stylesheet" href="/css/products.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-container">
+    <a href="/" class="navbar-logo">YallaMarket</a>
+
+    <!-- Mobile menu toggle button -->
+    <button class="menu-toggle" id="menuToggle">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Navigation Links -->
+    <ul class="navbar-links" id="navbarLinks">
+      <li><a href="/products" class="active">My Products</a></li>
+      <li><a href="/vendor-orders">Orders</a></li>
+      <li><a href="/stats">Refunds</a></li>
+    </ul>
+
+    <!-- User Menu -->
+    <div class="user-menu" id="userMenu">
+      <button class="user-menu-button">
+        <span>My Account</span>
+        <i class="fas fa-chevron-down"></i>
+      </button>
+      <div class="user-menu-dropdown">
+        <a href="/profile"><i class="fas fa-user"></i> Profile</a>
+        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<div class="products-container">
+  <h2>Vendor Orders</h2>
+
+  <div class="filter-section">
+    <label for="orderStatusFilter">Filter by Status:</label>
+    <select id="orderStatusFilter">
+      <option value="">All Statuses</option>
+      <option value="1">Pending</option>
+      <option value="2">Approved</option>
+      <option value="3">Shipped</option>
+      <option value="4">Delivered</option>
+      <option value="5">Cancelled</option>
+      <option value="6">Denied</option>
+    </select>
+    <button id="filterOrdersButton">Filter</button>
+  </div>
+
+  <div class="products-list" id="ordersList"></div>
+
+</div>
+<script src="/js/vendor-orders.js"></script>
+<style>
+  .products-container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 32px 24px;
+  }
+  .products-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      margin-top: 24px;
+  }
+  .product-card {
+      background: #f5f5f5;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(62,142,208,0.08);
+      padding: 20px 18px;
+      min-width: 260px;
+      flex: 1 1 260px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+  }
+  .product-info h3 {
+      color: #3e8ed0;
+      margin-bottom: 8px;
+  }
+  .details-btn {
+      background: #3e8ed0;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+      margin-top: 12px;
+      transition: background 0.2s;
+      display: inline-block;
+  }
+  .details-btn:hover {
+      background: #2566a6;
+  }
+  .empty, .error-message {
+      color: #d32f2f;
+      margin: 32px auto;
+      text-align: center;
+  }
+  .back-link {
+      margin-top: 32px;
+      text-align: center;
+  }
+  .back-btn {
+      display: inline-block;
+      padding: 8px 18px;
+      background: #f5f5f5;
+      color: #3e8ed0;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+      box-shadow: 0 1px 4px rgba(62,142,208,0.08);
+      transition: background 0.2s, color 0.2s;
+  }
+  .back-btn:hover {
+      background: #3e8ed0;
+      color: #fff;
+  }
+     /* Additions to your existing styles or products.css */
+    .filter-section {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Space between elements */
+    }
+    .filter-section label {
+        font-weight: bold;
+    }
+    .filter-section select,
+    .filter-section button {
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+    .filter-section button {
+        background-color: #3e8ed0; /* Using your existing blue from details-btn */
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .filter-section button:hover {
+        background-color: #2566a6;
+    }
+
+    /* Styles for order status display */
+    .order-status-display {
+        font-weight: bold;
+        padding: 4px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        font-size: 0.9em;
+    }
+    .status-PENDING { background-color: #fff3cd; color: #856404; } /* Yellowish */
+    .status-APPROVED { background-color: #d4edda; color: #155724; } /* Greenish */
+    .status-SHIPPED { background-color: #d1ecf1; color: #0c5460; } /* Cyanish */
+    .status-DELIVERED { background-color: #d4edda; color: #155724; } /* Similar to approved, or darker green */
+    .status-CANCELLED, .status-DENIED { background-color: #f8d7da; color: #721c24; } /* Reddish */
+
+</style>
+</body>
+</html>

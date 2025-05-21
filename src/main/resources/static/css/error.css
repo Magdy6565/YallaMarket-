@@ -1,0 +1,34 @@
+/* error.css */
+.error-container {
+    text-align: center;
+    padding: 50px 20px;
+    margin-top: 60px; /* Adjust based on navbar height */
+    color: #333;
+}
+
+.error-container h1 {
+    font-size: 3em;
+    color: #e74c3c; /* A strong red for error */
+    margin-bottom: 20px;
+}
+
+.error-container p {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.error-container .home-button {
+    display: inline-block;
+    background-color: #007bff; /* Primary blue for links/buttons */
+    color: white;
+    padding: 10px 25px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.error-container .home-button:hover {
+    background-color: #0056b3;
+}

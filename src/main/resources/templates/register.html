@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YallaMarket - Register</title>
+    <link rel="stylesheet" th:href="@{/css/login.css}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      /* Basic styling for error messages (can be in login.css) */
+      .form-group .error-message {
+        color: red;
+        font-size: 0.9em;
+        margin-top: 5px;
+        display: block; /* Ensure it takes its own line */
+      }
+      .form-group input.error-input,
+      .form-group select.error-input {
+        /* Added select targeting */
+        border-color: red;
+      }
+
+      /* Suggestion for scrollbar inside the form area if needed */
+      /* You might need to adjust max-height based on your overall layout */
+      /*
+        .form-container {
+            max-height: 75vh; /* e.g., 75% of the viewport height */
+      /* overflow-y: auto; */
+      /* padding-right: 10px; /* To avoid content hiding behind scrollbar */
+      /* }
+        */
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="login-container">
+        <div class="logo-container">
+          <h1>YallaMarket</h1>
+          <p>Connect vendors and retail stores</p>
+        </div>
+
+        <div
+          class="form-container"
+          style="max-height: 75vh; overflow-y: auto; padding-right: 10px"
+        >
+          <h2>Register</h2>
+
+          <form th:action="@{/auth/register}" method="post" id="registerForm">
+            <div class="form-group">
+              <label for="username">
+                <i class="fas fa-user"></i>
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="e.g., Big Ba3zo"
+                required
+                autofocus
+              />
+              <div class="error-message" id="usernameError"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="email">
+                <i class="fas fa-envelope"></i>
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="e.g., youssefmoheyaldeen@gmail.com"
+                required
+              />
+              <div class="error-message" id="emailError"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="password">
+                <i class="fas fa-lock"></i>
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+              />
+              <div class="error-message" id="passwordError"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="role">
+                <i class="fas fa-user-tag"></i>
+                Role
+              </label>
+              <select id="role" name="role" required>
+                <option value="">-- Select Role --</option>
+                <option value="1">Vendor</option>
+                <option value="2">Retail Store</option>
+              </select>
+              <div class="error-message" id="roleError"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="address">
+                <i class="fas fa-map-marker-alt"></i>
+                Address
+              </label>
+              <input
+                type="text"
+                id="address"
+                name="address"
+                placeholder="e.g., Damanhour -- EGypt"
+                required
+              />
+              <div class="error-message" id="addressError"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="contactInfo">
+                <i class="fas fa-phone"></i>
+                Contact Info
+              </label>
+              <input
+                type="text"
+                id="contactInfo"
+                name="contactInfo"
+                placeholder="e.g., 01098965324"
+                required
+              />
+              <div class="error-message" id="contactInfoError"></div>
+            </div>
+
+            <button type="submit" class="login-btn">
+              <i class="fas fa-user-plus"></i>
+              Register
+            </button>
+          </form>
+
+          <div class="register-link">
+            <p>
+              Already have an account? <a th:href="@{/login}">Login here</a>
+            </p>
+          </div>
+        </div>
+
+        <div class="footer">
+          <p>&copy; 2025 YallaMarket. All rights reserved.</p>
+        </div>
+      </div>
+
+      <div class="image-container">
+        <div class="overlay"></div>
+      </div>
+    </div>
+
+    <script th:src="@{/js/register.js}"></script>
+  </body>
+</html>

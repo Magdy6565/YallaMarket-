@@ -109,7 +109,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<String> getAllCategories() {
+    public List<String> getDistinctCategories() {
         return productRepository.findDistinctCategories();
     }
 

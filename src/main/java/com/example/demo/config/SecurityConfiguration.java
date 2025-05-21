@@ -51,23 +51,29 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             .authorizeHttpRequests(authorize -> authorize
                     // Permit authentication endpoints (login, signup, etc.)
                     .requestMatchers("/auth/**").permitAll()
-
-                    // Require authentication for the new product endpoints
-                    // User must provide a valid JWT (Bearer Token)
-                    .requestMatchers("/api/my-products/**").authenticated()
-
-                    // Require authentication for the user update endpoint
-                    // User must provide a valid JWT (Bearer Token)
-                    .requestMatchers("/api/users/**").authenticated() // Assuming user update is also protected
-
-                    .requestMatchers("/api/vendor/orders/**").authenticated()
+                    
+                    // Permit web resources and Thymeleaf views for login
+                    .requestMatchers("/", "/profile","/register","/error","/vendor-orders/**" ,"/edit-product/**","/add-product" ,"/verify" ,"/login", "/css/**", "/js/**", "/images/**").permitAll()
+                    
+                    // Require authentication for products pages
+                    .requestMatchers("/products", "/products/**").authenticated()
+                    .requestMatchers("/users/**").authenticated()
 
                     // Require authentication for any other request not explicitly permitted above
                     .anyRequest().authenticated() // This is the default for everything else
+            )            .formLogin(form -> form
+                    .loginPage("/login")
+                    .defaultSuccessUrl("/products")
+                    .permitAll()
             )
+            .logout(logout -> logout
+                    .logoutUrl("/logout")
+                    .logoutSuccessUrl("/login?logout")
+                    .permitAll()
+            )
+            // Configure session management
             .sessionManagement(session -> session
-                    // Configure session management to be stateless (typical for JWT APIs)
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
             )
             // Set the custom AuthenticationProvider
             .authenticationProvider(authenticationProvider)
