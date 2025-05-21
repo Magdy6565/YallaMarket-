@@ -2,26 +2,23 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.ProductFilterRequest;
 import com.example.demo.dto.ProductRequest;
+import com.example.demo.dto.ProductWithVendorDTO;
 import com.example.demo.model.Product;
-import com.example.demo.model.User; // Import your User model
+import com.example.demo.model.User;
 import com.example.demo.service.ProductService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-// Import Spring Security classes
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
 
 @RestController
@@ -157,4 +154,20 @@ public class ProductController {
         List<Product> filteredProducts = productService.filterProductsForUser(userId, filterRequest);
         return ResponseEntity.ok(filteredProducts);
     }
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<String>> getDistinctCategories() {
+        List<String> categories = productService.getAllCategories();
+        return ResponseEntity.ok(categories);
+    }
+
+    @GetMapping("/category/{category}")
+    public ResponseEntity<List<ProductWithVendorDTO>> getProductsByCategoryAndVendors(
+            @PathVariable @NotBlank(message = "Category cannot be null") String category,
+            @RequestParam(required = false) List<Long> vendorIds) {
+        List<ProductWithVendorDTO> response = productService.findProductsByCategoryAndVendors(
+                category, vendorIds);
+        return ResponseEntity.ok(response);
+    }
+
 }

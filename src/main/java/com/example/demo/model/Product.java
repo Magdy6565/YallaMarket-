@@ -1,7 +1,9 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -11,6 +13,8 @@ import java.time.LocalDateTime;
 @Table(name = "products")
 @Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product {
 
     @Id
@@ -28,7 +32,7 @@ public class Product {
     private BigDecimal price;
 
     @Column(name = "quantity")
-    private Integer quantity;
+    private Integer quantity = 0;
 
     // This column is named 'vendor_id' in the database, but stores the User's ID
     @Column(name = "vendor_id", nullable = false) // Keep the column name as 'vendor_id'
@@ -40,17 +44,4 @@ public class Product {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt; // Using soft delete
 
-    // Optional: Add constructors
-    public Product() {
-    }
-
-    public Product(String name, String description, BigDecimal price, Integer quantity, Long vendorId, String category) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.quantity = (quantity == null) ? 0 : quantity; // Apply default
-        this.vendorId = vendorId;
-        this.category = category;
-        this.deletedAt = null; // Ensure not deleted by default
-    }
 }

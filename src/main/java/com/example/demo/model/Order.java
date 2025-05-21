@@ -2,17 +2,20 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate; // Use LocalDate for DATE
 import java.time.LocalDateTime; // Use LocalDateTime for TIMESTAMP
+import java.util.ArrayList;
 import java.util.List; // To map OrderItems
 
 @Entity
 @Table(name = "orders")
 @Setter
 @Getter
+@NoArgsConstructor
 public class Order {
 
     @Id
@@ -21,7 +24,7 @@ public class Order {
     private Long orderId;
 
     @Column(name = "user_id", nullable = false)
-    private Integer userId; // Foreign key to RetailStores
+    private Long userId; // Foreign key to RetailStores
 
     @Column(name = "order_date", nullable = false)
     private LocalDate orderDate; // DATE type
@@ -36,11 +39,54 @@ public class Order {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+
     // Relationship to OrderItems (One Order can have many OrderItems)
     // Use mappedBy to indicate the owning side is OrderItem
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> orderItems;
+    private List<OrderItem> orderItems = new ArrayList<>();
 
-    // Optional: Add constructors
-    public Order() {}
 }
+
+//@Entity
+//@Table(name = "orders")
+//@Setter
+//@Getter
+//@NoArgsConstructor
+//public class Order {
+//
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(name = "order_id")
+//    private Long orderId;
+//
+//    // Replace userId with a User entity relationship (optional but recommended)
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id", nullable = false)
+//    private User user;
+//
+//    @Column(name = "order_date", nullable = false)
+//    private LocalDate orderDate;
+//
+//    @Column(name = "status", nullable = false)
+//    private String status;
+//
+//    @Column(name = "total_amount")
+//    private BigDecimal totalAmount;
+//
+//    @Column(name = "deleted_at")
+//    private LocalDateTime deletedAt;
+//
+//    @Column(name = "created_at", nullable = false)
+//    private LocalDateTime createdAt;
+//
+//    @Column(name = "updated_at", nullable = false)
+//    private LocalDateTime updatedAt;
+//
+//    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<OrderItem> orderItems = new ArrayList<>();
+//}

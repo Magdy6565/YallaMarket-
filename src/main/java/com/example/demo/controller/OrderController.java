@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.OrderFilterRequest;
+import com.example.demo.dto.OrderRequest;
 import com.example.demo.dto.OrderStatusUpdateRequest;
 import com.example.demo.dto.VendorOrderDetailsDto;
 import com.example.demo.model.User; // Import your User model
@@ -108,4 +109,14 @@ public class OrderController {
                              .map(ResponseEntity::ok)
                              .orElseGet(() -> ResponseEntity.notFound().build());
      }
+
+
+    @PostMapping("/place")
+    public ResponseEntity<String> placeOrder(
+            @RequestBody OrderRequest request) {  // Inject current logged-in user
+        Long userId = getAuthenticatedUserId(); // Get the authenticated user's ID
+
+        orderService.placeOrder(request, userId);
+        return ResponseEntity.ok("Order placed successfully");
+    }
 }

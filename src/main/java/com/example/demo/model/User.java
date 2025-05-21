@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,26 +19,36 @@ import java.util.List;
 //These will add setters and getters thanks to lombock
 @Getter
 @Setter
+@NoArgsConstructor
 //UserDetails --> integrates spring security
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Changed from AUTO, assuming SERIAL in DB
     private Long id;
+
     @Column(unique = true, nullable = false)
     private String username;
+
     @Column(unique = true, nullable = false)
     private String email; // Assuming this is the contact email
+
     @Column(nullable = false)
     private String password; // This should store password_hash
+
     @Column(name = "jwt_token") // Assuming this column exists based on schema comment
     private String jwtToken;
+
     @Column(name = "role")
     private int role; // Assuming role is stored as an integer
+
     @Column(name = "verification_code")
     private String verificationCode;
+
     @Column(name = "verification_expiration")
     private LocalDateTime verificationCodeExpiresAt;
+
     private boolean enabled;
+
     @Column(name = "address")
     private String address;
 
@@ -49,14 +60,6 @@ public class User implements UserDetails {
 
     @Column(name = "deleted_at") // Assuming this exists based on schema comment
     private LocalDateTime deletedAt;
-
-
-    //------------------------------
-
-    // constructor for creating a user (updated to include new fields if needed, or use setters)
-    // Default constructor is required by JPA
-    public User() {
-    }
 
     // You can add other constructors as needed, e.g., for registration
     public User(String username, String email, String password, int role, String address, String contactInfo) {

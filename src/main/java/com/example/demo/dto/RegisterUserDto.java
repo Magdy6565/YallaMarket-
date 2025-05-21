@@ -9,7 +9,6 @@ import lombok.Setter;
 
 @Setter
 @Getter
-
 public class RegisterUserDto {
 
     @NotBlank(message = "Username is required")
@@ -30,7 +29,6 @@ public class RegisterUserDto {
     @Size(max = 100, message = "Contact info cannot exceed 100 characters")
     private String contactInfo; // New field
 
-     private Integer role;
-
+    private Integer role;
 
 }

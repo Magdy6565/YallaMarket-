@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.dto.ProductFilterRequest;
 import com.example.demo.dto.ProductRequest;
+import com.example.demo.dto.ProductWithVendorDTO;
 import com.example.demo.model.Product;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.service.ProductService;
@@ -106,4 +107,22 @@ public class ProductServiceImpl implements ProductService {
         // Call the repository method that uses the vendorId column
         return productRepository.findByProductIdAndVendorIdAndDeletedAtIsNull(productId, userId);
     }
+
+    @Override
+    public List<String> getAllCategories() {
+        return productRepository.findDistinctCategories();
+    }
+
+    @Override
+    @Transactional(readOnly = true) // Good practice for read operations
+    public List<ProductWithVendorDTO> findProductsByCategoryAndVendors(
+            String category, List<Long> vendorIds) {
+        List<Long> effectiveVendorIds = (vendorIds != null && vendorIds.isEmpty()) ? null : vendorIds;
+
+        List<ProductWithVendorDTO> products = productRepository.findProductsWithVendorDetails(
+                category, effectiveVendorIds);
+
+        return products;
+    }
+
 }

@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.UserUpdateRequestDTO; // Import DTO for update
-import com.example.demo.dto.UserUpdateRequestDTO;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import java.util.Optional; // Import Optional
 // Import Spring Security classes for authorization check
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
 
 @RestController

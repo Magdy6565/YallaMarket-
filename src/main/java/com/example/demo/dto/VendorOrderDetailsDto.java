@@ -1,5 +1,6 @@
 package com.example.demo.dto;
 
+import com.example.demo.model.Invoice;
 import com.example.demo.model.Order;
 import com.example.demo.model.OrderItem;
 import com.example.demo.model.Product;
@@ -16,11 +17,12 @@ import java.util.stream.Collectors;
 public class VendorOrderDetailsDto {
 
     private Long orderId;
-    private Integer storeId;
+    private Long storeId;
     private LocalDate orderDate;
     private String status;
     private BigDecimal totalAmount;
     private List<VendorOrderItemDto> orderItems; // List of simplified order items
+    private InvoiceDTO invoice;
 
     // Constructor to map from Order entity
     public VendorOrderDetailsDto(Order order) {
@@ -37,6 +39,14 @@ public class VendorOrderDetailsDto {
                     .collect(Collectors.toList());
         }
     }
+
+    public VendorOrderDetailsDto(Order order, Invoice invoice) {
+        this(order); // Call the main constructor first
+        if (invoice != null && invoice.getDeletedAt() == null) {
+            this.invoice = new InvoiceDTO(invoice);
+        }
+    }
+
 
     public static class VendorOrderItemDto {
         private Long orderItemId;

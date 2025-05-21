@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "orderitems")
 @Setter
 @Getter
+@NoArgsConstructor
 public class OrderItem {
 
     @Id
@@ -44,6 +46,4 @@ public class OrderItem {
     @JoinColumn(name = "product_id", insertable = false, updatable = false) // product_id is the foreign key column
     private Product product; // Reference to the associated Product
 
-    // Optional: Add constructors
-    public OrderItem() {}
 }
