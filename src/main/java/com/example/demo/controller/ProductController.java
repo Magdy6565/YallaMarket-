@@ -4,8 +4,8 @@ import com.example.demo.dto.ProductFilterRequest;
 import com.example.demo.dto.ProductRequest;
 import com.example.demo.dto.ProductWithVendorDTO;
 import com.example.demo.model.Product;
-import com.example.demo.model.User;
 import com.example.demo.service.ProductService;
+import com.example.demo.util.AuthUtil;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.slf4j.Logger;
@@ -13,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,38 +20,15 @@ import java.util.Optional;
 
 
 @RestController
-// Keep the base path /api/my-products (or /api/products)
 @RequestMapping("/api/my-products")
 public class ProductController {
 
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
-
     private final ProductService productService;
 
     @Autowired
     public ProductController(ProductService productService) {
         this.productService = productService;
-    }
-
-    // Helper method to get the user ID from the authenticated user
-    // This method correctly gets the User's ID (Long)
-    private Long getAuthenticatedUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new IllegalStateException("User is not authenticated");
-        }
-
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof User) {
-            User authenticatedUser = (User) principal;
-            if (authenticatedUser.getId() == null) {
-                throw new IllegalStateException("Authenticated user has no ID");
-            }
-            return authenticatedUser.getId(); // Return the user's ID (Long)
-        } else {
-            throw new IllegalStateException("Authenticated principal is not a recognized User type");
-        }
     }
 
 
@@ -63,7 +38,7 @@ public class ProductController {
     public ResponseEntity<Product> addProduct(@Valid @RequestBody ProductRequest productRequest) {
 
         logger.info("We enetred add product NOWWOWOWO");
-        Long userId = getAuthenticatedUserId(); // Get userId (Long) from authenticated user
+        Long userId = AuthUtil.getAuthenticatedUserId(); // Get userId (Long) from authenticated user
         logger.info("Received POST request to add product for userId (stored as vendorId): {}", userId);
         logger.debug("Product Request Body: {}", productRequest);
 
@@ -82,7 +57,7 @@ public class ProductController {
             @PathVariable Long productId,
             @Valid @RequestBody ProductRequest productRequest) {
 
-        Long userId = getAuthenticatedUserId(); // Get userId (Long) from authenticated user
+        Long userId = AuthUtil.getAuthenticatedUserId(); // Get userId (Long) from authenticated user
         logger.info("Received PUT request to update product {} for userId (stored as vendorId): {}", productId, userId);
 
         // Pass the userId (Long) to the service
@@ -96,7 +71,7 @@ public class ProductController {
     // GET /api/my-products
     @GetMapping
     public ResponseEntity<List<Product>> getAllProductsForUser() {
-        Long userId = getAuthenticatedUserId(); // Get userId (Long) from authenticated user
+        Long userId = AuthUtil.getAuthenticatedUserId(); // Get userId (Long) from authenticated user
         logger.info("Received GET request for all products for userId (stored as vendorId): {}", userId);
 
         // Pass the userId (Long) to the service
@@ -110,7 +85,7 @@ public class ProductController {
     public ResponseEntity<Product> getProductByIdForUser(
             @PathVariable Long productId) {
 
-        Long userId = getAuthenticatedUserId(); // Get userId (Long) from authenticated user
+        Long userId = AuthUtil.getAuthenticatedUserId(); // Get userId (Long) from authenticated user
         logger.info("Received GET request for product {} for userId (stored as vendorId): {}", productId, userId);
 
         // Pass the userId (Long) to the service
@@ -126,7 +101,7 @@ public class ProductController {
     public ResponseEntity<Void> deleteProduct(
             @PathVariable Long productId) {
 
-        Long userId = getAuthenticatedUserId(); // Get userId (Long) from authenticated user
+        Long userId = AuthUtil.getAuthenticatedUserId(); // Get userId (Long) from authenticated user
         logger.info("Received DELETE request for product {} for userId (stored as vendorId): {}", productId, userId);
 
         // Pass the userId (Long) to the service
@@ -146,7 +121,7 @@ public class ProductController {
     public ResponseEntity<List<Product>> filterProducts(
             @ModelAttribute ProductFilterRequest filterRequest) {
 
-        Long userId = getAuthenticatedUserId(); // Get userId (Long) from authenticated user
+        Long userId = AuthUtil.getAuthenticatedUserId(); // Get userId (Long) from authenticated user
         logger.info("Received GET filter request for userId (stored as vendorId): {}", userId);
         logger.debug("Filter criteria: Quantity={}, Category={}", filterRequest.getQuantity(), filterRequest.getCategory());
 
@@ -154,6 +129,7 @@ public class ProductController {
         List<Product> filteredProducts = productService.filterProductsForUser(userId, filterRequest);
         return ResponseEntity.ok(filteredProducts);
     }
+
     @GetMapping("/categories")
     public ResponseEntity<List<String>> getDistinctCategories() {
         List<String> categories = productService.getDistinctCategories();

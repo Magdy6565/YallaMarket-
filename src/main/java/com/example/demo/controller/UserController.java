@@ -1,25 +1,19 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.UserUpdateRequestDTO; // Import DTO for update
+import com.example.demo.dto.UserUpdateRequestDTO;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*; // Import all annotation types
-import org.springframework.http.CacheControl;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-import java.util.concurrent.TimeUnit;
-import jakarta.validation.Valid; // Import validation annotation
-
-import java.util.List; // Import List
-import java.util.Optional; // Import Optional
-
-// Import Spring Security classes for authorization check
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -49,7 +43,7 @@ public class UserController {
     // GET /api/users/
     @GetMapping("/") // Or just @GetMapping("")
     public ResponseEntity<List<User>> allUsers() {
-        List <User> users = userService.allUsers();
+        List<User> users = userService.allUsers();
         return ResponseEntity.ok(users);
     }
 

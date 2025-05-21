@@ -1,24 +1,20 @@
 package com.example.demo.controller;
-import com.example.demo.dto.OrderFilterRequest;
+
 import com.example.demo.dto.OrderRequest;
 import com.example.demo.dto.OrderStatusUpdateRequest;
 import com.example.demo.dto.VendorOrderDetailsDto;
-import com.example.demo.model.User;
 import com.example.demo.model.Order;
-import com.example.demo.repository.OrderItemRepository;
+import com.example.demo.model.OrderStatus;
+import com.example.demo.repository.OrderRepository;
 import com.example.demo.service.OrderService;
+import com.example.demo.util.AuthUtil;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.demo.repository.OrderRepository;
-import jakarta.validation.Valid;
-import com.example.demo.model.OrderStatus;
+
 import java.util.List;
 import java.util.Optional;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 @RestController
 @RequestMapping("/api/vendor/orders") // Base path for vendor order management
 public class OrderController {
@@ -30,31 +26,12 @@ public class OrderController {
         this.orderRepository = orderRepository;
 
     }
-    //-------------------------------------------------------------
-    // Helper method to get the user ID from the authenticated user
-    private Long getAuthenticatedUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new IllegalStateException("User is not authenticated");
-        }
 
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof User) {
-            User authenticatedUser = (User) principal;
-            if (authenticatedUser.getId() == null) {
-                throw new IllegalStateException("Authenticated user has no ID");
-            }
-            return authenticatedUser.getId(); // Return the user's ID (Long)
-        } else {
-            throw new IllegalStateException("Authenticated principal is not a recognized User type");
-        }
-    }
     //-------------------------------------------------------------
     // GET /api/vendor/orders
     @GetMapping
     public ResponseEntity<List<VendorOrderDetailsDto>> getAllVendorOrders() {
-        Long vendorUserId = getAuthenticatedUserId(); // Get the authenticated user's ID
+        Long vendorUserId = AuthUtil.getAuthenticatedUserId(); // Get the authenticated user's ID
         List<VendorOrderDetailsDto> orders = orderService.getVendorOrders(vendorUserId);
         return ResponseEntity.ok(orders);
     }
@@ -65,7 +42,7 @@ public class OrderController {
             @PathVariable Long orderId,
             @Valid @RequestBody OrderStatusUpdateRequest statusUpdateRequest) {
 
-        Long vendorUserId = getAuthenticatedUserId(); // Get the authenticated user's ID
+        Long vendorUserId = AuthUtil.getAuthenticatedUserId(); // Get the authenticated user's ID
         // TODO: Add authorization check here to ensure the authenticated user is a vendor
 
         Optional<Order> updatedOrder = orderService.updateOrderStatus(orderId, vendorUserId, statusUpdateRequest.getStatus());
@@ -76,7 +53,7 @@ public class OrderController {
     //-------------------------------------------------------------
     @GetMapping("/filter")
     public ResponseEntity<List<VendorOrderDetailsDto>> getFilteredVendorOrders(@RequestParam(required = false) Integer status) {
-        Long vendorUserId = getAuthenticatedUserId();
+        Long vendorUserId = AuthUtil.getAuthenticatedUserId();
         if (status == null) {
             return ResponseEntity.ok(orderService.getVendorOrders(vendorUserId));
         }
@@ -95,7 +72,7 @@ public class OrderController {
     // GET /api/vendor/orders/{orderId}
      @GetMapping("/{orderId}")
      public ResponseEntity<VendorOrderDetailsDto> getVendorOrderById(@PathVariable Long orderId) {
-         Long vendorUserId = getAuthenticatedUserId();
+         Long vendorUserId = AuthUtil.getAuthenticatedUserId();
          Optional<Order> orderOptional = orderRepository.findOrderByOrderIdAndProductVendorId(orderId, vendorUserId);
          return orderOptional.map(VendorOrderDetailsDto::new)
                              .map(ResponseEntity::ok)
@@ -106,7 +83,7 @@ public class OrderController {
     @PostMapping("/place")
     public ResponseEntity<String> placeOrder(
             @RequestBody OrderRequest request) {  // Inject current logged-in user
-        Long userId = getAuthenticatedUserId(); // Get the authenticated user's ID
+        Long userId = AuthUtil.getAuthenticatedUserId(); // Get the authenticated user's ID
 
         orderService.placeOrder(request, userId);
         return ResponseEntity.ok("Order placed successfully");
