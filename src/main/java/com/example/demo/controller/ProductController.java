@@ -160,12 +160,6 @@ public class ProductController {
         return ResponseEntity.ok(categories);
     }
 
-    @GetMapping("/categories")
-    public ResponseEntity<List<String>> getDistinctCategories() {
-        List<String> categories = productService.getAllCategories();
-        return ResponseEntity.ok(categories);
-    }
-
     @GetMapping("/category/{category}")
     public ResponseEntity<List<ProductWithVendorDTO>> getProductsByCategoryAndVendors(
             @PathVariable @NotBlank(message = "Category cannot be null") String category,
