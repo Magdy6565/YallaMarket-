@@ -37,31 +37,16 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findByUserId(Long userId);
 
-    // Find orders by vendor ID
-    List<Order> findByVendorIdOrderByOrderDateDesc(Integer vendorId); // Changed CreatedAt to OrderDate
-
     // Find orders by retail store ID (now userId)
-    List<Order> findByUserIdOrderByOrderDateDesc(Integer userId); // Changed field and OrderBy
-
-    // Count orders by vendor ID
-    long countByVendorId(Integer vendorId);
+    List<Order> findByUserIdOrderByOrderDateDesc(Long userId); // Changed field and OrderBy
 
     // Count orders by retail store ID (now userId)
-    long countByUserId(Integer userId);
+    long countByUserId(Long userId);
 
     // Calculate total revenue for a vendor
-    @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.vendorId = :vendorId AND o.paymentStatus = com.example.demo.model.PaymentStatus.COMPLETED")
+    @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.userId = :userId AND o.paymentStatus = com.example.demo.model.PaymentStatus.COMPLETED")
     // Added fully qualified enum
-    BigDecimal calculateTotalRevenueForVendor(@Param("vendorId") Integer vendorId);
-
-    // Find orders by vendor ID and payment status
-    List<Order> findByVendorIdAndPaymentStatus(Integer vendorId, com.example.demo.model.PaymentStatus paymentStatus);
-
-    // Find orders by retail store ID (now userId) and payment status
-    List<Order> findByUserIdAndPaymentStatus(Integer userId, com.example.demo.model.PaymentStatus paymentStatus);
-
-    // Find orders by retail store ID (now userId) and delivery status
-    List<Order> findByUserIdAndDeliveryStatus(Integer userId, com.example.demo.model.DeliveryStatus deliveryStatus);
+    BigDecimal calculateTotalRevenueForVendor(@Param("userId") Long userId);
 
     // Count orders by retail store ID (now userId) and delivery status
     long countByUserIdAndDeliveryStatus(Integer userId, com.example.demo.model.DeliveryStatus deliveryStatus);

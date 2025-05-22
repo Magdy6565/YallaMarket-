@@ -29,7 +29,6 @@ public class Order {
     @Column(name = "order_date", nullable = false)
     private LocalDate orderDate; // DATE type
 
-
     @Column(name = "status", nullable = false)
     private String status; // Maps to order_status enum in DB (e.g., 'pending', 'approved', 'denied')
 

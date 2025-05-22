@@ -8,16 +8,10 @@ import java.util.List;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    
+
     // Find notifications by user ID
     List<Notification> findByUserIdOrderByCreatedAtDesc(Long userId);
-    
-    // Find unread notifications by user ID
-    List<Notification> findByUserIdAndReadOrderByCreatedAtDesc(Long userId, boolean read);
-    
-    // Find notifications by user ID and type
-    List<Notification> findByUserIdAndTypeOrderByCreatedAtDesc(Long userId, com.example.demo.model.NotificationType type);
-    
+
     // Count unread notifications by user ID
     long countByUserIdAndRead(Long userId, boolean read);
 }

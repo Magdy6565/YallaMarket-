@@ -51,10 +51,10 @@ public class DashboardServiceImpl implements DashboardService {
         long totalProducts = productRepository.findByVendorIdAndDeletedAtIsNull(userId).size();
         
         // Count orders received
-        long ordersReceived = orderRepository.countByVendorId(vendorId);
+        long ordersReceived = orderRepository.countByUserId(userId);
         
         // Calculate total revenue
-        BigDecimal totalRevenue = orderRepository.calculateTotalRevenueForVendor(vendorId);
+        BigDecimal totalRevenue = orderRepository.calculateTotalRevenueForVendor(userId);
         if (totalRevenue == null) {
             totalRevenue = BigDecimal.ZERO;
         }
@@ -80,7 +80,7 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public RetailStoreDashboardResponse getRetailStoreDashboard(Long retailStoreId) {
         // Count orders placed
-        long ordersPlaced = orderRepository.countByUserId(retailStoreId.intValue()); // Changed to countByUserId and cast to Integer
+        long ordersPlaced = orderRepository.countByUserId(retailStoreId); // Changed to countByUserId and cast to Integer
         
         // Get delivery status breakdown
         List<OrderDeliveryStatusDto> deliveryStatusList = getDeliveryStatusBreakdown(retailStoreId.intValue()); // Changed to use intValue()
@@ -113,7 +113,7 @@ public class DashboardServiceImpl implements DashboardService {
         return result;
     }    private BigDecimal calculateTotalPaymentsMade(Long retailStoreId) {
         // Get all orders for the retail store
-        List<Order> orders = orderRepository.findByUserIdOrderByOrderDateDesc(retailStoreId.intValue()); // Changed to findByUserIdOrderByOrderDateDesc and cast to Integer
+        List<Order> orders = orderRepository.findByUserIdOrderByOrderDateDesc(retailStoreId); // Changed to findByUserIdOrderByOrderDateDesc and cast to Integer
         
         // Extract order IDs
         List<Long> orderIds = orders.stream()

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,9 +22,8 @@ public class Payment {
     @Column(name = "payment_id")
     private Long paymentId;
 
-    @OneToOne
-    @JoinColumn(name = "order_id", unique = true)
-    private Order order; // One-to-one with Order
+    @Column(name = "order_id", nullable = false)
+    private Long orderId;
 
     @Column(name = "user_id")
     private Long userId; // Foreign key to Users (no direct relationship shown here)
@@ -37,9 +37,6 @@ public class Payment {
     @Column(name = "payment_method", length = 50)
     private String paymentMethod;
 
-    @Column(length = 50)
-    private String status;
-
     @Column(name = "reference_no", length = 100)
     private String referenceNo;
 
@@ -48,6 +45,10 @@ public class Payment {
 
     @Column(name = "transaction_id", length = 100)
     private String transactionId;
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status;
 
     @OneToMany(mappedBy = "payment")
     private List<Invoice> invoices;

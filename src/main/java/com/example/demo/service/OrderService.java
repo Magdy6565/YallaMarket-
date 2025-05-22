@@ -143,12 +143,12 @@ public class OrderService {
 
         // Payment
         Payment payment = new Payment();
-        payment.setOrder(savedOrder);
+        payment.setOrderId(savedOrder.getOrderId());
         payment.setUserId(userId);
         payment.setAmount(totalAmount);
         payment.setPaymentDate(LocalDateTime.now());
         payment.setPaymentMethod(orderRequest.getPaymentMethod());
-        payment.setStatus("PAID");
+        payment.setStatus(PaymentStatus.PENDING);
         paymentRepository.save(payment);
 
         // Invoice

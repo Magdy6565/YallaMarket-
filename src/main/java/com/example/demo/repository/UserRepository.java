@@ -1,6 +1,5 @@
 package com.example.demo.repository;
 
-
 import com.example.demo.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,9 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
 
     Optional<User> findByContactInfo(String contactInfo); // Add this if contactInfo is unique}
-
-    // Find user by the verification code they would enter
-    Optional<User> findByVerificationCode(String verificationCode);
 
     // Find all active users (not soft-deleted)
     @Query("SELECT u FROM User u WHERE u.deletedAt IS NULL")
