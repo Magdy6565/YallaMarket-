@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YallaMarket - Supermarket Home</title>
+    <link rel="stylesheet" th:href="@{/css/products.css}">
+    <link rel="stylesheet" th:href="@{/css/supermarket.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/supermarket/home" class="navbar-logo">YallaMarket</a>
+            
+            <!-- Mobile menu toggle button -->
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <!-- Navigation Links -->
+            <ul class="navbar-links" id="navbarLinks">
+                <li><a href="/supermarket/home" class="active">Home</a></li>
+                <li><a href="/supermarket/orders">Orders</a></li>
+                <li>
+                    <a href="/supermarket/basket" class="cart-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-badge" id="cartBadge">0</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <!-- User Menu -->
+            <div class="user-menu" id="userMenu">
+                <button class="user-menu-button">
+                    <span>My Account</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="user-menu-dropdown">
+                    <a href="/profile"><i class="fas fa-user"></i> Profile</a>
+                    <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-title">
+            <h1>Supermarket Products</h1>
+        </div>
+
+        <!-- Categories Section -->
+        <div class="categories-section">
+            <h2>Categories</h2>
+            <div class="categories-container" id="categoriesContainer">
+                <!-- Categories will be loaded here -->
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i> Loading categories...
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <h2>Products</h2>
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="vendorFilter">Filter by Vendor:</label>
+                    <select id="vendorFilter" class="form-control">
+                        <option value="">All Vendors</option>
+                        <!-- Vendors will be loaded dynamically -->
+                    </select>
+                </div>
+                <button id="filterButton" class="btn btn-primary">Filter</button>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="productsGrid">
+            <!-- Products will be loaded here -->
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i> Select a category to view products
+            </div>
+        </div>
+        
+        <!-- Empty State (shown when no products) -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="fas fa-box-open"></i>
+            <h2>No Products Found</h2>
+            <p>There are no products available in this category.</p>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-body" id="modalBody">
+                <!-- Product details will be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script th:src="@{/js/supermarket-home.js}"></script>
+</body>
+</html>

@@ -55,6 +55,10 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     // Permit web resources and Thymeleaf views for login
                     .requestMatchers("/", "/profile","/register","/error","/vendor-orders/**" ,"/edit-product/**","/add-product" ,"/verify" ,"/login", "/css/**", "/js/**", "/images/**").permitAll()
                     
+                    // Permit the categories API endpoint
+                    .requestMatchers("/api/my-products/**").permitAll()
+                    .requestMatchers("/users/role/**").permitAll()
+
                     // Require authentication for products pages
                     .requestMatchers("/products", "/products/**").authenticated()
                     .requestMatchers("/users/**").authenticated()
@@ -63,7 +67,19 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .anyRequest().authenticated() // This is the default for everything else
             )            .formLogin(form -> form
                     .loginPage("/login")
-                    .defaultSuccessUrl("/products")
+                    .successHandler((request, response, authentication) -> {
+                        Object principal = authentication.getPrincipal();
+                        if (principal instanceof com.example.demo.model.User) {
+                            com.example.demo.model.User user = (com.example.demo.model.User) principal;
+                            if (user.getRole() == 2) {
+                                response.sendRedirect(request.getContextPath() + "/supermarket/home");
+                            } else {
+                                response.sendRedirect(request.getContextPath() + "/products");
+                            }
+                        } else {
+                            response.sendRedirect(request.getContextPath() + "/products");
+                        }
+                    })
                     .permitAll()
             )
             .logout(logout -> logout

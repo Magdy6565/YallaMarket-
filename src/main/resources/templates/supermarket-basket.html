@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YallaMarket - My Basket</title>
+    <link rel="stylesheet" th:href="@{/css/products.css}">
+    <link rel="stylesheet" th:href="@{/css/supermarket.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/supermarket/home" class="navbar-logo">YallaMarket</a>
+            
+            <!-- Mobile menu toggle button -->
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <!-- Navigation Links -->
+            <ul class="navbar-links" id="navbarLinks">
+                <li><a href="/supermarket/home">Home</a></li>
+                <li><a href="/supermarket/orders">Orders</a></li>
+                <li>
+                    <a href="/supermarket/basket" class="cart-link active">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-badge" id="cartBadge">0</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <!-- User Menu -->
+            <div class="user-menu" id="userMenu">
+                <button class="user-menu-button">
+                    <span>My Account</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="user-menu-dropdown">
+                    <a href="/profile"><i class="fas fa-user"></i> Profile</a>
+                    <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-title">
+            <h1>My Basket</h1>
+        </div>
+        
+        <!-- Cart Container -->
+        <div class="cart-container" id="cartContainer">
+            <!-- Cart items will be loaded here -->
+        </div>
+        
+        <!-- Empty Cart State -->
+        <div class="empty-state" id="emptyCartState" style="display: none;">
+            <i class="fas fa-shopping-cart"></i>
+            <h2>Your Basket is Empty</h2>
+            <p>Start adding products to your basket.</p>
+            <a href="/supermarket/home" class="btn">
+                <i class="fas fa-shopping-basket"></i> Continue Shopping
+            </a>
+        </div>
+        
+        <!-- Cart Summary -->
+        <div class="cart-summary" id="cartSummary" style="display: none;">
+            <h2>Order Summary</h2>
+            <div class="summary-item">
+                <span class="summary-label">Subtotal:</span>
+                <span class="summary-value" id="cartSubtotal">$0.00</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Estimated Shipping:</span>
+                <span class="summary-value" id="cartShipping">$0.00</span>
+            </div>
+            <div class="summary-item total">
+                <span class="summary-label">Total:</span>
+                <span class="summary-value" id="cartTotal">$0.00</span>
+            </div>
+            
+            <div class="checkout-form">
+                <div class="form-group">
+                    <label for="shippingAddress">Shipping Address</label>
+                    <textarea id="shippingAddress" class="form-control" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="paymentMethod">Payment Method</label>
+                    <select id="paymentMethod" class="form-control" required>
+                        <option value="">Select a payment method</option>
+                        <option value="CREDIT_CARD">Credit Card</option>
+                        <option value="PAYPAL">PayPal</option>
+                        <option value="CASH">Cash on Delivery</option>
+                    </select>
+                </div>
+                
+                <button id="checkoutBtn" class="btn checkout-btn">
+                    <i class="fas fa-credit-card"></i> Proceed to Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Order Confirmation Modal -->
+    <div id="orderConfirmationModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-body" id="confirmationModalBody">
+                <h2>Order Confirmation</h2>
+                <div class="confirmation-message">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Your order has been placed successfully!</p>
+                    <p>Order #<span id="confirmedOrderId">12345</span></p>
+                </div>
+                <div class="confirmation-actions">
+                    <a href="/supermarket/orders" class="btn view-orders-btn">
+                        <i class="fas fa-list"></i> View My Orders
+                    </a>
+                    <button class="btn continue-shopping-btn" id="continueShoppingBtn">
+                        <i class="fas fa-shopping-basket"></i> Continue Shopping
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script th:src="@{/js/supermarket-basket.js}"></script>
+</body>
+</html>
