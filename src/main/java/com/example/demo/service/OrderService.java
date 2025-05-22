@@ -3,6 +3,8 @@ package com.example.demo.service;
 import com.example.demo.dto.OrderItemRequest;
 import com.example.demo.dto.OrderRequest;
 import com.example.demo.dto.VendorOrderDetailsDto;
+import com.example.demo.enums.OrderStatus;
+import com.example.demo.enums.PaymentStatus;
 import com.example.demo.model.*;
 import com.example.demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;

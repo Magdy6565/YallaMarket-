@@ -1,6 +1,7 @@
 package com.example.demo.repository;
 
 import com.example.demo.dto.VendorOrderDetailsDto;
+import com.example.demo.enums.DeliveryStatus;
 import com.example.demo.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -44,10 +45,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     long countByUserId(Long userId);
 
     // Calculate total revenue for a vendor
-    @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.userId = :userId AND o.paymentStatus = com.example.demo.model.PaymentStatus.COMPLETED")
+    @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.userId = :userId AND o.paymentStatus = com.example.demo.enums.PaymentStatus.COMPLETED")
     // Added fully qualified enum
     BigDecimal calculateTotalRevenueForVendor(@Param("userId") Long userId);
 
     // Count orders by retail store ID (now userId) and delivery status
-    long countByUserIdAndDeliveryStatus(Integer userId, com.example.demo.model.DeliveryStatus deliveryStatus);
+    long countByUserIdAndDeliveryStatus(Integer userId, DeliveryStatus deliveryStatus);
 }

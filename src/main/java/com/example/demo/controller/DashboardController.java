@@ -3,14 +3,11 @@ package com.example.demo.controller;
 import com.example.demo.dto.NotificationDto;
 import com.example.demo.dto.RetailStoreDashboardResponse;
 import com.example.demo.dto.VendorDashboardResponse;
-import com.example.demo.model.UserRole;
 import com.example.demo.service.DashboardService;
 import com.example.demo.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

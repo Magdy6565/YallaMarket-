@@ -4,7 +4,7 @@ import com.example.demo.dto.OrderRequest;
 import com.example.demo.dto.OrderStatusUpdateRequest;
 import com.example.demo.dto.VendorOrderDetailsDto;
 import com.example.demo.model.Order;
-import com.example.demo.model.OrderStatus;
+import com.example.demo.enums.OrderStatus;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.service.OrderService;
 import com.example.demo.util.AuthUtil;

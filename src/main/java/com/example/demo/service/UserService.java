@@ -5,7 +5,7 @@ import com.example.demo.dto.UserCreateDTO;
 import com.example.demo.dto.UserListDTO;
 import com.example.demo.dto.UserUpdateRequestDTO;
 import com.example.demo.model.User;
-import com.example.demo.model.UserRole;
+import com.example.demo.enums.UserRole;
 import com.example.demo.repository.UserRepository;
 // Import PasswordEncoder if you have methods that use it (like password change or verification)
 // import org.springframework.security.crypto.password.PasswordEncoder;

@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.example.demo.enums.RefundStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

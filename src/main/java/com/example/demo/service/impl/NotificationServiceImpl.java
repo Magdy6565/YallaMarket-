@@ -2,15 +2,12 @@ package com.example.demo.service.impl;
 
 import com.example.demo.dto.NotificationDto;
 import com.example.demo.model.Notification;
-import com.example.demo.model.NotificationType;
+import com.example.demo.enums.NotificationType;
 import com.example.demo.repository.NotificationRepository;
 import com.example.demo.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

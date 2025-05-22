@@ -2,7 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dto.NotificationDto;
 import com.example.demo.model.Notification;
-import com.example.demo.model.NotificationType;
+import com.example.demo.enums.NotificationType;
 
 import java.util.List;
 

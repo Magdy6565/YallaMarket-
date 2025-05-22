@@ -1,7 +1,7 @@
 package com.example.demo.dto;
 
 import com.example.demo.model.Refund;
-import com.example.demo.model.RefundStatus;
+import com.example.demo.enums.RefundStatus;
 import lombok.Getter;
 import lombok.Setter;
 

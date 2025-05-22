@@ -1,7 +1,8 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.dto.*;
-import com.example.demo.model.DeliveryStatus;
+import com.example.demo.enums.DeliveryStatus;
+import com.example.demo.enums.PaymentStatus;
 import com.example.demo.model.Order;
 import com.example.demo.model.Product;
 import com.example.demo.repository.OrderItemRepository;
@@ -15,9 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -126,7 +125,7 @@ public class DashboardServiceImpl implements DashboardService {
         }
         
         List<com.example.demo.model.Payment> payments = paymentRepository.findByStatusAndOrderIdIn(
-                com.example.demo.model.PaymentStatus.COMPLETED, orderIds);
+                PaymentStatus.COMPLETED, orderIds);
         
         return payments.stream()
                 .map(com.example.demo.model.Payment::getAmount)

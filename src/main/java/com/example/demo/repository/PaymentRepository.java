@@ -1,7 +1,7 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.Payment;
-import com.example.demo.model.PaymentStatus;
+import com.example.demo.enums.PaymentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

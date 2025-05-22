@@ -5,7 +5,7 @@ import com.example.demo.dto.RefundResponseDto;
 import com.example.demo.model.OrderItem;
 import com.example.demo.model.Payment;
 import com.example.demo.model.Refund;
-import com.example.demo.model.RefundStatus;
+import com.example.demo.enums.RefundStatus;
 import com.example.demo.repository.OrderItemRepository;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.RefundRepository;
