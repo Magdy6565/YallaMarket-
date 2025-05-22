@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,9 +17,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     // hygeeb all orders for a specific user.
     @Query("SELECT DISTINCT o FROM Order o JOIN o.orderItems oi JOIN oi.product p WHERE p.vendorId = :vendorId AND o.deletedAt IS NULL")
     List<Order> findOrdersByProductVendorId(@Param("vendorId") Long vendorId);
+
     //de htgeeb  specific order with order id x l user mo3yn
     @Query("SELECT DISTINCT o FROM Order o JOIN o.orderItems oi JOIN oi.product p WHERE o.orderId = :orderId AND p.vendorId = :vendorId AND o.deletedAt IS NULL")
     Optional<Order> findOrderByOrderIdAndProductVendorId(@Param("orderId") Long orderId, @Param("vendorId") Long vendorId);
+
     // Leeh Upper ? 3l4an case sensitivvvve
     @Query("SELECT o FROM Order o WHERE UPPER(o.status) = UPPER(:orderStatusValue)")
     List<VendorOrderDetailsDto> findOrdersBySpecificStatus(@Param("orderStatusValue") String orderStatusValue);
@@ -33,4 +36,33 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Double sumRevenueByProductVendorId(@Param("vendorId") Long vendorId);
 
     List<Order> findByUserId(Long userId);
+
+    // Find orders by vendor ID
+    List<Order> findByVendorIdOrderByOrderDateDesc(Integer vendorId); // Changed CreatedAt to OrderDate
+
+    // Find orders by retail store ID (now userId)
+    List<Order> findByUserIdOrderByOrderDateDesc(Integer userId); // Changed field and OrderBy
+
+    // Count orders by vendor ID
+    long countByVendorId(Integer vendorId);
+
+    // Count orders by retail store ID (now userId)
+    long countByUserId(Integer userId);
+
+    // Calculate total revenue for a vendor
+    @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.vendorId = :vendorId AND o.paymentStatus = com.example.demo.model.PaymentStatus.COMPLETED")
+    // Added fully qualified enum
+    BigDecimal calculateTotalRevenueForVendor(@Param("vendorId") Integer vendorId);
+
+    // Find orders by vendor ID and payment status
+    List<Order> findByVendorIdAndPaymentStatus(Integer vendorId, com.example.demo.model.PaymentStatus paymentStatus);
+
+    // Find orders by retail store ID (now userId) and payment status
+    List<Order> findByUserIdAndPaymentStatus(Integer userId, com.example.demo.model.PaymentStatus paymentStatus);
+
+    // Find orders by retail store ID (now userId) and delivery status
+    List<Order> findByUserIdAndDeliveryStatus(Integer userId, com.example.demo.model.DeliveryStatus deliveryStatus);
+
+    // Count orders by retail store ID (now userId) and delivery status
+    long countByUserIdAndDeliveryStatus(Integer userId, com.example.demo.model.DeliveryStatus deliveryStatus);
 }

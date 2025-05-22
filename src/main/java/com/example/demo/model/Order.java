@@ -6,10 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate; // Use LocalDate for DATE
-import java.time.LocalDateTime; // Use LocalDateTime for TIMESTAMP
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List; // To map OrderItems
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -33,6 +33,14 @@ public class Order {
     @Column(name = "status", nullable = false)
     private String status; // Maps to order_status enum in DB (e.g., 'pending', 'approved', 'denied')
 
+    @Enumerated(EnumType.STRING) // Store enum as string
+    @Column(name = "delivery_status") // Define the database column name
+    private DeliveryStatus deliveryStatus; // New field for delivery status
+
+    @Enumerated(EnumType.STRING) // Store enum as string
+    @Column(name = "payment_status") // Define the database column name
+    private PaymentStatus paymentStatus; // New field for payment status
+
     @Column(name = "total_amount")
     private BigDecimal totalAmount;
 
@@ -51,42 +59,3 @@ public class Order {
     private List<OrderItem> orderItems = new ArrayList<>();
 
 }
-
-//@Entity
-//@Table(name = "orders")
-//@Setter
-//@Getter
-//@NoArgsConstructor
-//public class Order {
-//
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "order_id")
-//    private Long orderId;
-//
-//    // Replace userId with a User entity relationship (optional but recommended)
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private User user;
-//
-//    @Column(name = "order_date", nullable = false)
-//    private LocalDate orderDate;
-//
-//    @Column(name = "status", nullable = false)
-//    private String status;
-//
-//    @Column(name = "total_amount")
-//    private BigDecimal totalAmount;
-//
-//    @Column(name = "deleted_at")
-//    private LocalDateTime deletedAt;
-//
-//    @Column(name = "created_at", nullable = false)
-//    private LocalDateTime createdAt;
-//
-//    @Column(name = "updated_at", nullable = false)
-//    private LocalDateTime updatedAt;
-//
-//    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<OrderItem> orderItems = new ArrayList<>();
-//}

@@ -1,6 +1,5 @@
 package com.example.demo.model;
 
-// Payment.java
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
