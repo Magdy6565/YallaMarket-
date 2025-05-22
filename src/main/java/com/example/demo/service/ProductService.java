@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dto.ProductFilterRequest;
 import com.example.demo.dto.ProductRequest;
 import com.example.demo.dto.ProductWithVendorDTO;
+import com.example.demo.dto.VendorDTO;
 import com.example.demo.model.Product;
 
 import java.util.List;
@@ -31,4 +32,6 @@ public interface ProductService {
     List<String> getDistinctCategories();
 
     List<ProductWithVendorDTO> findProductsByCategoryAndVendors(String category, List<Long> vendorIds);
+
+    List<VendorDTO> getVendorDetailsByCategory(String category);
 }

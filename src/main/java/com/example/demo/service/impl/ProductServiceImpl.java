@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import com.example.demo.dto.ProductFilterRequest;
 import com.example.demo.dto.ProductRequest;
 import com.example.demo.dto.ProductWithVendorDTO;
+import com.example.demo.dto.VendorDTO;
 import com.example.demo.model.Product;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.service.ProductService;
@@ -129,6 +130,11 @@ public class ProductServiceImpl implements ProductService {
                 category, effectiveVendorIds);
 
         return products;
+    }
+
+    @Override
+    public List<VendorDTO> getVendorDetailsByCategory(String category) {
+        return productRepository.findVendorsByCategory(category);
     }
 
 }

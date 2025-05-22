@@ -1,6 +1,7 @@
 package com.example.demo.repository;
 
 import com.example.demo.dto.ProductWithVendorDTO;
+import com.example.demo.dto.VendorDTO;
 import com.example.demo.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -57,4 +58,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("vendorIds") List<Long> vendorIds
 
     );
+
+
+    @Query("SELECT new com.example.demo.dto.VendorDTO(u.id, u.username) " +
+            "FROM Product p JOIN User u ON p.vendorId = u.id " +
+            "WHERE p.category = :category AND p.deletedAt IS NULL AND u.deletedAt IS NULL")
+    List<VendorDTO> findVendorsByCategory(@Param("category") String category);
+
+
 }
