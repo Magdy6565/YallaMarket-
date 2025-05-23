@@ -19,23 +19,11 @@
             <nav class="sidebar-nav">
                 <ul>
                     <li>
-                        <a href="/dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
-                    </li>
-                    
-                    <!-- Admin-specific menu items -->
-                    <li>
-                        <a href="/user-management"><i class="fas fa-users"></i> User Management</a>
+                        <a href="/admin/users"><i class="fas fa-users"></i> User Management</a>
                     </li>
                     <li>
-                        <a href="#"><i class="fas fa-store"></i> Store Management</a>
+                        <a href="/admin/products"><i class="fas fa-boxes"></i> Product Management</a>
                     </li>
-                    <li>
-                        <a href="#"><i class="fas fa-boxes"></i> Product Management</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fas fa-shopping-cart"></i> Order Management</a>
-                    </li>
-                    
                     <!-- Common menu items -->
                     <li class="active">
                         <a href="/payments"><i class="fas fa-credit-card"></i> Payments</a>
@@ -43,12 +31,9 @@
                     <li>
                         <a href="/profile"><i class="fas fa-user"></i> Profile</a>
                     </li>
-                    <li>
-                        <a href="#"><i class="fas fa-cog"></i> Settings</a>
-                    </li>
                 </ul>
             </nav>
-            
+             
             <div class="sidebar-footer">
                 <form th:action="@{/logout}" method="post">
                     <button type="submit" class="logout-btn">

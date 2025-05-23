@@ -77,9 +77,14 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                         Object principal = authentication.getPrincipal();
                         if (principal instanceof com.example.demo.model.User) {
                             com.example.demo.model.User user = (com.example.demo.model.User) principal;
-                            if (user.getRole() == 2) {
+                            if (user.getRole() == 0) {
+                                // Admin redirect
+                                response.sendRedirect(request.getContextPath() + "/admin/users");
+                            } else if (user.getRole() == 2) {
+                                // Retail store redirect
                                 response.sendRedirect(request.getContextPath() + "/supermarket/home");
                             } else {
+                                // Vendor or other roles
                                 response.sendRedirect(request.getContextPath() + "/products");
                             }
                         } else {
