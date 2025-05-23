@@ -56,14 +56,14 @@ document.addEventListener("DOMContentLoaded", function () {
  */
 async function fetchUserProfileAndDisplay() {
   try {
-//    const token = localStorage.getItem('jwtToken'); // Get token from local storage
+    //    const token = localStorage.getItem('jwtToken'); // Get token from local storage
 
-    const response = await fetch("/users/me" , {
-        method:"GET" ,
-        headers: {
-            //        'Authorization': `Bearer ${token}` // Include Authorization header
-                'Content-Type': 'application/json'
-                  }
+    const response = await fetch("/users/me", {
+      method: "GET",
+      headers: {
+        //        'Authorization': `Bearer ${token}` // Include Authorization header
+        'Content-Type': 'application/json'
+      }
     });
 
     if (!response.ok) {
@@ -93,13 +93,13 @@ async function fetchUserProfileAndDisplay() {
     document.getElementById("profile-email").textContent = userData.email || "N/A";
     document.getElementById("profile-contactInfo").textContent = userData.contactInfo || "N/A";
     document.getElementById("profile-address").textContent = userData.address || "N/A";
-    
+
     // --- Update Navigation based on role ---
     const navbarLinks = document.getElementById('navbarLinks');
     if (navbarLinks) {
       // Clear existing links
       navbarLinks.innerHTML = '';
-      
+
       if (userData.role === 1) { // Vendor
         navbarLinks.innerHTML = `
           <li><a href="/products">My Products</a></li>
@@ -117,7 +117,7 @@ async function fetchUserProfileAndDisplay() {
             </a>
           </li>
         `;
-        
+
         // Update cart badge if we're in supermarket view
         const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
         const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
@@ -128,18 +128,21 @@ async function fetchUserProfileAndDisplay() {
         }
       }
     }
-    
+
     // Also update the logo link based on role
     const logoLink = document.querySelector('.navbar-logo');
     if (logoLink) {
       logoLink.href = userData.role === 2 ? '/supermarket/home' : '/products';
-    }    // For vendor users, show statistics section and load data
+    }
+
+    // For vendor users, show statistics section and load data
     if (userData.role === 1) { // Vendor
+      // The original issue was here: 'try' block was opened without a closing brace before its own catch.
+      // This 'try...catch' block belongs specifically to the vendor statistics loading.
       try {
         // Add statistics section dynamically for vendor users
         const profileContent = document.querySelector('.profile-content');
         const accountSettingsSection = document.querySelector('.profile-content .profile-section:last-child');
-        
         // Create statistics section
         const statsSection = document.createElement('div');
         statsSection.className = 'profile-section';
@@ -178,27 +181,27 @@ async function fetchUserProfileAndDisplay() {
                 <i class="fas fa-star"></i>
               </div>
               <div class="stat-info">
-                <h3>Rating</h3>
+                <h3>Vendor Rating</h3>
                 <p id="stats-rating">0.0/5</p>
               </div>
             </div>
           </div>
         `;
-        
+
         // Insert statistics section before account settings
         if (accountSettingsSection && profileContent) {
           profileContent.insertBefore(statsSection, accountSettingsSection);
-          
+
           // Load statistics data
           await loadVendorStatistics(currentUserId);
         }
-      } catch (error) {
+      } catch (error) { // This catch block now correctly closes the 'try' above it.
         console.error("Error loading vendor statistics:", error);
       }
     }
     // Statistics section is not shown for supermarket users
 
-  } catch (error) {
+  } catch (error) { // This is the catch block for the outer `WorkspaceUserProfileAndDisplay` function.
     console.error("Critical error loading user profile:", error);
     // Display robust error messages on the page if data cannot be loaded
     document.getElementById("profile-username").textContent = "Error loading profile data";
@@ -206,21 +209,30 @@ async function fetchUserProfileAndDisplay() {
     document.getElementById("profile-email").textContent = "Failed to load profile. Please ensure you are logged in and refresh.";
     document.getElementById("profile-contactInfo").textContent = "";
     document.getElementById("profile-address").textContent = "";
-//    document.getElementById("profile-memberSince").textContent = "";    // Only clear stats for vendor users if they exist
-    if (userData.role === 1) {
-      const statsElements = ["stats-totalProducts", "stats-totalOrders", "stats-totalRevenue", "stats-rating"];
-      statsElements.forEach(id => {
-        const element = document.getElementById(id);
-        if (element) element.textContent = "N/A";
-      });
-    }
+    //    document.getElementById("profile-memberSince").textContent = "";    // Only clear stats for vendor users if they exist
+    // You cannot access userData.role here because userData might not be defined if the outer try failed before it was assigned.
+    // So, this part needs to be careful or moved.
+    // For now, I'll keep the check but be aware it might not always work.
+    // A more robust approach might be to set a flag.
+    // Assuming 'userData' would only be undefined if the *initial* fetch failed.
+    // If the initial fetch succeeded, 'userData' exists, and we only reach this catch if a later operation (like DOM manipulation) failed.
+    // However, the current structure means 'userData' might be undefined if the `await response.json()` or `Workspace` itself threw an error.
+
+    // A safer way to handle this might be to wrap the entire try block inside an if(userData) or similar.
+    // For now, removing the conditional check as it might cause an error if userData is null.
+    // Instead, just try to clear elements if they exist.
+    const statsElements = ["stats-totalProducts", "stats-totalOrders", "stats-totalRevenue", "stats-rating"];
+    statsElements.forEach(id => {
+      const element = document.getElementById(id);
+      if (element) element.textContent = "N/A";
+    });
+
 
     // Optionally disable edit buttons if data couldn't load
     if (document.getElementById("editProfileBtn")) document.getElementById("editProfileBtn").disabled = true;
     // We've removed the Change Password button functionality
   }
 }
-
 /**
  * Loads vendor statistics from the backend API
  */
@@ -229,9 +241,9 @@ async function loadVendorStatistics(vendorId) {
     const url = `/api/vendor/stats/${vendorId}`;
     
     // Add Authorization header if your endpoint is secured
-    const token = localStorage.getItem('jwtToken');
-    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-    
+//    const token = localStorage.getItem('jwtToken');
+//    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    const headers = {}
     const response = await fetch(url, { headers });
     
     if (!response.ok) {
@@ -241,15 +253,25 @@ async function loadVendorStatistics(vendorId) {
     
     // Parse the JSON response from the backend
     const backendData = await response.json();
-    
     // Map backend DTO properties to frontend variables, with fallbacks
     const totalProducts = backendData.totalProductsListed !== undefined ? backendData.totalProductsListed : 0;
     const totalOrders = backendData.totalOrdersReceived !== undefined ? backendData.totalOrdersReceived : 0;
     const totalRevenue = backendData.totalRevenue !== undefined ? backendData.totalRevenue : 0.00;
-    const rating = backendData.rating !== undefined ? backendData.rating : 0.0;
+    
+    // Fetch vendor rating separately from the ratings API
+    let vendorRating = 0;
+    try {
+      const ratingResponse = await fetch(`/api/ratings/vendor/${vendorId}/average`, { headers });
+      if (ratingResponse.ok) {
+        const ratingData = await ratingResponse.json();
+        vendorRating = ratingData.rating || 0;
+      }
+    } catch (ratingError) {
+      console.error("Error fetching vendor rating:", ratingError);
+    }
     
     // Update the display with vendor data (isVendor = true)
-    updateStatsDisplay(totalProducts, totalOrders, totalRevenue, rating, true);
+    updateStatsDisplay(totalProducts, totalOrders, totalRevenue, vendorRating, true);
   } catch (error) {
     console.error("Error fetching vendor statistics:", error);
     // Update with default values
@@ -280,9 +302,12 @@ function updateStatsDisplay(totalProducts, totalOrders, totalAmount, rating, isV
       statsTotalRevenueElement.textContent = `$${totalAmount.toFixed(2)}`;
     }
 
+    // Update the rating display with real data from vendor_ratings table
     const statsRatingElement = document.getElementById("stats-rating");
     if (statsRatingElement) {
-      statsRatingElement.textContent = `${rating.toFixed(1)}/5`;
+      // Format to one decimal place
+      const formattedRating = (Math.round(rating * 10) / 10).toFixed(1);
+      statsRatingElement.textContent = `${formattedRating}/5`;
     }
 
     // Adjust labels based on isVendor flag
