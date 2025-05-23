@@ -96,6 +96,47 @@ async function fetchUserProfileAndDisplay() {
     document.getElementById("profile-email").textContent = userData.email || "N/A";
     document.getElementById("profile-contactInfo").textContent = userData.contactInfo || "N/A";
     document.getElementById("profile-address").textContent = userData.address || "N/A";
+    
+    // --- Update Navigation based on role ---
+    const navbarLinks = document.getElementById('navbarLinks');
+    if (navbarLinks) {
+      // Clear existing links
+      navbarLinks.innerHTML = '';
+      
+      if (userData.role === 1) { // Vendor
+        navbarLinks.innerHTML = `
+          <li><a href="/products">My Products</a></li>
+          <li><a href="/vendor-orders">Orders</a></li>
+          <li><a href="/stats">Refunds</a></li>
+        `;
+      } else if (userData.role === 2) { // Supermarket
+        navbarLinks.innerHTML = `
+          <li><a href="/supermarket/home">Home</a></li>
+          <li><a href="/supermarket/orders">Orders</a></li>
+          <li>
+            <a href="/supermarket/basket" class="cart-link">
+              <i class="fas fa-shopping-cart"></i>
+              <span class="cart-badge" id="cartBadge">0</span>
+            </a>
+          </li>
+        `;
+        
+        // Update cart badge if we're in supermarket view
+        const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+        const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+        const cartBadge = document.getElementById("cartBadge");
+        if (cartBadge) {
+          cartBadge.textContent = totalItems;
+          cartBadge.style.display = totalItems > 0 ? "flex" : "none";
+        }
+      }
+    }
+    
+    // Also update the logo link based on role
+    const logoLink = document.querySelector('.navbar-logo');
+    if (logoLink) {
+      logoLink.href = userData.role === 2 ? '/supermarket/home' : '/products';
+    }
 
 try {
     // Fetch data from the endpoint. No 'localhost' prefix needed if served from the same domain.
@@ -208,6 +249,7 @@ try {
 }
 
 /**
+ * htp google ftive 8842
  * Helper function to convert numeric role ID to a readable string.
  */
 function getRoleName(roleId) {
@@ -215,7 +257,7 @@ function getRoleName(roleId) {
     case 1:
       return "Vendor";
     case 2:
-      return "Customer";
+      return "Supermarket"; // Changed from "Customer" to "Supermarket"
     default:
       return "User"; // Default if role is unknown
   }
@@ -503,3 +545,139 @@ async function updateNotificationSettings(formData) {
     alert("Failed to update notification settings: " + error.message);
   }
 }
+
+/**
+ * Function to view a specific order with ID 15
+ * Uses the endpoint /api/vendor/orders/15
+ */
+async function viewSpecificOrder() {
+  const orderContainer = document.createElement('div');
+  orderContainer.id = 'specificOrderContainer';
+  orderContainer.className = 'product-card detailed';
+  orderContainer.innerHTML = '<p>Loading specific order data...</p>';
+  
+  // Find where to insert the order container
+  const profileContainer = document.querySelector('.profile-container');
+  if (profileContainer) {
+    profileContainer.appendChild(orderContainer);
+  } else {
+    document.body.appendChild(orderContainer);
+  }
+  
+  try {
+    const response = await fetch('/api/vendor/orders/15', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      // If we get a non-2xx response, handle it here
+      if (response.status === 401 || response.status === 403) {
+        throw new Error('Authentication required or access denied.');
+      }
+      throw new Error(`Failed to fetch order: HTTP status ${response.status}`);
+    }
+
+    const orderData = await response.json();
+    renderSpecificOrder(orderData, orderContainer);
+  } catch (error) {
+    console.error('Error fetching specific order:', error);
+    orderContainer.innerHTML = `
+      <div class="error-message">
+        <i class="fas fa-exclamation-circle"></i>
+        <p>Failed to load order: ${error.message}</p>
+      </div>
+    `;
+  }
+}
+
+/**
+ * Renders a specific order with detailed information
+ * @param {Object} order - An order object
+ * @param {HTMLElement} container - Container to render the order in
+ */
+function renderSpecificOrder(order, container) {
+  if (!order) {
+    container.innerHTML = `
+      <div class="empty">
+        <i class="fas fa-box-open"></i>
+        <p>No order found with ID 15.</p>
+        <button id="closeOrderView" class="btn">Close</button>
+      </div>
+    `;
+    return;
+  }
+
+  // Format data
+  const formattedDate = order.orderDate ? new Date(order.orderDate).toLocaleString() : 'N/A';
+  const statusClass = `status-${order.status ? order.status.toUpperCase() : 'UNKNOWN'}`;
+
+  // Create HTML for order items
+  const orderItemsHtml = order.orderItems && order.orderItems.length > 0
+    ? order.orderItems.map(item => `
+        <li>
+          <strong>${item.productName || 'N/A'}</strong>
+          <p>Category: ${item.productCategory || 'N/A'}</p>
+          <p>Quantity: ${item.quantity || 0}</p>
+          <p>Price: $${item.priceEach ? item.priceEach.toFixed(2) : 'N/A'}</p>
+          <button class="view-product-btn" data-product-id="${item.productId}">View Product</button>
+        </li>
+      `).join('')
+    : '<li>No items in this order.</li>';
+
+  container.innerHTML = `
+    <div class="order-header">
+      <h3>Order #${order.orderId || 'N/A'}</h3>
+      <button id="closeOrderView" class="btn close-btn"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="order-status">
+      Status: <span class="${statusClass}">${order.status || 'N/A'}</span>
+    </div>
+    <div class="order-details">
+      <p><strong>Date:</strong> ${formattedDate}</p>
+      <p><strong>Total:</strong> $${order.totalAmount ? order.totalAmount.toFixed(2) : 'N/A'}</p>
+      <p><strong>Store ID:</strong> ${order.storeId || 'N/A'}</p>
+    </div>
+    <h4>Order Items</h4>
+    <ul class="order-items-list">
+      ${orderItemsHtml}
+    </ul>
+  `;
+
+  // Add event listeners to the view product buttons
+  container.querySelectorAll('.view-product-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const productId = this.getAttribute('data-product-id');
+      // Navigate to product details page
+      window.location.href = `/products/${productId}`;
+    });
+  });
+
+  // Add close button functionality
+  const closeBtn = container.querySelector('#closeOrderView');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function() {
+      container.remove();
+    });
+  }
+}
+
+// Add a button to view the specific order in the profile page
+document.addEventListener('DOMContentLoaded', function() {
+  // ... existing code ...
+  
+  // Add a button to view order #15
+  const viewOrderBtn = document.createElement('button');
+  viewOrderBtn.id = 'viewSpecificOrderBtn';
+  viewOrderBtn.className = 'btn primary-btn';
+  viewOrderBtn.innerHTML = '<i class="fas fa-eye"></i> View Order #15';
+  viewOrderBtn.addEventListener('click', viewSpecificOrder);
+  
+  // Add the button after the profile section
+  const profileSection = document.querySelector('.profile-info');
+  if (profileSection) {
+    profileSection.parentNode.insertBefore(viewOrderBtn, profileSection.nextSibling);
+  }
+});

@@ -63,3 +63,13 @@ CREATE TABLE IF NOT EXISTS notifications (
     is_read BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL
 );
+
+-- Create vendor ratings table
+CREATE TABLE IF NOT EXISTS vendor_ratings (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    vendor_id BIGINT NOT NULL,
+    rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    timestamp TIMESTAMP NOT NULL DEFAULT NOW(),
+    CONSTRAINT unique_user_vendor_rating UNIQUE (user_id, vendor_id)
+);

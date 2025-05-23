@@ -303,11 +303,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 )}</p>
                 <p class="product-quantity">${
                   product.quantity || "Out Of Stock"
-                }</p>
-                <p class="product-vendor">${product.vendorUsername || "N/A"}</p>
-                <p class="product-vendorRating">Vendor Rating :${
-                  product.vendorRating
-                }</p>
+                }</p>                <p class="product-vendor">${product.vendorUsername || "N/A"}</p>
+                <p class="product-vendorRating">
+                  ${displayRatingStars(product.vendorRating || 0)}
+                  <span>${product.vendorRating ? parseFloat(product.vendorRating).toFixed(1) + '/5' : 'Not rated yet'}</span>
+                </p>
                 <div class="product-actions">
                     ${
                       !isOutOfStock
@@ -317,7 +317,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         : `<button class="out-of-stock-btn" disabled>Out of Stock</button>`
                     }
                     <button class="view-product-btn" data-product-id="${
-                      product.id
+                      product.productId
                     }">View</button>
                 </div>
             `;
@@ -421,73 +421,14 @@ document.addEventListener("DOMContentLoaded", function () {
     // Hide badge if cart is empty
     cartBadge.style.display = totalItems > 0 ? "flex" : "none";
   }
-
   /**
-   * View product details in a modal
+   * View product details - redirects to product details page
    */
-  async function viewProductDetails(productId) {
-    try {
-      const response = await fetch(`/api/my-products/${productId}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch product details");
-      }
-      const product = await response.json();
-      renderProductModal(product);
-    } catch (error) {
-      console.error("Error fetching product details:", error);
-      alert("Failed to load product details. Please try again.");
-    }
+  function viewProductDetails(productId) {
+    // Navigate to the product details page
+    window.location.href = `/supermarket/product/${productId}`;
   }
-
-  /**
-   * Render product details in the modal
-   */
-  function renderProductModal(product) {
-    // Determine if product is in stock
-    const isOutOfStock = !product.quantity || product.quantity <= 0;
-
-    modalBody.innerHTML = `
-            <div class="product-detail-content">
-                <img src="${
-                  product.imageUrl || "https://via.placeholder.com/200"
-                }" alt="${product.name}" class="product-detail-image">
-                <div class="product-detail-info">
-                    <h3 class="product-detail-name">${product.name}</h3>
-                    <p class="product-detail-category">Category: ${
-                      product.category || "N/A"
-                    }</p>
-                    <p class="product-detail-vendor">Vendor: ${
-                      product.vendorName || "N/A"
-                    }</p>
-                    <p class="product-detail-description">${
-                      product.description || "No description available."
-                    }</p>
-                    <p class="product-detail-price">$${parseFloat(
-                      product.price
-                    ).toFixed(2)}</p>
-                    <p class="product-detail-quantity">Available: ${
-                      product.quantity || "Out of Stock"
-                    }</p>
-                    ${
-                      !isOutOfStock
-                        ? `<button class="add-to-cart-modal-btn" data-product='${JSON.stringify(
-                            product
-                          )}'>Add to Cart</button>`
-                        : `<button class="out-of-stock-modal-btn" disabled>Out of Stock</button>`
-                    }
-                </div>
-            </div>
-        `;
-    productModal.style.display = "block"; // Add event listener for the "Add to Cart" button in the modal
-    const addToCartButton = document.querySelector(".add-to-cart-modal-btn");
-    if (addToCartButton) {
-      addToCartButton.addEventListener("click", function () {
-        const productToAdd = JSON.parse(this.getAttribute("data-product"));
-        addToCart(productToAdd);
-        productModal.style.display = "none"; // Close modal after adding to cart
-      });
-    }
-  }
+  // Product details rendering has been moved to the supermarket-product-details.html page
 
   // --- Event Listeners ---    // Filter products by vendors
   if (filterButton) {
@@ -527,19 +468,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
-
-  // Close modal event listeners
-  if (closeModal) {
-    closeModal.addEventListener("click", function () {
-      productModal.style.display = "none";
-    });
-  }
-
-  window.addEventListener("click", function (event) {
-    if (event.target === productModal) {
-      productModal.style.display = "none";
-    }
-  });
+  // Modal code removed as we now navigate to product details page instead
 
   // Initial fetches
   fetchCategories();
@@ -948,3 +877,35 @@ homeStyle.textContent = `
     }
 `;
 document.head.appendChild(homeStyle);
+
+/**
+   * Display star rating based on the given rating value
+   * @param {number} rating The rating value (0-5)
+   * @returns {string} HTML string with star icons
+   */
+  function displayRatingStars(rating) {
+    if (!rating || isNaN(rating)) rating = 0;
+    
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+    const emptyStars = 5 - fullStars - halfStar;
+    
+    let starsHtml = '';
+    
+    // Add full stars
+    for (let i = 0; i < fullStars; i++) {
+      starsHtml += '<i class="fas fa-star"></i>';
+    }
+    
+    // Add half star if needed
+    if (halfStar) {
+      starsHtml += '<i class="fas fa-star-half-alt"></i>';
+    }
+    
+    // Add empty stars
+    for (let i = 0; i < emptyStars; i++) {
+      starsHtml += '<i class="far fa-star"></i>';
+    }
+    
+    return starsHtml;
+  }

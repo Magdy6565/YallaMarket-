@@ -65,22 +65,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     try {
       // Construct the URL with optional status filter
-      let url = "/api/store/orders";
+      let url = "/api/vendor/orders"; // Use vendor orders API
       if (status && status !== "") {
-        url += `/filter?status=${status}`;
+        url += `/filter?status=${status}`; // Filter vendor orders
       }
-
+      console.log(url);
       const response = await fetch(url, {
         credentials: 'include',
         headers: {
           'Accept': 'application/json'
         }
       });
-
       if (!response.ok) {
         throw new Error("Failed to fetch orders");
       }
-
       const orders = await response.json();
       console.log(orders);
       renderOrders(orders);
@@ -189,7 +187,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Open modal
       orderDetailModal.style.display = "block";      // Fetch order details with credentials: 'include' to ensure cookies are sent
-      const response = await fetch(`/api/store/orders/${orderId}`, {
+      const response = await fetch(`/api/vendor/orders/${orderId}`, { // Use vendor orders endpoint
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
@@ -481,7 +479,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Open modal
       orderDetailModal.style.display = 'block';
         // Fetch order details with credentials: 'include' to ensure cookies are sent
-      const response = await fetch(`/api/store/orders/${orderId}`, {
+      const response = await fetch(`/api/vendor/orders/${orderId}`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'

@@ -143,4 +143,116 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  /**
+   * Function to view a specific order with ID 15
+   * Uses the endpoint /api/vendor/orders/15
+   */
+  async function viewSpecificOrder() {
+    ordersList.innerHTML = '<p>Loading specific order...</p>'; // Show loading message
+    
+    try {
+      // Add Authorization header if your order endpoints are secured
+      const token = localStorage.getItem('jwtToken'); // Assuming you store JWT in localStorage
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
+      const response = await fetch('/api/vendor/orders/15', { headers });
+
+      if (!response.ok) {
+        const errorText = await response.text(); // Get raw text for non-OK responses
+        throw new Error(errorText || `HTTP error! status: ${response.status}`);
+      }
+
+      const order = await response.json();
+      // We're displaying a single order, so wrap it in an array for renderOrders
+      renderSpecificOrder(order);
+    } catch (error) {
+      console.error("Error loading specific order:", error);
+      ordersList.innerHTML = `<div class="error-message">Failed to load specific order: ${error.message || error}.</div>`;
+    }
+  }
+
+  /**
+   * Renders a specific order with more detailed information
+   * @param {Object} order - An order object.
+   */
+  function renderSpecificOrder(order) {
+    ordersList.innerHTML = ''; // Clear previous orders
+
+    if (!order) {
+      // If no order, inject the empty state HTML directly into ordersList
+      ordersList.innerHTML = `
+        <div class="empty">
+            <i class="fas fa-box-open"></i>
+            <p>No order found with ID 15.</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Determine status class for styling
+    const statusClass = `status-${order.status ? order.status.toUpperCase() : 'UNKNOWN'}`;
+
+    // Create a detailed order view
+    const orderCard = document.createElement('div');
+    orderCard.className = 'product-card detailed';
+    orderCard.innerHTML = `
+      <div class="product-info">
+        <h3>Order #${order.orderId || 'N/A'}</h3>
+        <p><strong>Status:</strong> <span class="order-status-display ${statusClass}">${order.status || 'N/A'}</span></p>
+        <p><strong>Total:</strong> $${order.totalAmount !== null ? order.totalAmount.toFixed(2) : "N/A"}</p>
+        <p><strong>Date:</strong> ${order.orderDate ? new Date(order.orderDate).toLocaleString() : "N/A"}</p>
+        <p><strong>Store ID:</strong> ${order.storeId || 'N/A'}</p>
+        
+        <h4>Order Items:</h4>
+        <ul class="order-items-list">
+          ${
+            order.orderItems && order.orderItems.length > 0
+              ? order.orderItems
+                  .map(
+                    (item) => `
+                  <li>
+                    <strong>${item.productName || "N/A"}</strong>
+                    <p>Category: ${item.productCategory || "N/A"}</p>
+                    <p>Quantity: ${item.quantity || 0}</p>
+                    <p>Price: $${item.priceEach ? item.priceEach.toFixed(2) : 'N/A'}</p>
+                    <p>Subtotal: $${item.quantity && item.priceEach ? (item.quantity * item.priceEach).toFixed(2) : 'N/A'}</p>
+                    <button class="view-product-btn" data-product-id="${item.productId}">View Product</button>
+                  </li>
+                `
+                  )
+                  .join("")
+              : "<li>No items in this order.</li>"
+          }
+        </ul>
+        
+        <a href="/vendor-orders" class="btn back-btn">Back to All Orders</a>
+      </div>
+    `;
+
+    ordersList.appendChild(orderCard);
+
+    // Add event listeners to the view product buttons
+    ordersList.querySelectorAll('.view-product-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const productId = this.getAttribute('data-product-id');
+        // Navigate to product details page
+        window.location.href = `/products/${productId}`;
+      });
+    });
+  }
+
+  // Add a button to view the specific order with ID 15
+  const viewSpecificOrderBtn = document.createElement('button');
+  viewSpecificOrderBtn.className = 'btn view-specific-btn';
+  viewSpecificOrderBtn.innerText = 'View Order #15';
+  viewSpecificOrderBtn.addEventListener('click', viewSpecificOrder);
+  
+  // Insert the button after the filter button
+  if (filterOrdersButton && filterOrdersButton.parentNode) {
+    filterOrdersButton.parentNode.insertBefore(viewSpecificOrderBtn, filterOrdersButton.nextSibling);
+  } else {
+    // If filter button doesn't exist, add to the beginning of the page
+    const firstElement = ordersList.parentNode.firstChild;
+    ordersList.parentNode.insertBefore(viewSpecificOrderBtn, firstElement);
+  }
 }); // End DOMContentLoaded
