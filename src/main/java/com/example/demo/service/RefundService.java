@@ -23,9 +23,7 @@ public class RefundService {
 
     private final RefundRepository refundRepository;
     private final PaymentRepository paymentRepository;
-    private final OrderItemRepository orderItemRepository;
-
-    public RefundResponseDto createRefund(RefundRequestDto dto) {
+    private final OrderItemRepository orderItemRepository;    public RefundResponseDto createRefund(RefundRequestDto dto) {
         Payment payment = paymentRepository.findById(dto.getPaymentId())
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
 
@@ -39,6 +37,10 @@ public class RefundService {
         refund.setReason(dto.getReason());
         refund.setRefundDate(LocalDateTime.now());
         refund.setStatus(RefundStatus.requested);
+        
+        // Mark the order item as deleted (soft delete)
+        orderItem.setDeletedAt(LocalDateTime.now());
+        orderItemRepository.save(orderItem);
 
         refund = refundRepository.save(refund);
 

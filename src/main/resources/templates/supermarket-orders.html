@@ -1,103 +1,108 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>YallaMarket - Supermarket Orders</title>
-    <link rel="stylesheet" th:href="@{/css/products.css}">
-    <link rel="stylesheet" th:href="@{/css/supermarket.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
+    <link rel="stylesheet" th:href="@{/css/products.css}" />
+    <link rel="stylesheet" th:href="@{/css/supermarket.css}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
-        <div class="navbar-container">
-            <a href="/supermarket/home" class="navbar-logo">YallaMarket</a>
-            
-            <!-- Mobile menu toggle button -->
-            <button class="menu-toggle" id="menuToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            
-            <!-- Navigation Links -->
-            <ul class="navbar-links" id="navbarLinks">
-                <li><a href="/supermarket/home">Home</a></li>
-                <li><a href="/supermarket/orders" class="active">Orders</a></li>
-                <li>
-                    <a href="/supermarket/basket" class="cart-link">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="cart-badge" id="cartBadge">0</span>
-                    </a>
-                </li>
-            </ul>
-            
-            <!-- User Menu -->
-            <div class="user-menu" id="userMenu">
-                <button class="user-menu-button">
-                    <span>My Account</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-                <div class="user-menu-dropdown">
-                    <a href="/profile"><i class="fas fa-user"></i> Profile</a>
-                    <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                </div>
-            </div>
+      <div class="navbar-container">
+        <a href="/supermarket/home" class="navbar-logo">YallaMarket</a>
+
+        <!-- Mobile menu toggle button -->
+        <button class="menu-toggle" id="menuToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Navigation Links -->
+        <ul class="navbar-links" id="navbarLinks">
+          <li><a href="/supermarket/home">Home</a></li>
+          <li><a href="/supermarket/orders" class="active">Orders</a></li>
+          <li>
+            <a href="/supermarket/basket" class="cart-link">
+              <i class="fas fa-shopping-cart"></i>
+              <span class="cart-badge" id="cartBadge">0</span>
+            </a>
+          </li>
+        </ul>
+
+        <!-- User Menu -->
+        <div class="user-menu" id="userMenu">
+          <button class="user-menu-button">
+            <span>My Account</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="user-menu-dropdown">
+            <a href="/profile"><i class="fas fa-user"></i> Profile</a>
+            <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </div>
         </div>
+      </div>
     </nav>
-    
+
     <!-- Main Content -->
     <div class="container">
-        <div class="page-title">
-            <h1>My Orders</h1>
-        </div>
-        
-        <div class="filter-section">
-            <div class="filter-controls">
-                <div class="filter-group">
-                    <label for="orderStatusFilter">Filter by Status:</label>
-                    <select id="orderStatusFilter" class="form-control">
-                        <option value="">All Statuses</option>
-                        <option value="PENDING">Pending</option>
-                        <option value="APPROVED">Approved</option>
-                        <option value="SHIPPED">Shipped</option>
-                        <option value="DELIVERED">Delivered</option>
-                        <option value="CANCELLED">Cancelled</option>
-                    </select>
-                </div>
-                <button id="filterOrdersButton" class="btn btn-primary">Filter</button>
-            </div>
-        </div>
+      <div class="page-title">
+        <h1>My Orders</h1>
+      </div>
 
-        <!-- Orders List -->
-        <div class="orders-container" id="ordersContainer">
-            <!-- Orders will be loaded here -->
-            <div class="loading-spinner">
-                <i class="fas fa-spinner fa-spin"></i> Loading orders...
-            </div>
+      <div class="filter-section">
+        <div class="filter-controls">
+          <div class="filter-group">
+            <label for="orderStatusFilter">Filter by Status:</label>
+            <select id="orderStatusFilter" class="form-control">
+              <option value="">All Statuses</option>
+              <option value="PENDING">Pending</option>
+              <option value="APPROVED">Approved</option>
+              <option value="SHIPPED">Shipped</option>
+              <option value="DELIVERED">Delivered</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+          </div>
+          <button id="filterOrdersButton" class="btn btn-primary">
+            Filter
+          </button>
         </div>
-        
-        <!-- Empty State (shown when no orders) -->
-        <div class="empty-state" id="emptyState" style="display: none;">
-            <i class="fas fa-shopping-bag"></i>
-            <h2>No Orders Found</h2>
-            <p>You haven't placed any orders yet.</p>
-            <a href="/supermarket/home" class="btn">
-                <i class="fas fa-shopping-cart"></i> Start Shopping
-            </a>
+      </div>
+
+      <!-- Orders List -->
+      <div class="orders-container" id="ordersContainer">
+        <!-- Orders will be loaded here -->
+        <div class="loading-spinner">
+          <i class="fas fa-spinner fa-spin"></i> Loading orders...
         </div>
+      </div>
+
+      <!-- Empty State (shown when no orders) -->
+      <div class="empty-state" id="emptyState" style="display: none">
+        <i class="fas fa-shopping-bag"></i>
+        <h2>No Orders Found</h2>
+        <p>You haven't placed any orders yet.</p>
+        <a href="/supermarket/home" class="btn">
+          <i class="fas fa-shopping-cart"></i> Start Shopping
+        </a>
+      </div>
     </div>
 
     <!-- Order Detail Modal -->
     <div id="orderDetailModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <div class="modal-body" id="orderModalBody">
-                <!-- Order details will be loaded here -->
-            </div>
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="modal-body" id="orderModalBody">
+          <!-- Order details will be loaded here -->
         </div>
+      </div>
     </div>
-    
+
     <!-- JavaScript -->
     <script th:src="@{/js/supermarket-orders.js}"></script>
-</body>
+  </body>
 </html>

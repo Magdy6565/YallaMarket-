@@ -165,4 +165,20 @@ public class OrderService {
 
         return savedOrder;
     }
+
+    public List<VendorOrderDetailsDto> getOrdersByStatusForUser(OrderStatus status, Long userId) {
+        // Convert the status enum to its name (string representation)
+        String statusName = status.name();
+        
+        // Find orders by user ID and status
+        List<Order> orders = orderRepository.findByUserIdAndStatus(userId, statusName);
+        
+        // Convert orders to DTOs with invoices
+        return orders.stream()
+                .map(order -> {
+                    Invoice invoice = invoiceRepository.findByOrder(order);
+                    return new VendorOrderDetailsDto(order, invoice);
+                })
+                .collect(Collectors.toList());
+    }
 }

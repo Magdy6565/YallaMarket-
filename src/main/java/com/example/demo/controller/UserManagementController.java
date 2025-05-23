@@ -5,7 +5,7 @@ import com.example.demo.dto.UserCreateDTO;
 import com.example.demo.dto.UserListDTO;
 import com.example.demo.dto.UserUpdateRequestDTO;
 import com.example.demo.model.User;
-import com.example.demo.model.UserRole;
+import com.example.demo.enums.UserRole;
 import com.example.demo.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;

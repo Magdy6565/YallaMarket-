@@ -58,9 +58,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("vendorIds") List<Long> vendorIds
 
     );
-
-
-    @Query("SELECT new com.example.demo.dto.VendorDTO(u.id, u.username) " +
+    @Query("SELECT DISTINCT new com.example.demo.dto.VendorDTO(u.id, u.username) " +
             "FROM Product p JOIN User u ON p.vendorId = u.id " +
             "WHERE p.category = :category AND p.deletedAt IS NULL AND u.deletedAt IS NULL")
     List<VendorDTO> findVendorsByCategory(@Param("category") String category);

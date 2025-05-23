@@ -51,4 +51,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     // Count orders by retail store ID (now userId) and delivery status
     long countByUserIdAndDeliveryStatus(Integer userId, DeliveryStatus deliveryStatus);
+
+    // Find orders by user ID and status
+    List<Order> findByUserIdAndStatus(Long userId, String status);
 }
