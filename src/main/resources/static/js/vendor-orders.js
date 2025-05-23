@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
           return `
             <div class="product-card">
                 <div class="product-info">
-                    <h3>Order #${order.id || 'N/A'}</h3>
+                    <h3>Order #${order.orderId || 'N/A'}</h3>
                     <p><strong>Status:</strong> <span class="order-status-display ${statusClass}">${order.status || 'N/A'}</span></p>
                     <p><strong>Total:</strong> $${
                       order.totalAmount !== null ? order.totalAmount.toFixed(2) : "N/A"
@@ -242,17 +242,17 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Add a button to view the specific order with ID 15
-  const viewSpecificOrderBtn = document.createElement('button');
-  viewSpecificOrderBtn.className = 'btn view-specific-btn';
-  viewSpecificOrderBtn.innerText = 'View Order #15';
-  viewSpecificOrderBtn.addEventListener('click', viewSpecificOrder);
-  
+//  const viewSpecificOrderBtn = document.createElement('button');
+//  viewSpecificOrderBtn.className = 'btn view-specific-btn';
+//  viewSpecificOrderBtn.innerText = 'View Order #15';
+//  viewSpecificOrderBtn.addEventListener('click', viewSpecificOrder);
+//
   // Insert the button after the filter button
-  if (filterOrdersButton && filterOrdersButton.parentNode) {
-    filterOrdersButton.parentNode.insertBefore(viewSpecificOrderBtn, filterOrdersButton.nextSibling);
-  } else {
-    // If filter button doesn't exist, add to the beginning of the page
-    const firstElement = ordersList.parentNode.firstChild;
-    ordersList.parentNode.insertBefore(viewSpecificOrderBtn, firstElement);
-  }
+//  if (filterOrdersButton && filterOrdersButton.parentNode) {
+//    filterOrdersButton.parentNode.insertBefore(viewSpecificOrderBtn, filterOrdersButton.nextSibling);
+//  } else {
+//    // If filter button doesn't exist, add to the beginning of the page
+//    const firstElement = ordersList.parentNode.firstChild;
+//    ordersList.parentNode.insertBefore(viewSpecificOrderBtn, firstElement);
+//  }
 }); // End DOMContentLoaded

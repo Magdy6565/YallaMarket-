@@ -34,11 +34,10 @@ public class OrderController {
         Long vendorUserId = AuthUtil.getAuthenticatedUserId(); // Get the authenticated user's ID
         List<VendorOrderDetailsDto> orders = orderService.getVendorOrders(vendorUserId);
         return ResponseEntity.ok(orders);
-    }
-    //-------------------------------------------------------------
+    }    //-------------------------------------------------------------
     // PUT /api/vendor/orders/{orderId}/status
     @PutMapping("/{orderId}/status")
-    public ResponseEntity<Order> updateOrderStatus(
+    public ResponseEntity<VendorOrderDetailsDto> updateOrderStatus(
             @PathVariable Long orderId,
             @Valid @RequestBody OrderStatusUpdateRequest statusUpdateRequest) {
 
@@ -47,7 +46,7 @@ public class OrderController {
 
         Optional<Order> updatedOrder = orderService.updateOrderStatus(orderId, vendorUserId, statusUpdateRequest.getStatus());
 
-        return updatedOrder.map(ResponseEntity::ok)
+        return updatedOrder.map(order -> ResponseEntity.ok(new VendorOrderDetailsDto(order)))
                 .orElseGet(() -> ResponseEntity.notFound().build()); // 404 if not found or not owned
     }
     //-------------------------------------------------------------
