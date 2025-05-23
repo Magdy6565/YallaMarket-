@@ -151,9 +151,21 @@ document.addEventListener('DOMContentLoaded', function() {
         
         refunds.forEach(refund => {
             const tr = document.createElement('tr');
-            
             const statusClass = getStatusClass(refund.status);
-            
+            // Build action buttons: view always, approve/reject for requested
+            let actionsHtml = `
+                <button class="action-btn view" title="View Details" onClick="viewRefundDetails(${refund.refundId})">
+                    <i class="fas fa-eye"></i>
+                </button>`;
+            if (String(refund.status).toUpperCase() === 'REQUESTED') {
+                actionsHtml += `
+                <button class="action-btn approve" title="Approve" onClick="updateRefundStatusRow(${refund.refundId}, 'APPROVED')">
+                    <i class="fas fa-check"></i>
+                </button>
+                <button class="action-btn reject" title="Reject" onClick="updateRefundStatusRow(${refund.refundId}, 'REJECTED')">
+                    <i class="fas fa-times"></i>
+                </button>`;
+            }
             tr.innerHTML = `
                 <td>${refund.refundId}</td>
                 <td>${refund.orderId}</td>
@@ -162,13 +174,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${escapeHtml(truncateText(refund.reason, 30))}</td>
                 <td><span class="status-badge ${statusClass}">${refund.status}</span></td>
                 <td>${formatDate(refund.refundDate)}</td>
-                <td class="actions">
-                    <button class="action-btn view" title="View Details" onClick="viewRefundDetails(${refund.refundId})">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </td>
+                <td class="actions">${actionsHtml}</td>
             `;
-            
             refundsTableBody.appendChild(tr);
         });
     }
@@ -290,6 +297,14 @@ document.addEventListener('DOMContentLoaded', function() {
             showToast(`Error ${status.toLowerCase()}ing refund. Please try again.`, false);
         });
     }
+    
+    /**
+     * Helper to update refund status directly from row buttons
+     */
+    window.updateRefundStatusRow = function(refundId, status) {
+        currentRefundId = refundId;
+        updateRefundStatus(status);
+    };
     
     /**
      * Get CSS class for refund status

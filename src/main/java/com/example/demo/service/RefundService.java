@@ -10,6 +10,8 @@ import com.example.demo.repository.OrderItemRepository;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.RefundRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,7 @@ public class RefundService {
     private final PaymentRepository paymentRepository;
     private final OrderItemRepository orderItemRepository;
     private final com.example.demo.repository.UserRepository userRepository;
+    private final JavaMailSender mailSender;
     
     public RefundResponseDto createRefund(RefundRequestDto dto) {
         Payment payment = paymentRepository.findById(dto.getPaymentId())
@@ -43,10 +46,6 @@ public class RefundService {
         refund.setRefundDate(LocalDateTime.now());
         refund.setStatus(RefundStatus.requested);
         
-        // Mark the order item as deleted (soft delete)
-        orderItem.setDeletedAt(LocalDateTime.now());
-        orderItemRepository.save(orderItem);
-
         refund = refundRepository.save(refund);
 
         return new RefundResponseDto(refund);
@@ -77,6 +76,23 @@ public class RefundService {
             .map(refund -> {
                 refund.setStatus(newStatus);
                 Refund updated = refundRepository.save(refund);
+                // Notify retail store via email
+                Long storeId = updated.getOrderItem().getOrder().getUserId();
+                userRepository.findById(storeId).ifPresent(storeUser -> {
+                    String to = storeUser.getEmail();
+                    String subject = "Your refund request #" + updated.getRefundId() + " has been " + newStatus.name().toLowerCase();
+                    String text = "Hello " + storeUser.getUsername() + ",\n\n" +
+                        "Your refund request for order #" + updated.getOrderItem().getOrder().getOrderId() +
+                        " has been " + newStatus.name().toLowerCase() + ".\n" +
+                        "Amount: $" + updated.getAmount() + "\n" +
+                        "Reason: " + updated.getReason() + "\n\n" +
+                        "Thank you,\nYallaMarket Team";
+                    SimpleMailMessage message = new SimpleMailMessage();
+                    message.setTo(to);
+                    message.setSubject(subject);
+                    message.setText(text);
+                    mailSender.send(message);
+                });
                 return new RefundResponseDto(updated);
             });
     }
