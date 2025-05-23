@@ -47,7 +47,8 @@ public class RefundController {
             @PathVariable Long refundId, 
             @RequestBody RefundStatusUpdateDto statusUpdate) {
         try {
-            RefundStatus newStatus = RefundStatus.valueOf(statusUpdate.getStatus().toUpperCase());
+            // Parse status in lowercase (matches enum constants)
+            RefundStatus newStatus = RefundStatus.valueOf(statusUpdate.getStatus().toLowerCase());
             Optional<RefundResponseDto> refund = refundService.updateRefundStatus(refundId, newStatus);
             return refund.map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.notFound().build());
