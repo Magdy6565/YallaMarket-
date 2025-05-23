@@ -440,14 +440,13 @@
                   changeStatusBtn.onclick = function () {
                       const newStatusText = statusSelect.options[statusSelect.selectedIndex].text;
                       const newStatusClass = newStatusText.toLowerCase().replace(/\s/g, '-'); // Get class for new status
-
+                      console.log(newStatusText);
                       document.getElementById("statusSuccess").textContent = "";
                       document.getElementById("statusError").textContent = "";
-
                       fetch(`/api/vendor/orders/${orderId}/status`, {
                           method: "PUT",
                           headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ status: newStatusText.toLowerCase() }) // Send the status text as lowercase
+                          body: JSON.stringify({ status: newStatusText.toLowerCase() })
                       })
                       .then((res) => {
                           if (res.ok) {
@@ -461,6 +460,7 @@
                                   let errorMessage = "Failed to update status.";
                                   try {
                                       const errorData = JSON.parse(text);
+                                      console.log(errorData)
                                       errorMessage = errorData.message || errorData.error || text;
                                   } catch (e) {
                                       errorMessage = text;
