@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /**
    * Fetch orders from the API with optional status filter
-   */  async function fetchOrders(status = "") {
+   */ async function fetchOrders(status = "") {
     // Show loading spinner
     ordersContainer.innerHTML =
       '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading orders...</div>';
@@ -71,10 +71,10 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       console.log(url);
       const response = await fetch(url, {
-        credentials: 'include',
+        credentials: "include",
         headers: {
-          'Accept': 'application/json'
-        }
+          Accept: "application/json",
+        },
       });
       if (!response.ok) {
         throw new Error("Failed to fetch orders");
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /**
    * Render orders in the container
-   */  function renderOrders(orders) {
+   */ function renderOrders(orders) {
     if (!orders || orders.length === 0) {
       ordersContainer.innerHTML = "";
       emptyState.style.display = "flex";
@@ -146,10 +146,14 @@ document.addEventListener("DOMContentLoaded", function () {
                     } items</div>
                 </div>                
                 <div class="order-actions">
-                    <button class="details-btn" data-order-id="${order.orderId}">
+                    <button class="details-btn" data-order-id="${
+                      order.orderId
+                    }">
                         <i class="fas fa-info-circle"></i> View Details
                     </button>
-                    <button class="invoice-btn" data-order-id="${order.orderId}">
+                    <button class="invoice-btn" data-order-id="${
+                      order.orderId
+                    }">
                         <i class="fas fa-file-invoice"></i> Show Invoice
                     </button>
                 </div>
@@ -167,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
         openOrderDetailModal(orderId);
       });
     });
-    
+
     // Add event listeners to invoice buttons
     document.querySelectorAll(".invoice-btn").forEach((button) => {
       button.addEventListener("click", function () {
@@ -186,21 +190,22 @@ document.addEventListener("DOMContentLoaded", function () {
         '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading order details...</div>';
 
       // Open modal
-      orderDetailModal.style.display = "block";      // Fetch order details with credentials: 'include' to ensure cookies are sent
-      const response = await fetch(`/api/store/orders/${orderId}`, { // Use vendor orders endpoint
+      orderDetailModal.style.display = "block"; // Fetch order details with credentials: 'include' to ensure cookies are sent
+      const response = await fetch(`/api/store/orders/${orderId}`, {
+        // Use vendor orders endpoint
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-        credentials: 'include'
+        credentials: "include",
       });
-      
+
       if (!response.ok) {
         throw new Error(`Failed to fetch order details: ${response.status}`);
       }
 
       const order = await response.json();
-      console.log('Order details:', order);
+      console.log("Order details:", order);
 
       // Format date
       const orderDate = new Date(
@@ -218,7 +223,7 @@ document.addEventListener("DOMContentLoaded", function () {
         DENIED: "cancelled",
       };
 
-      const statusClass = statusMap[order.status] || "pending";      // Create content for modal
+      const statusClass = statusMap[order.status] || "pending"; // Create content for modal
       let itemsHtml = "";
       if (order.orderItems && order.orderItems.length > 0) {
         itemsHtml = order.orderItems
@@ -227,7 +232,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     <div class="order-item">
                         <div class="item-details">
                             <h4>${item.productName}</h4>
-                            <div class="item-category">${item.productCategory || 'General'}</div>
+                            <div class="item-category">${
+                              item.productCategory || "General"
+                            }</div>
                             <div class="item-price-qty">
                                 <span class="item-price">$${parseFloat(
                                   item.priceEach
@@ -236,13 +243,19 @@ document.addEventListener("DOMContentLoaded", function () {
                             </div>
                         </div>
                         <div class="item-total">
-                            $${parseFloat(item.priceEach * item.quantity).toFixed(2)}
+                            $${parseFloat(
+                              item.priceEach * item.quantity
+                            ).toFixed(2)}
                         </div>
                         <div class="item-actions">
-                            <button class="refund-btn" data-order-item-id="${item.orderItemId}" data-product-name="${item.productName}">
+                            <button class="refund-btn" data-order-item-id="${
+                              item.orderItemId
+                            }" data-product-name="${item.productName}">
                                 <i class="fas fa-undo"></i> Refund
                             </button>
-                            <button class="view-product-btn" data-product-id="${item.productId}">
+                            <button class="view-product-btn" data-product-id="${
+                              item.productId
+                            }">
                                 <i class="fas fa-eye"></i> View Product
                             </button>
                         </div>
@@ -255,19 +268,29 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       // Prepare invoice section HTML if invoice exists
-      let invoiceHtml = '';
+      let invoiceHtml = "";
       if (order.invoice) {
-        const issueDate = new Date(order.invoice.issueDate).toLocaleDateString();
+        const issueDate = new Date(
+          order.invoice.issueDate
+        ).toLocaleDateString();
         const dueDate = new Date(order.invoice.dueDate).toLocaleDateString();
-        
+
         invoiceHtml = `
           <div class="order-invoice-section">
             <h3>Invoice Details</h3>
-            <div class="invoice-group"><strong>Invoice ID:</strong> ${order.invoice.invoiceId}</div>
+            <div class="invoice-group"><strong>Invoice ID:</strong> ${
+              order.invoice.invoiceId
+            }</div>
             <div class="invoice-group"><strong>Issue Date:</strong> ${issueDate}</div>
             <div class="invoice-group"><strong>Due Date:</strong> ${dueDate}</div>
-            <div class="invoice-group"><strong>Status:</strong> ${order.invoice.status}</div>
-            ${order.invoice.pdfLink ? `<a href="${order.invoice.pdfLink}" target="_blank" class="btn">Download PDF</a>` : ''}
+            <div class="invoice-group"><strong>Status:</strong> ${
+              order.invoice.status
+            }</div>
+            ${
+              order.invoice.pdfLink
+                ? `<a href="${order.invoice.pdfLink}" target="_blank" class="btn">Download PDF</a>`
+                : ""
+            }
           </div>
         `;
       }
@@ -277,7 +300,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div class="order-detail">
                     <div class="order-detail-header">
                         <h2>Order #${order.orderId}</h2>
-                        <div class="order-status ${statusClass}">${order.status}</div>
+                        <div class="order-status ${statusClass}">${
+        order.status
+      }</div>
                     </div>
                     
                     <div class="order-detail-info">
@@ -327,27 +352,28 @@ document.addEventListener("DOMContentLoaded", function () {
                         : ""
                     }
                 </div>
-            `;      // Add event listener for cancel button if exists
+            `; // Add event listener for cancel button if exists
       const cancelBtn = orderModalBody.querySelector(".cancel-order-btn");
       if (cancelBtn) {
         cancelBtn.addEventListener("click", function () {
           cancelOrder(order.orderId);
         });
       }
-      
+
       // Add event listeners for refund buttons
       const refundBtns = orderModalBody.querySelectorAll(".refund-btn");
-      refundBtns.forEach(btn => {
+      refundBtns.forEach((btn) => {
         btn.addEventListener("click", function () {
           const orderItemId = this.getAttribute("data-order-item-id");
           const productName = this.getAttribute("data-product-name");
           processRefund(orderItemId, productName);
         });
       });
-      
+
       // Add event listeners for view product buttons
-      const viewProductBtns = orderModalBody.querySelectorAll(".view-product-btn");
-      viewProductBtns.forEach(btn => {
+      const viewProductBtns =
+        orderModalBody.querySelectorAll(".view-product-btn");
+      viewProductBtns.forEach((btn) => {
         btn.addEventListener("click", function () {
           const productId = this.getAttribute("data-product-id");
           viewProductDetails(productId);
@@ -362,7 +388,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             `;
     }
-  }  /**
+  }
+  /**
    * Cancel an order
    */
   async function cancelOrder(orderId) {
@@ -376,12 +403,14 @@ document.addEventListener("DOMContentLoaded", function () {
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: 'include' // Include cookies for authentication if needed
+        credentials: "include", // Include cookies for authentication if needed
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Failed to cancel order: ${response.status} - ${errorText}`);
+        throw new Error(
+          `Failed to cancel order: ${response.status} - ${errorText}`
+        );
       }
 
       // Close modal and refresh orders list
@@ -394,72 +423,85 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Error cancelling order:", error);
       alert("Failed to cancel order. Please try again later.");
     }
-  }  /**
+  }
+  /**
    * Process refund for an order item
    */
   async function processRefund(orderItemId, productName) {
-    const reason = prompt(`Please provide a reason for refunding ${productName}:`, "");
+    const reason = prompt(
+      `Please provide a reason for refunding ${productName}:`,
+      ""
+    );
     if (!reason) return; // User cancelled
-    
+
     // Show loading message
-    const refundBtn = document.querySelector(`[data-order-item-id="${orderItemId}"]`);
+    const refundBtn = document.querySelector(
+      `[data-order-item-id="${orderItemId}"]`
+    );
     if (refundBtn) {
       const originalText = refundBtn.innerHTML;
-      refundBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+      refundBtn.innerHTML =
+        '<i class="fas fa-spinner fa-spin"></i> Processing...';
       refundBtn.disabled = true;
     }
-    
+
     try {
       // Find the payment ID related to this order (in a real app, you'd get this from the order or API)
       // For now we use a placeholder ID of 2 as per the API requirements
       const paymentId = 2;
-      
-      const response = await fetch('/api/refunds', {
-        method: 'POST',
+
+      const response = await fetch("/api/refunds", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        credentials: 'include', // Include cookies for authentication
+        credentials: "include", // Include cookies for authentication
         body: JSON.stringify({
           orderItemId: orderItemId,
           paymentId: paymentId,
-          reason: reason
-        })
+          reason: reason,
+        }),
       });
-      
+
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Failed to process refund: ${response.status} - ${errorText}`);
+        throw new Error(
+          `Failed to process refund: ${response.status} - ${errorText}`
+        );
       }
-      
+
       const result = await response.json();
-      
+
       // Update the UI to reflect the refunded item
-      const itemElement = document.querySelector(`.order-item:has([data-order-item-id="${orderItemId}"])`);
+      const itemElement = document.querySelector(
+        `.order-item:has([data-order-item-id="${orderItemId}"])`
+      );
       if (itemElement) {
-        itemElement.classList.add('refunded');
-        itemElement.querySelector('.item-actions').innerHTML = '<span class="refund-status">Refund Requested</span>';
+        itemElement.classList.add("refunded");
+        itemElement.querySelector(".item-actions").innerHTML =
+          '<span class="refund-status">Refund Requested</span>';
       }
-      
-      alert('Refund request submitted successfully');
-      
+
+      alert("Refund request submitted successfully");
+
       // After a short delay, refresh the order details to show the updated state
       setTimeout(() => {
         // Re-fetch the current order details
-        const currentOrderId = new URLSearchParams(window.location.search).get('orderId');
+        const currentOrderId = new URLSearchParams(window.location.search).get(
+          "orderId"
+        );
         if (currentOrderId) {
           openOrderDetailModal(currentOrderId);
         } else {
           // Close modal and refresh orders list
-          orderDetailModal.style.display = 'none';
+          orderDetailModal.style.display = "none";
           fetchOrders(orderStatusFilter.value);
         }
       }, 1500);
-      
     } catch (error) {
-      console.error('Error processing refund:', error);
-      alert('Failed to process refund. Please try again later.');
-      
+      console.error("Error processing refund:", error);
+      alert("Failed to process refund. Please try again later.");
+
       // Reset button if it exists
       if (refundBtn) {
         refundBtn.innerHTML = '<i class="fas fa-undo"></i> Refund';
@@ -474,35 +516,37 @@ document.addEventListener("DOMContentLoaded", function () {
   async function openInvoiceModal(orderId) {
     try {
       // Show loading in modal
-      orderModalBody.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading invoice details...</div>';
-      
+      orderModalBody.innerHTML =
+        '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading invoice details...</div>';
+
       // Open modal
-      orderDetailModal.style.display = 'block';
-        // Fetch order details with credentials: 'include' to ensure cookies are sent
+      orderDetailModal.style.display = "block";
+      // Fetch order details with credentials: 'include' to ensure cookies are sent
       const response = await fetch(`/api/store/orders/${orderId}`, {
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-        credentials: 'include'
+        credentials: "include",
       });
-      
+
       if (!response.ok) {
         throw new Error(`Failed to fetch order details: ${response.status}`);
       }
-      
+
       const order = await response.json();
-      
+
       // Check if order has invoice
       if (!order.invoice) {
-        orderModalBody.innerHTML = '<div class="error">No invoice available for this order.</div>';
+        orderModalBody.innerHTML =
+          '<div class="error">No invoice available for this order.</div>';
         return;
       }
-      
+
       // Format dates
       const issueDate = new Date(order.invoice.issueDate).toLocaleDateString();
       const dueDate = new Date(order.invoice.dueDate).toLocaleDateString();
-      
+
       // Create invoice content
       orderModalBody.innerHTML = `
         <div class="invoice-detail">
@@ -522,7 +566,9 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
             <div class="invoice-info-group">
               <div class="info-label">Total Amount:</div>
-              <div class="info-value">$${parseFloat(order.invoice.total).toFixed(2)}</div>
+              <div class="info-value">$${parseFloat(
+                order.invoice.total
+              ).toFixed(2)}</div>
             </div>
             <div class="invoice-info-group">
               <div class="info-label">Order Reference:</div>
@@ -530,19 +576,19 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
           </div>
           
-          ${order.invoice.pdfLink ? 
-            `<div class="invoice-actions">
+          ${
+            order.invoice.pdfLink
+              ? `<div class="invoice-actions">
               <a href="${order.invoice.pdfLink}" target="_blank" class="btn">
                 <i class="fas fa-file-pdf"></i> Download PDF
               </a>
-            </div>` : 
-            `<div class="note">PDF download not available for this invoice.</div>`
+            </div>`
+              : `<div class="note">PDF download not available for this invoice.</div>`
           }
         </div>
       `;
-      
     } catch (error) {
-      console.error('Error loading invoice details:', error);
+      console.error("Error loading invoice details:", error);
       orderModalBody.innerHTML = `
         <div class="error">
           <i class="fas fa-exclamation-circle"></i>
@@ -557,10 +603,14 @@ document.addEventListener("DOMContentLoaded", function () {
    */
   function viewProductDetails(productId) {
     // Store the order ID if we're currently viewing an order detail
-    const currentOrderId = document.querySelector(".order-detail h2")?.textContent?.replace("Order #", "");
-    
+    const currentOrderId = document
+      .querySelector(".order-detail h2")
+      ?.textContent?.replace("Order #", "");
+
     // Navigate to the product details page
-    window.location.href = `/supermarket/product/${productId}${currentOrderId ? `?returnTo=orders&orderId=${currentOrderId}` : ''}`;
+    window.location.href = `/supermarket/product/${productId}${
+      currentOrderId ? `?returnTo=orders&orderId=${currentOrderId}` : ""
+    }`;
   }
 
   // --- Event Listeners ---
@@ -588,17 +638,17 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   // --- Initial Setup ---
   fetchOrders();
-  
+
   // Check if we need to open a specific order detail modal (when returning from product details)
   const urlParams = new URLSearchParams(window.location.search);
-  const openOrderId = urlParams.get('openOrder');
-  
+  const openOrderId = urlParams.get("openOrder");
+
   if (openOrderId) {
     // We need to wait for orders to load before opening the modal
     setTimeout(() => {
       openOrderDetailModal(openOrderId);
       // Clear the URL parameter to avoid reopening on page refresh
-      window.history.replaceState({}, document.title, '/supermarket/orders');
+      window.history.replaceState({}, document.title, "/supermarket/orders");
     }, 1000); // Give time for orders to load
   }
 });

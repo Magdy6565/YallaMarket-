@@ -4,34 +4,33 @@
 let currentUserId = null;
 
 document.addEventListener("DOMContentLoaded", function () {
-  // Mobile menu toggle functionality
-  const menuToggle = document.getElementById("menuToggle");
-  const navbarLinks = document.getElementById("navbarLinks");
 
-  if (menuToggle && navbarLinks) {
-    menuToggle.addEventListener("click", function () {
-      navbarLinks.classList.toggle("active");
-    });
-  }
+    // Mobile menu toggle functionality
+    const menuToggle = document.getElementById('menuToggle');
+    const navbarLinks = document.getElementById('navbarLinks');
 
-  // User menu dropdown functionality
-  const userMenu = document.getElementById("userMenu");
-  const userMenuButton = userMenu
-    ? userMenu.querySelector(".user-menu-button")
-    : null;
+    if (menuToggle && navbarLinks) {
+        menuToggle.addEventListener('click', function() {
+            navbarLinks.classList.toggle('active');
+        });
+    }
 
-  if (userMenuButton) {
-    userMenuButton.addEventListener("click", function () {
-      userMenu.classList.toggle("open");
-    });
+    // User menu dropdown functionality
+    const userMenu = document.getElementById('userMenu');
+    const userMenuButton = userMenu ? userMenu.querySelector('.user-menu-button') : null;
 
-    // Close the dropdown when clicking outside
-    document.addEventListener("click", function (event) {
-      if (!userMenu.contains(event.target)) {
-        userMenu.classList.remove("open");
-      }
-    });
-  }
+    if (userMenuButton) {
+        userMenuButton.addEventListener('click', function() {
+            userMenu.classList.toggle('open');
+        });
+
+        // Close the dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!userMenu.contains(event.target)) {
+                userMenu.classList.remove('open');
+            }
+        });
+    }
 
   // --- Core Logic: Fetch and Display User Data on Load ---
   fetchUserProfileAndDisplay(); // Call this once the DOM is ready
@@ -43,11 +42,11 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   // Change password functionality removed as requested
 
-  //  // Ensure this is uncommented if you have a Notification Settings button in your HTML
-  //  const notificationSettingsBtn = document.getElementById("notificationSettingsBtn");
-  //  if (notificationSettingsBtn) {
-  //    notificationSettingsBtn.addEventListener("click", showNotificationSettingsModal);
-  //  }
+//  // Ensure this is uncommented if you have a Notification Settings button in your HTML
+//  const notificationSettingsBtn = document.getElementById("notificationSettingsBtn");
+//  if (notificationSettingsBtn) {
+//    notificationSettingsBtn.addEventListener("click", showNotificationSettingsModal);
+//  }
 });
 
 /**
@@ -57,30 +56,27 @@ document.addEventListener("DOMContentLoaded", function () {
  */
 async function fetchUserProfileAndDisplay() {
   try {
-    //    const token = localStorage.getItem('jwtToken'); // Get token from local storage
+//    const token = localStorage.getItem('jwtToken'); // Get token from local storage
 
-    const response = await fetch("/users/me", {
-      method: "GET",
-      headers: {
-        //        'Authorization': `Bearer ${token}` // Include Authorization header
-        "Content-Type": "application/json",
-      },
+    const response = await fetch("/users/me" , {
+        method:"GET" ,
+        headers: {
+            //        'Authorization': `Bearer ${token}` // Include Authorization header
+                'Content-Type': 'application/json'
+                  }
     });
 
     if (!response.ok) {
       // Handle authentication/authorization issues explicitly
       if (response.status === 401 || response.status === 403) {
-        console.warn(
-          "Authentication required or forbidden. Redirecting to login."
-        );
+        console.warn("Authentication required or forbidden. Redirecting to login.");
         window.location.href = "/login"; // Redirect to login page
         return; // Stop execution
       }
       // For any other HTTP error (e.g., 404, 500 from the API itself)
-      throw new Error(
-        `Failed to fetch user profile: HTTP status ${response.status}`
-      );
+      throw new Error(`Failed to fetch user profile: HTTP status ${response.status}`);
     }
+
 
     const userData = await response.json();
     console.log(userData);
@@ -92,33 +88,25 @@ async function fetchUserProfileAndDisplay() {
 
     // --- Populate Basic Information ---
     // Use || "N/A" for fallbacks in case a field is missing or null
-    document.getElementById("profile-username").textContent =
-      userData.username || "N/A";
-    document.getElementById("profile-role").textContent = getRoleName(
-      userData.role
-    );
-    document.getElementById("profile-email").textContent =
-      userData.email || "N/A";
-    document.getElementById("profile-contactInfo").textContent =
-      userData.contactInfo || "N/A";
-    document.getElementById("profile-address").textContent =
-      userData.address || "N/A";
-
+    document.getElementById("profile-username").textContent = userData.username || "N/A";
+    document.getElementById("profile-role").textContent = getRoleName(userData.role);
+    document.getElementById("profile-email").textContent = userData.email || "N/A";
+    document.getElementById("profile-contactInfo").textContent = userData.contactInfo || "N/A";
+    document.getElementById("profile-address").textContent = userData.address || "N/A";
+    
     // --- Update Navigation based on role ---
-    const navbarLinks = document.getElementById("navbarLinks");
+    const navbarLinks = document.getElementById('navbarLinks');
     if (navbarLinks) {
       // Clear existing links
-      navbarLinks.innerHTML = "";
-
-      if (userData.role === 1) {
-        // Vendor
+      navbarLinks.innerHTML = '';
+      
+      if (userData.role === 1) { // Vendor
         navbarLinks.innerHTML = `
           <li><a href="/products">My Products</a></li>
           <li><a href="/vendor-orders">Orders</a></li>
           <li><a href="/stats">Refunds</a></li>
         `;
-      } else if (userData.role === 2) {
-        // Supermarket
+      } else if (userData.role === 2) { // Supermarket
         navbarLinks.innerHTML = `
           <li><a href="/supermarket/home">Home</a></li>
           <li><a href="/supermarket/orders">Orders</a></li>
@@ -129,13 +117,10 @@ async function fetchUserProfileAndDisplay() {
             </a>
           </li>
         `;
-
+        
         // Update cart badge if we're in supermarket view
         const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-        const totalItems = cartItems.reduce(
-          (total, item) => total + item.quantity,
-          0
-        );
+        const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
         const cartBadge = document.getElementById("cartBadge");
         if (cartBadge) {
           cartBadge.textContent = totalItems;
@@ -143,177 +128,83 @@ async function fetchUserProfileAndDisplay() {
         }
       }
     }
-
+    
     // Also update the logo link based on role
-    const logoLink = document.querySelector(".navbar-logo");
+    const logoLink = document.querySelector('.navbar-logo');
     if (logoLink) {
-      logoLink.href = userData.role === 2 ? "/supermarket/home" : "/products";
+      logoLink.href = userData.role === 2 ? '/supermarket/home' : '/products';
     }
 
-    // For vendor users, show statistics section and load data
-    if (userData.role === 1) {
-      // Vendor
-      // The original issue was here: 'try' block was opened without a closing brace before its own catch.
-      // This 'try...catch' block belongs specifically to the vendor statistics loading.
-      try {
-        // Add statistics section dynamically for vendor users
-        const profileContent = document.querySelector(".profile-content");
-        const accountSettingsSection = document.querySelector(
-          ".profile-content .profile-section:last-child"
-        );
-        // Create statistics section
-        const statsSection = document.createElement("div");
-        statsSection.className = "profile-section";
-        statsSection.innerHTML = `
-          <h2><i class="fas fa-chart-line"></i> Account Statistics</h2>
-          <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-icon products">
-                <i class="fas fa-box"></i>
-              </div>
-              <div class="stat-info">
-                <h3>Total Products</h3>
-                <p id="stats-totalProducts">0</p>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon orders">
-                <i class="fas fa-shopping-cart"></i>
-              </div>
-              <div class="stat-info">
-                <h3 id="stats-ordersLabel">Orders</h3>
-                <p id="stats-totalOrders">0</p>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon revenue">
-                <i class="fas fa-dollar-sign"></i>
-              </div>
-              <div class="stat-info">
-                <h3 id="stats-revenueLabel">Revenue</h3>
-                <p id="stats-totalRevenue">$0.00</p>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon rating">
-                <i class="fas fa-star"></i>
-              </div>
-              <div class="stat-info">
-                <h3>Vendor Rating</h3>
-                <p id="stats-rating">0.0/5</p>
-              </div>
-            </div>
-          </div>
-        `;
-
-        // Insert statistics section before account settings
-        if (accountSettingsSection && profileContent) {
-          profileContent.insertBefore(statsSection, accountSettingsSection);
-
-          // Load statistics data
-          await loadVendorStatistics(currentUserId);
-        }
-      } catch (error) {
-        // This catch block now correctly closes the 'try' above it.
-        console.error("Error loading vendor statistics:", error);
+    try {
+      // Load statistics based on user role
+      if (userData.role === 1) { // Vendor
+        await loadVendorStatistics(currentUserId);
+      } else if (userData.role === 2) { // Supermarket
+        loadSupermarketStatistics();
+      } else {
+        // Default fallback
+        updateStatsDisplay(0, 0, 0, 0, false);
+      }
+    } catch (error) {
+      console.error("Error fetching statistics:", error);
+      // Display error message
+      const statsContainer = document.querySelector(".products-container");
+      if (statsContainer) {
+        statsContainer.innerHTML = `<div class="error-message">Failed to load statistics: ${error.message || "Please try again later."}</div>`;
       }
     }
-    // Statistics section is not shown for supermarket users
+
   } catch (error) {
-    // This is the catch block for the outer `WorkspaceUserProfileAndDisplay` function.
     console.error("Critical error loading user profile:", error);
     // Display robust error messages on the page if data cannot be loaded
-    document.getElementById("profile-username").textContent =
-      "Error loading profile data";
+    document.getElementById("profile-username").textContent = "Error loading profile data";
     document.getElementById("profile-role").textContent = ""; // Clear role
-    document.getElementById("profile-email").textContent =
-      "Failed to load profile. Please ensure you are logged in and refresh.";
+    document.getElementById("profile-email").textContent = "Failed to load profile. Please ensure you are logged in and refresh.";
     document.getElementById("profile-contactInfo").textContent = "";
     document.getElementById("profile-address").textContent = "";
-    //    document.getElementById("profile-memberSince").textContent = "";    // Only clear stats for vendor users if they exist
-    // You cannot access userData.role here because userData might not be defined if the outer try failed before it was assigned.
-    // So, this part needs to be careful or moved.
-    // For now, I'll keep the check but be aware it might not always work.
-    // A more robust approach might be to set a flag.
-    // Assuming 'userData' would only be undefined if the *initial* fetch failed.
-    // If the initial fetch succeeded, 'userData' exists, and we only reach this catch if a later operation (like DOM manipulation) failed.
-    // However, the current structure means 'userData' might be undefined if the `await response.json()` or `Workspace` itself threw an error.
+//    document.getElementById("profile-memberSince").textContent = "";
 
-    // A safer way to handle this might be to wrap the entire try block inside an if(userData) or similar.
-    // For now, removing the conditional check as it might cause an error if userData is null.
-    // Instead, just try to clear elements if they exist.
-    const statsElements = [
-      "stats-totalProducts",
-      "stats-totalOrders",
-      "stats-totalRevenue",
-      "stats-rating",
-    ];
-    statsElements.forEach((id) => {
-      const element = document.getElementById(id);
-      if (element) element.textContent = "N/A";
-    });
+    // Clear stats or show error
+    document.getElementById("stats-totalProducts").textContent = "N/A";
+    document.getElementById("stats-totalOrders").textContent = "N/A";
+    document.getElementById("stats-totalRevenue").textContent = "N/A";
+    document.getElementById("stats-rating").textContent = "N/A";
 
     // Optionally disable edit buttons if data couldn't load
-    if (document.getElementById("editProfileBtn"))
-      document.getElementById("editProfileBtn").disabled = true;
+    if (document.getElementById("editProfileBtn")) document.getElementById("editProfileBtn").disabled = true;
     // We've removed the Change Password button functionality
   }
 }
+
 /**
  * Loads vendor statistics from the backend API
  */
 async function loadVendorStatistics(vendorId) {
   try {
     const url = `/api/vendor/stats/${vendorId}`;
-
+    
     // Add Authorization header if your endpoint is secured
-    //    const token = localStorage.getItem('jwtToken');
-    //    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-    const headers = {};
+    const token = localStorage.getItem('jwtToken');
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    
     const response = await fetch(url, { headers });
-
+    
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(errorText || `HTTP error! status: ${response.status}`);
     }
-
+    
     // Parse the JSON response from the backend
     const backendData = await response.json();
+    
     // Map backend DTO properties to frontend variables, with fallbacks
-    const totalProducts =
-      backendData.totalProductsListed !== undefined
-        ? backendData.totalProductsListed
-        : 0;
-    const totalOrders =
-      backendData.totalOrdersReceived !== undefined
-        ? backendData.totalOrdersReceived
-        : 0;
-    const totalRevenue =
-      backendData.totalRevenue !== undefined ? backendData.totalRevenue : 0.0;
-
-    // Fetch vendor rating separately from the ratings API
-    let vendorRating = 0;
-    try {
-      const ratingResponse = await fetch(
-        `/api/ratings/vendor/${vendorId}/average`,
-        { headers }
-      );
-      if (ratingResponse.ok) {
-        const ratingData = await ratingResponse.json();
-        vendorRating = ratingData.rating || 0;
-      }
-    } catch (ratingError) {
-      console.error("Error fetching vendor rating:", ratingError);
-    }
-
+    const totalProducts = backendData.totalProductsListed !== undefined ? backendData.totalProductsListed : 0;
+    const totalOrders = backendData.totalOrdersReceived !== undefined ? backendData.totalOrdersReceived : 0;
+    const totalRevenue = backendData.totalRevenue !== undefined ? backendData.totalRevenue : 0.00;
+    const rating = backendData.rating !== undefined ? backendData.rating : 0.0;
+    
     // Update the display with vendor data (isVendor = true)
-    updateStatsDisplay(
-      totalProducts,
-      totalOrders,
-      totalRevenue,
-      vendorRating,
-      true
-    );
+    updateStatsDisplay(totalProducts, totalOrders, totalRevenue, rating, true);
   } catch (error) {
     console.error("Error fetching vendor statistics:", error);
     // Update with default values
@@ -321,62 +212,62 @@ async function loadVendorStatistics(vendorId) {
   }
 }
 
-// Supermarket statistics functionality removed as requested
+/**
+ * Loads supermarket statistics from local storage
+ */
+function loadSupermarketStatistics() {
+  try {
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    const orderHistory = JSON.parse(localStorage.getItem("orderHistory")) || [];
+    
+    const totalProducts = 0; // Supermarkets don't list products
+    const totalOrders = orderHistory.length;
+    const totalSpent = orderHistory.reduce((total, order) => total + (order.totalAmount || 0), 0);
+    const rating = 0.0; // Supermarkets don't have ratings yet
+    
+    // Update HTML elements with calculated data (isVendor = false)
+    updateStatsDisplay(totalProducts, totalOrders, totalSpent, rating, false);
+  } catch (err) {
+    console.error("Error calculating supermarket stats:", err);
+    updateStatsDisplay(0, 0, 0, 0, false);
+  }
+}
 
 /**
  * Helper function to update the stats display on the profile page
  */
-function updateStatsDisplay(
-  totalProducts,
-  totalOrders,
-  totalAmount,
-  rating,
-  isVendor
-) {
+function updateStatsDisplay(totalProducts, totalOrders, totalAmount, rating, isVendor) {
   try {
     // Update HTML elements with the data
-    const statsTotalProductsElement = document.getElementById(
-      "stats-totalProducts"
-    );
+    const statsTotalProductsElement = document.getElementById("stats-totalProducts");
     if (statsTotalProductsElement) {
       statsTotalProductsElement.textContent = totalProducts;
     }
 
-    const statsTotalOrdersElement =
-      document.getElementById("stats-totalOrders");
+    const statsTotalOrdersElement = document.getElementById("stats-totalOrders");
     if (statsTotalOrdersElement) {
       statsTotalOrdersElement.textContent = totalOrders;
     }
 
-    const statsTotalRevenueElement =
-      document.getElementById("stats-totalRevenue");
+    const statsTotalRevenueElement = document.getElementById("stats-totalRevenue");
     if (statsTotalRevenueElement) {
       statsTotalRevenueElement.textContent = `$${totalAmount.toFixed(2)}`;
     }
 
-    // Update the rating display with real data from vendor_ratings table
     const statsRatingElement = document.getElementById("stats-rating");
     if (statsRatingElement) {
-      // Format to one decimal place
-      const formattedRating = (Math.round(rating * 10) / 10).toFixed(1);
-      statsRatingElement.textContent = `${formattedRating}/5`;
+      statsRatingElement.textContent = `${rating.toFixed(1)}/5`;
     }
 
     // Adjust labels based on isVendor flag
-    const statsOrdersLabelElement =
-      document.getElementById("stats-ordersLabel");
+    const statsOrdersLabelElement = document.getElementById("stats-ordersLabel");
     if (statsOrdersLabelElement) {
-      statsOrdersLabelElement.textContent = isVendor
-        ? "Orders Received"
-        : "Orders Placed";
+      statsOrdersLabelElement.textContent = isVendor ? 'Orders Received' : 'Orders Placed';
     }
 
-    const statsRevenueLabelElement =
-      document.getElementById("stats-revenueLabel");
+    const statsRevenueLabelElement = document.getElementById("stats-revenueLabel");
     if (statsRevenueLabelElement) {
-      statsRevenueLabelElement.textContent = isVendor
-        ? "Total Revenue"
-        : "Total Spent";
+      statsRevenueLabelElement.textContent = isVendor ? 'Total Revenue' : 'Total Spent';
     }
   } catch (err) {
     console.error("Error updating stats display:", err);
@@ -426,8 +317,7 @@ function createModal(title, content) {
 
   // Close modal when clicking outside the modal content
   modal.addEventListener("click", function (e) {
-    if (e.target === modal) {
-      // Only close if the click is directly on the modal background
+    if (e.target === modal) { // Only close if the click is directly on the modal background
       modal.remove();
     }
   });
@@ -438,12 +328,9 @@ function createModal(title, content) {
 
 function showEditProfileModal() {
   // Pre-fill modal with current displayed values (which came from the last fetch)
-  const currentUsername =
-    document.getElementById("profile-username").textContent;
+  const currentUsername = document.getElementById("profile-username").textContent;
   const currentEmail = document.getElementById("profile-email").textContent;
-  const currentContactInfo = document.getElementById(
-    "profile-contactInfo"
-  ).textContent;
+  const currentContactInfo = document.getElementById("profile-contactInfo").textContent;
   const currentAddress = document.getElementById("profile-address").textContent;
 
   const modal = createModal(
@@ -517,6 +404,7 @@ function showNotificationSettingsModal() {
   }
 }
 
+
 // --- API Call Functions ---
 
 /**
@@ -526,22 +414,20 @@ function showNotificationSettingsModal() {
  */
 async function updateProfile(formData) {
   if (!currentUserId) {
-    alert(
-      "Error: User ID not found for profile update. Please refresh the page."
-    );
+    alert("Error: User ID not found for profile update. Please refresh the page.");
     console.error("Attempted to update profile without a valid currentUserId.");
     return;
   }
 
   try {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem('jwtToken');
     const url = `/users/${currentUserId}`; // Use full URL with dynamic ID
 
     const response = await fetch(url, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Include Authorization header
+        'Authorization': `Bearer ${token}` // Include Authorization header
       },
       body: JSON.stringify(Object.fromEntries(formData)), // Convert FormData to JSON object
     });
@@ -552,10 +438,7 @@ async function updateProfile(formData) {
       window.location.reload(true); // Forces a reload from the server (true for hard reload)
     } else {
       const errorData = await response.json(); // Attempt to read error message from backend
-      throw new Error(
-        errorData.message ||
-          `Failed to update profile: Status ${response.status}`
-      );
+      throw new Error(errorData.message || `Failed to update profile: Status ${response.status}`);
     }
   } catch (error) {
     console.error("Error updating profile:", error);
@@ -569,17 +452,13 @@ async function updateProfile(formData) {
  */
 async function updateNotificationSettings(formData) {
   if (!currentUserId) {
-    alert(
-      "Error: User ID not found for notification settings. Please refresh the page."
-    );
-    console.error(
-      "Attempted to update notification settings without a valid currentUserId."
-    );
+    alert("Error: User ID not found for notification settings. Please refresh the page.");
+    console.error("Attempted to update notification settings without a valid currentUserId.");
     return;
   }
 
   try {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem('jwtToken');
     // Adjust this URL to your actual notification settings endpoint that accepts user ID
     const url = `/users/${currentUserId}/notification-settings`; // Example endpoint structure
 
@@ -587,7 +466,7 @@ async function updateNotificationSettings(formData) {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
         emailNotifications: formData.get("emailNotifications") === "on", // Checkbox values are "on" or null
@@ -601,10 +480,7 @@ async function updateNotificationSettings(formData) {
       document.querySelector(".modal").remove(); // Close modal
     } else {
       const errorData = await response.json();
-      throw new Error(
-        errorData.message ||
-          `Failed to update notification settings: Status ${response.status}`
-      );
+      throw new Error(errorData.message || `Failed to update notification settings: Status ${response.status}`);
     }
   } catch (error) {
     console.error("Error updating notification settings:", error);
