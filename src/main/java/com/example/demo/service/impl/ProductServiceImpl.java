@@ -136,5 +136,10 @@ public class ProductServiceImpl implements ProductService {
     public List<VendorDTO> getVendorDetailsByCategory(String category) {
         return productRepository.findVendorsByCategory(category);
     }
+    public Optional<Product> getProductById(Long productId) {
+        // This is the implementation for the method you selected.
+        // It uses the productRepository to find a product by its ID.
+        return productRepository.findById(productId);
+    }
 
 }

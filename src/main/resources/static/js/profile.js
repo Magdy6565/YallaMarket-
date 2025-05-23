@@ -1,3 +1,4 @@
+// filepath: c:\Users\SourcesNet\Desktop\Sw_final\YallaMarket-\src\main\resources\static\js\profile.js
 // Global variable to store the authenticated user's ID
 // Initialize to null, it will be set after a successful fetch.
 let currentUserId = null;
@@ -39,11 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (editProfileBtn) {
     editProfileBtn.addEventListener("click", showEditProfileModal);
   }
-
-  const changePasswordBtn = document.getElementById("changePasswordBtn");
-  if (changePasswordBtn) {
-    changePasswordBtn.addEventListener("click", showChangePasswordModal);
-  }
+  // Change password functionality removed as requested
 
 //  // Ensure this is uncommented if you have a Notification Settings button in your HTML
 //  const notificationSettingsBtn = document.getElementById("notificationSettingsBtn");
@@ -138,92 +135,24 @@ async function fetchUserProfileAndDisplay() {
       logoLink.href = userData.role === 2 ? '/supermarket/home' : '/products';
     }
 
-try {
-    // Fetch data from the endpoint. No 'localhost' prefix needed if served from the same domain.
-    const url = `/api/vendor/stats/${currentUserId}`;
-
-    // Add Authorization header if your endpoint is secured (assuming JWT is stored in localStorage)
-    const token = localStorage.getItem('jwtToken');
-    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-
-    const response = await fetch(url, { headers });
-
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || `HTTP error! status: ${response.status}`);
-    }
-
-    // Parse the JSON response from the backend
-    const backendData = await response.json();
-
-    // Map backend DTO properties to frontend variables, with fallbacks
-    const totalProducts = backendData.totalProductsListed !== undefined ? backendData.totalProductsListed : 0;
-    const totalOrders = backendData.totalOrdersReceived !== undefined ? backendData.totalOrdersReceived : 0;
-    const totalRevenue = backendData.totalRevenue !== undefined ? backendData.totalRevenue : 0.00;
-    const rating = backendData.rating !== undefined ? backendData.rating : 0.0; // Assuming 'rating' might come from backend later
-
-    // Update HTML elements with the fetched data
-    // Ensure these IDs exist in your HTML (e.g., in your 'stats.html' page)
-    const statsTotalProductsElement = document.getElementById("stats-totalProducts");
-    if (statsTotalProductsElement) {
-        statsTotalProductsElement.textContent = totalProducts;
-    } else {
-        console.warn("Element with ID 'stats-totalProducts' not found.");
-    }
-
-    const statsTotalOrdersElement = document.getElementById("stats-totalOrders");
-    if (statsTotalOrdersElement) {
-        statsTotalOrdersElement.textContent = totalOrders;
-    } else {
-        console.warn("Element with ID 'stats-totalOrders' not found.");
-    }
-
-    const statsTotalRevenueElement = document.getElementById("stats-totalRevenue");
-    if (statsTotalRevenueElement) {
-        statsTotalRevenueElement.textContent = `$${totalRevenue.toFixed(2)}`;
-    } else {
-        console.warn("Element with ID 'stats-totalRevenue' not found.");
-    }
-
-    const statsRatingElement = document.getElementById("stats-rating");
-    if (statsRatingElement) {
-        statsRatingElement.textContent = `${rating.toFixed(1)}/5`;
-    } else {
-        console.warn("Element with ID 'stats-rating' not found.");
-    }
-
-    // Adjust labels based on role (assuming 'role' 1 is 'vendor' and others are 'customer')
-    // This part assumes 'role' is available in backendData or determined otherwise.
-    // If 'role' is not in backendData, you'll need to fetch user role separately.
-    const isVendor = backendData.role === 1; // Adjust this logic if 'role' is not directly in backendData
-    const statsOrdersLabelElement = document.getElementById("stats-ordersLabel");
-    if (statsOrdersLabelElement) {
-        statsOrdersLabelElement.textContent = isVendor ? 'Orders Received' : 'Orders Placed';
-    } else {
-        console.warn("Element with ID 'stats-ordersLabel' not found.");
-    }
-
-    const statsRevenueLabelElement = document.getElementById("stats-revenueLabel");
-    if (statsRevenueLabelElement) {
-        statsRevenueLabelElement.textContent = isVendor ? 'Total Revenue' : 'Total Spent';
-    } else {
-        console.warn("Element with ID 'stats-revenueLabel' not found.");
-    }
-
-} catch (error) {
-    console.error("Error fetching vendor statistics:", error);
-    // You might want to display an error message on the page here,
-    // e.g., by targeting a specific error div or the main container.
-    const statsContainer = document.querySelector(".products-container"); // Assuming this is your main container
-    if (statsContainer) {
+    try {
+      // Load statistics based on user role
+      if (userData.role === 1) { // Vendor
+        await loadVendorStatistics(currentUserId);
+      } else if (userData.role === 2) { // Supermarket
+        loadSupermarketStatistics();
+      } else {
+        // Default fallback
+        updateStatsDisplay(0, 0, 0, 0, false);
+      }
+    } catch (error) {
+      console.error("Error fetching statistics:", error);
+      // Display error message
+      const statsContainer = document.querySelector(".products-container");
+      if (statsContainer) {
         statsContainer.innerHTML = `<div class="error-message">Failed to load statistics: ${error.message || "Please try again later."}</div>`;
+      }
     }
-}
-
-
-
-
-
 
   } catch (error) {
     console.error("Critical error loading user profile:", error);
@@ -243,13 +172,109 @@ try {
 
     // Optionally disable edit buttons if data couldn't load
     if (document.getElementById("editProfileBtn")) document.getElementById("editProfileBtn").disabled = true;
-    if (document.getElementById("changePasswordBtn")) document.getElementById("changePasswordBtn").disabled = true;
-//    if (document.getElementById("notificationSettingsBtn")) document.getElementById("notificationSettingsBtn").disabled = true;
+    // We've removed the Change Password button functionality
   }
 }
 
 /**
- * htp google ftive 8842
+ * Loads vendor statistics from the backend API
+ */
+async function loadVendorStatistics(vendorId) {
+  try {
+    const url = `/api/vendor/stats/${vendorId}`;
+    
+    // Add Authorization header if your endpoint is secured
+    const token = localStorage.getItem('jwtToken');
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    
+    const response = await fetch(url, { headers });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || `HTTP error! status: ${response.status}`);
+    }
+    
+    // Parse the JSON response from the backend
+    const backendData = await response.json();
+    
+    // Map backend DTO properties to frontend variables, with fallbacks
+    const totalProducts = backendData.totalProductsListed !== undefined ? backendData.totalProductsListed : 0;
+    const totalOrders = backendData.totalOrdersReceived !== undefined ? backendData.totalOrdersReceived : 0;
+    const totalRevenue = backendData.totalRevenue !== undefined ? backendData.totalRevenue : 0.00;
+    const rating = backendData.rating !== undefined ? backendData.rating : 0.0;
+    
+    // Update the display with vendor data (isVendor = true)
+    updateStatsDisplay(totalProducts, totalOrders, totalRevenue, rating, true);
+  } catch (error) {
+    console.error("Error fetching vendor statistics:", error);
+    // Update with default values
+    updateStatsDisplay(0, 0, 0, 0, true);
+  }
+}
+
+/**
+ * Loads supermarket statistics from local storage
+ */
+function loadSupermarketStatistics() {
+  try {
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    const orderHistory = JSON.parse(localStorage.getItem("orderHistory")) || [];
+    
+    const totalProducts = 0; // Supermarkets don't list products
+    const totalOrders = orderHistory.length;
+    const totalSpent = orderHistory.reduce((total, order) => total + (order.totalAmount || 0), 0);
+    const rating = 0.0; // Supermarkets don't have ratings yet
+    
+    // Update HTML elements with calculated data (isVendor = false)
+    updateStatsDisplay(totalProducts, totalOrders, totalSpent, rating, false);
+  } catch (err) {
+    console.error("Error calculating supermarket stats:", err);
+    updateStatsDisplay(0, 0, 0, 0, false);
+  }
+}
+
+/**
+ * Helper function to update the stats display on the profile page
+ */
+function updateStatsDisplay(totalProducts, totalOrders, totalAmount, rating, isVendor) {
+  try {
+    // Update HTML elements with the data
+    const statsTotalProductsElement = document.getElementById("stats-totalProducts");
+    if (statsTotalProductsElement) {
+      statsTotalProductsElement.textContent = totalProducts;
+    }
+
+    const statsTotalOrdersElement = document.getElementById("stats-totalOrders");
+    if (statsTotalOrdersElement) {
+      statsTotalOrdersElement.textContent = totalOrders;
+    }
+
+    const statsTotalRevenueElement = document.getElementById("stats-totalRevenue");
+    if (statsTotalRevenueElement) {
+      statsTotalRevenueElement.textContent = `$${totalAmount.toFixed(2)}`;
+    }
+
+    const statsRatingElement = document.getElementById("stats-rating");
+    if (statsRatingElement) {
+      statsRatingElement.textContent = `${rating.toFixed(1)}/5`;
+    }
+
+    // Adjust labels based on isVendor flag
+    const statsOrdersLabelElement = document.getElementById("stats-ordersLabel");
+    if (statsOrdersLabelElement) {
+      statsOrdersLabelElement.textContent = isVendor ? 'Orders Received' : 'Orders Placed';
+    }
+
+    const statsRevenueLabelElement = document.getElementById("stats-revenueLabel");
+    if (statsRevenueLabelElement) {
+      statsRevenueLabelElement.textContent = isVendor ? 'Total Revenue' : 'Total Spent';
+    }
+  } catch (err) {
+    console.error("Error updating stats display:", err);
+  }
+}
+
+/**
  * Helper function to convert numeric role ID to a readable string.
  */
 function getRoleName(roleId) {
@@ -342,37 +367,6 @@ function showEditProfileModal() {
   }
 }
 
-function showChangePasswordModal() {
-  const modal = createModal(
-    "Change Password",
-    `
-        <form id="changePasswordForm">
-            <div class="form-group">
-                <label for="currentPassword">Current Password</label>
-                <input type="password" id="currentPassword" name="currentPassword" required>
-            </div>
-            <div class="form-group">
-                <label for="newPassword">New Password</label>
-                <input type="password" id="newPassword" name="newPassword" required>
-            </div>
-            <div class="form-group">
-                <label for="confirmPassword">Confirm New Password</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required>
-            </div>
-            <button type="submit" class="btn save-btn">Change Password</button>
-        </form>
-    `
-  );
-
-  const form = modal.querySelector("form");
-  if (form) {
-    form.addEventListener("submit", async function (e) {
-      e.preventDefault();
-      await changePassword(new FormData(form));
-    });
-  }
-}
-
 function showNotificationSettingsModal() {
   const modal = createModal(
     "Notification Settings",
@@ -440,10 +434,8 @@ async function updateProfile(formData) {
 
     if (response.ok) {
       alert("Profile updated successfully!");
-//      fetchUserProfileAndDisplay(); // Re-fetch and display the latest data
       document.querySelector(".modal").remove(); // Close the modal
-//        document.querySelector(".modal").remove(); // Close the modal first
-        window.location.reload(true); // Forces a reload from the server (true for hard reload)
+      window.location.reload(true); // Forces a reload from the server (true for hard reload)
     } else {
       const errorData = await response.json(); // Attempt to read error message from backend
       throw new Error(errorData.message || `Failed to update profile: Status ${response.status}`);
@@ -451,56 +443,6 @@ async function updateProfile(formData) {
   } catch (error) {
     console.error("Error updating profile:", error);
     alert("Failed to update profile: " + error.message);
-  }
-}
-
-/**
- * Handles changing the user's password via a POST request.
- * Compares new password with confirmation and includes current user ID in the URL.
- * @param {FormData} formData - Form data containing current, new, and confirm passwords.
- */
-async function changePassword(formData) {
-  const newPassword = formData.get("newPassword");
-  const confirmPassword = formData.get("confirmPassword");
-
-  if (newPassword !== confirmPassword) {
-    alert("New passwords do not match!");
-    return;
-  }
-
-  if (!currentUserId) {
-    alert("Error: User ID not found for password change. Please refresh the page.");
-    console.error("Attempted to change password without a valid currentUserId.");
-    return;
-  }
-
-  try {
-    const token = localStorage.getItem('jwtToken');
-    // Adjust this URL to your actual change password endpoint that accepts user ID
-    const url = `/users/${currentUserId}/change-password`; // Example endpoint structure
-
-    const response = await fetch(url, {
-      method: "POST", // Often POST for password changes
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        currentPassword: formData.get("currentPassword"),
-        newPassword: newPassword, // Use the stored newPassword
-      }),
-    });
-
-    if (response.ok) {
-      alert("Password changed successfully!");
-      document.querySelector(".modal").remove(); // Close modal
-    } else {
-      const errorData = await response.json();
-      throw new Error(errorData.message || `Failed to change password: Status ${response.status}`);
-    }
-  } catch (error) {
-    console.error("Error changing password:", error);
-    alert("Failed to change password: " + error.message);
   }
 }
 
@@ -545,139 +487,3 @@ async function updateNotificationSettings(formData) {
     alert("Failed to update notification settings: " + error.message);
   }
 }
-
-/**
- * Function to view a specific order with ID 15
- * Uses the endpoint /api/vendor/orders/15
- */
-async function viewSpecificOrder() {
-  const orderContainer = document.createElement('div');
-  orderContainer.id = 'specificOrderContainer';
-  orderContainer.className = 'product-card detailed';
-  orderContainer.innerHTML = '<p>Loading specific order data...</p>';
-  
-  // Find where to insert the order container
-  const profileContainer = document.querySelector('.profile-container');
-  if (profileContainer) {
-    profileContainer.appendChild(orderContainer);
-  } else {
-    document.body.appendChild(orderContainer);
-  }
-  
-  try {
-    const response = await fetch('/api/vendor/orders/15', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      // If we get a non-2xx response, handle it here
-      if (response.status === 401 || response.status === 403) {
-        throw new Error('Authentication required or access denied.');
-      }
-      throw new Error(`Failed to fetch order: HTTP status ${response.status}`);
-    }
-
-    const orderData = await response.json();
-    renderSpecificOrder(orderData, orderContainer);
-  } catch (error) {
-    console.error('Error fetching specific order:', error);
-    orderContainer.innerHTML = `
-      <div class="error-message">
-        <i class="fas fa-exclamation-circle"></i>
-        <p>Failed to load order: ${error.message}</p>
-      </div>
-    `;
-  }
-}
-
-/**
- * Renders a specific order with detailed information
- * @param {Object} order - An order object
- * @param {HTMLElement} container - Container to render the order in
- */
-function renderSpecificOrder(order, container) {
-  if (!order) {
-    container.innerHTML = `
-      <div class="empty">
-        <i class="fas fa-box-open"></i>
-        <p>No order found with ID 15.</p>
-        <button id="closeOrderView" class="btn">Close</button>
-      </div>
-    `;
-    return;
-  }
-
-  // Format data
-  const formattedDate = order.orderDate ? new Date(order.orderDate).toLocaleString() : 'N/A';
-  const statusClass = `status-${order.status ? order.status.toUpperCase() : 'UNKNOWN'}`;
-
-  // Create HTML for order items
-  const orderItemsHtml = order.orderItems && order.orderItems.length > 0
-    ? order.orderItems.map(item => `
-        <li>
-          <strong>${item.productName || 'N/A'}</strong>
-          <p>Category: ${item.productCategory || 'N/A'}</p>
-          <p>Quantity: ${item.quantity || 0}</p>
-          <p>Price: $${item.priceEach ? item.priceEach.toFixed(2) : 'N/A'}</p>
-          <button class="view-product-btn" data-product-id="${item.productId}">View Product</button>
-        </li>
-      `).join('')
-    : '<li>No items in this order.</li>';
-
-  container.innerHTML = `
-    <div class="order-header">
-      <h3>Order #${order.orderId || 'N/A'}</h3>
-      <button id="closeOrderView" class="btn close-btn"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="order-status">
-      Status: <span class="${statusClass}">${order.status || 'N/A'}</span>
-    </div>
-    <div class="order-details">
-      <p><strong>Date:</strong> ${formattedDate}</p>
-      <p><strong>Total:</strong> $${order.totalAmount ? order.totalAmount.toFixed(2) : 'N/A'}</p>
-      <p><strong>Store ID:</strong> ${order.storeId || 'N/A'}</p>
-    </div>
-    <h4>Order Items</h4>
-    <ul class="order-items-list">
-      ${orderItemsHtml}
-    </ul>
-  `;
-
-  // Add event listeners to the view product buttons
-  container.querySelectorAll('.view-product-btn').forEach(button => {
-    button.addEventListener('click', function() {
-      const productId = this.getAttribute('data-product-id');
-      // Navigate to product details page
-      window.location.href = `/products/${productId}`;
-    });
-  });
-
-  // Add close button functionality
-  const closeBtn = container.querySelector('#closeOrderView');
-  if (closeBtn) {
-    closeBtn.addEventListener('click', function() {
-      container.remove();
-    });
-  }
-}
-
-// Add a button to view the specific order in the profile page
-document.addEventListener('DOMContentLoaded', function() {
-  // ... existing code ...
-  
-  // Add a button to view order #15
-  const viewOrderBtn = document.createElement('button');
-  viewOrderBtn.id = 'viewSpecificOrderBtn';
-  viewOrderBtn.className = 'btn primary-btn';
-  viewOrderBtn.innerHTML = '<i class="fas fa-eye"></i> View Order #15';
-  viewOrderBtn.addEventListener('click', viewSpecificOrder);
-  
-  // Add the button after the profile section
-  const profileSection = document.querySelector('.profile-info');
-  if (profileSection) {
-    profileSection.parentNode.insertBefore(viewOrderBtn, profileSection.nextSibling);
-  }
-});

@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     try {
       // Construct the URL with optional status filter
-      let url = "/api/vendor/orders"; // Use vendor orders API
+      let url = "/api/store/orders"; // Use vendor orders API
       if (status && status !== "") {
         url += `/filter?status=${status}`; // Filter vendor orders
       }
@@ -187,7 +187,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Open modal
       orderDetailModal.style.display = "block";      // Fetch order details with credentials: 'include' to ensure cookies are sent
-      const response = await fetch(`/api/vendor/orders/${orderId}`, { // Use vendor orders endpoint
+      const response = await fetch(`/api/store/orders/${orderId}`, { // Use vendor orders endpoint
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
@@ -479,7 +479,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Open modal
       orderDetailModal.style.display = 'block';
         // Fetch order details with credentials: 'include' to ensure cookies are sent
-      const response = await fetch(`/api/vendor/orders/${orderId}`, {
+      const response = await fetch(`/api/store/orders/${orderId}`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'

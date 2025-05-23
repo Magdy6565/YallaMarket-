@@ -57,6 +57,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     // Permit all product API endpoints
                     .requestMatchers("/api/my-products/**").permitAll()
                     .requestMatchers("/api/vendor/**").permitAll()
+                    .requestMatchers("/api/store/orders").permitAll()
                     // Permit store orders endpoints
                     .requestMatchers("/api/store/orders/**").permitAll()
                     .requestMatchers("/supermarket/**").permitAll()

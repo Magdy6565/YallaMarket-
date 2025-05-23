@@ -34,4 +34,7 @@ public interface ProductService {
     List<ProductWithVendorDTO> findProductsByCategoryAndVendors(String category, List<Long> vendorIds);
 
     List<VendorDTO> getVendorDetailsByCategory(String category);
+
+    Optional<Product> getProductById(Long productId);
+
 }

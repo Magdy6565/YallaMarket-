@@ -107,6 +107,7 @@ public class JwtService {
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(user.getEmail()) // <-- Explicitly using getEmail()
+//                .setSubject(user.getUsername()) // <-- Explicitly using getEmail()
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
@@ -137,6 +138,7 @@ public class JwtService {
         }
         User user = (User) userDetails;
         final String userEmailFromDetails = user.getEmail(); // <-- Explicitly using getEmail()
+//        final String userEmailFromDetails = user.getUsername(); // <-- Explicitly using getEmail()
 
         // --- Add log here to see the user's email from UserDetails ---
         logger.info("JWT Validation: User email from UserDetails: '{}'", userEmailFromDetails);

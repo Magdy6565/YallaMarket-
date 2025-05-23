@@ -1,4 +1,602 @@
-<!--<!DOCTYPE html>-->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YallaMarket - Product Details</title>
+    <link rel="stylesheet" th:href="@{/css/products.css}" />
+    <link rel="stylesheet" th:href="@{/css/supermarket.css}" />
+    <link rel="stylesheet" th:href="@{/css/vendor-rating.css}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      .product-details-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .product-header {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+      }
+      
+      .product-title {
+        flex: 1;
+      }
+      
+      .product-title h1 {
+        margin: 0 0 10px 0;
+        color: #333;
+        font-size: 32px;
+      }
+      
+      .product-price {
+        font-size: 28px;
+        font-weight: bold;
+        color: #e67e22;
+        margin: 10px 0 0 0;
+        padding: 10px 20px;
+        background: #fff8e5;
+        border-radius: 6px;
+        text-align: right;
+      }
+      
+      .product-description {
+        margin-bottom: 30px;
+        line-height: 1.6;
+        color: #555;
+        font-size: 16px;
+      }
+      
+      .product-meta {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+      }
+      
+      .meta-item {
+        background: #f7f9fc;
+        padding: 12px 20px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      .meta-item i {
+        color: #e67e22;
+      }
+      
+      .product-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+      }
+      
+      .quantity-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      
+      .quantity-control button {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid #ddd;
+        background: #fff;
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+      
+      .quantity-control button:hover {
+        background: #f8f8f8;
+      }
+      
+      .quantity-control input {
+        width: 60px;
+        height: 40px;
+        text-align: center;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+      
+      .add-to-cart {
+        background: #e67e22;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      .add-to-cart:hover {
+        background: #d35400;
+      }
+      
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #555;
+        text-decoration: none;
+        margin-bottom: 20px;
+      }
+      
+      .back-link:hover {
+        color: #e67e22;
+      }
+      
+      .vendor-rating {
+        margin-top: 20px;
+        background: #f7f9fc;
+        padding: 15px;
+        border-radius: 6px;
+      }
+      
+      .vendor-rating h3 {
+        margin: 0 0 10px 0;
+        font-size: 18px;
+        color: #333;
+      }
+      
+      .rating-stars {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 10px;
+      }
+      
+      .rating-stars i {
+        color: #e67e22;
+        cursor: pointer;
+      }
+      
+      .rating-message {
+        font-size: 14px;
+        color: #555;
+      }
+      
+      @media (max-width: 768px) {
+        .product-header {
+          flex-direction: column;
+        }
+        
+        .product-price {
+          margin-top: 15px;
+          align-self: flex-start;
+        }
+        
+        .product-actions {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="/supermarket/home" class="navbar-logo">YallaMarket</a>
+
+        <!-- Mobile menu toggle button -->
+        <button class="menu-toggle" id="menuToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Navigation Links -->
+        <ul class="navbar-links" id="navbarLinks">
+          <li><a href="/supermarket/home">Home</a></li>
+          <li><a href="/supermarket/orders">Orders</a></li>
+          <li>
+            <a href="/supermarket/basket" class="cart-link">
+              <i class="fas fa-shopping-cart"></i>
+              <span class="cart-badge" id="cartBadge">0</span>
+            </a>
+          </li>
+        </ul>
+
+        <!-- User Menu -->
+        <div class="user-menu" id="userMenu">
+          <button class="user-menu-button">
+            <span>My Account</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="user-menu-dropdown">
+            <a href="/profile"><i class="fas fa-user"></i> Profile</a>
+            <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+      <div id="back-links">
+        <a href="/supermarket/home" class="back-link" id="backToProducts">
+          <i class="fas fa-chevron-left"></i> Back to Products
+        </a>
+        <a href="/supermarket/orders" class="back-link" id="backToOrder" style="display: none;">
+          <i class="fas fa-chevron-left"></i> Back to Order
+        </a>
+      </div>
+      
+      <div class="product-details-container">
+        <div class="product-header">
+          <div class="product-title">
+            <h1 th:text="${product.name}">Product Name</h1>
+            <div class="meta-item">
+              <i class="fas fa-tag"></i> 
+              <span th:text="${product.category}">Category</span>
+            </div>
+          </div>
+          <div class="product-price" th:text="${'$' + product.price}">$0.00</div>
+        </div>
+        
+        <div class="product-description" th:text="${product.description}">
+          Product description will be displayed here.
+        </div>
+        
+        <div class="product-meta">
+          <div class="meta-item">
+            <i class="fas fa-box"></i> 
+            <span>In Stock: <strong th:text="${product.quantity}">0</strong> items</span>
+          </div>
+          <div class="meta-item" th:if="${product.vendorId != null}">
+            <i class="fas fa-store"></i> 
+            <span>Vendor: <strong th:text="${product.vendorId}">Vendor ID</strong></span>
+          </div>
+          
+          <!-- Vendor Rating Section -->
+          <div class="vendor-rating" th:if="${product.vendorId != null}">
+            <h3>Rate This Vendor</h3>
+            <div class="rating-stars" id="vendorRating" th:data-vendor-id="${product.vendorId}">
+              <i class="far fa-star" data-rating="1"></i>
+              <i class="far fa-star" data-rating="2"></i>
+              <i class="far fa-star" data-rating="3"></i>
+              <i class="far fa-star" data-rating="4"></i>
+              <i class="far fa-star" data-rating="5"></i>
+            </div>
+            <div class="rating-message" id="ratingMessage">Click on a star to rate this vendor</div>
+          </div>
+        </div>
+        
+        <div class="product-actions">
+          <div class="quantity-control">
+            <button id="decreaseQuantity"><i class="fas fa-minus"></i></button>
+            <input type="number" id="quantity" value="1" min="1" th:max="${product.quantity}">
+            <button id="increaseQuantity"><i class="fas fa-plus"></i></button>
+          </div>
+          <button class="add-to-cart" id="addToCartBtn">
+            <i class="fas fa-cart-plus"></i> Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script th:inline="javascript">
+      // Get product data from Thymeleaf
+      const product = {
+        id: /*[[${product.productId}]]*/ 0,
+        name: /*[[${product.name}]]*/ 'Product Name',
+        price: /*[[${product.price}]]*/ 0.00,
+        maxQuantity: /*[[${product.quantity}]]*/ 0,
+        category: /*[[${product.category}]]*/ 'Category',
+        vendorId: /*[[${product.vendorId}]]*/ null,
+        description: /*[[${product.description}]]*/ 'Product Description'
+      };
+      
+      document.addEventListener('DOMContentLoaded', function() {
+        const quantityInput = document.getElementById('quantity');
+        const decreaseBtn = document.getElementById('decreaseQuantity');
+        const increaseBtn = document.getElementById('increaseQuantity');
+        const addToCartBtn = document.getElementById('addToCartBtn');
+        const cartBadge = document.getElementById('cartBadge');
+        const backToProducts = document.getElementById('backToProducts');
+        const backToOrder = document.getElementById('backToOrder');
+        
+        // Check URL parameters for returnTo and orderId
+        const urlParams = new URLSearchParams(window.location.search);
+        const returnTo = urlParams.get('returnTo');
+        const orderId = urlParams.get('orderId');
+        
+        // Setup back link based on where user came from
+        if (returnTo === 'orders' && orderId) {
+          backToOrder.style.display = 'inline-flex';
+          backToProducts.style.display = 'none';
+          backToOrder.href = `/supermarket/orders?openOrder=${orderId}`;
+        }
+        
+        // Load cart count on page load
+        updateCartBadge();
+        
+        // Quantity controls
+        decreaseBtn.addEventListener('click', function() {
+          let currentValue = parseInt(quantityInput.value);
+          if (currentValue > 1) {
+            quantityInput.value = currentValue - 1;
+          }
+        });
+        
+        increaseBtn.addEventListener('click', function() {
+          let currentValue = parseInt(quantityInput.value);
+          if (currentValue < product.maxQuantity) {
+            quantityInput.value = currentValue + 1;
+          }
+        });
+        
+        // Add to cart functionality
+        addToCartBtn.addEventListener('click', function() {
+          const quantity = parseInt(quantityInput.value);
+          
+          if (quantity <= 0 || quantity > product.maxQuantity) {
+            alert('Please select a valid quantity');
+            return;
+          }
+          
+          addToCart(product.id, quantity);
+        });
+
+        // Mobile menu toggle
+        document.getElementById('menuToggle').addEventListener('click', function() {
+          document.getElementById('navbarLinks').classList.toggle('active');
+        });
+
+        // User menu dropdown
+        document.querySelector('.user-menu-button').addEventListener('click', function() {
+          document.querySelector('.user-menu-dropdown').classList.toggle('active');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+          const userMenu = document.getElementById('userMenu');
+          if (!userMenu.contains(event.target)) {
+            document.querySelector('.user-menu-dropdown').classList.remove('active');
+          }
+        });
+      });
+      
+      // Add to cart function
+      function addToCart(productId, quantity) {
+        // Get existing cart or create empty one
+        let cart = JSON.parse(localStorage.getItem('cartItems')) || [];
+        
+        // Check if product already in cart
+        const existingProduct = cart.find(item => item.id === productId);
+        
+        if (existingProduct) {
+          // Update quantity if already in cart
+          existingProduct.quantity += quantity;
+        } else {
+          // Add new product to cart
+          cart.push({
+            id: productId,
+            name: product.name,
+            price: product.price,
+            quantity: quantity,
+            category: product.category
+          });
+        }
+        
+        // Save updated cart back to localStorage
+        localStorage.setItem('cartItems', JSON.stringify(cart));
+        
+        // Update cart badge
+        updateCartBadge();
+        
+        // Show confirmation
+        alert(`${quantity} ${product.name} added to your cart!`);
+      }
+      
+      // Update cart badge
+      function updateCartBadge() {
+        const cart = JSON.parse(localStorage.getItem('cartItems')) || [];
+        const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+        const cartBadge = document.getElementById('cartBadge');
+        
+        cartBadge.textContent = totalItems;
+        cartBadge.style.display = totalItems > 0 ? 'flex' : 'none';
+      }
+        
+      // Vendor Rating functionality
+      document.addEventListener('DOMContentLoaded', function() {
+        const ratingStars = document.querySelectorAll('#vendorRating .fa-star');
+        const ratingContainer = document.getElementById('vendorRating');
+        const ratingMessage = document.getElementById('ratingMessage');
+        
+        if (ratingContainer) {
+          const vendorId = ratingContainer.getAttribute('data-vendor-id');
+          
+          if (!vendorId) {
+            console.error('Vendor ID not found in the rating container');
+            ratingMessage.textContent = 'Unable to load rating system. Vendor information is missing.';
+            ratingMessage.className = 'rating-message error';
+            return;
+          }
+
+          console.log('Loading ratings for vendor ID:', vendorId);
+          
+          // Check if this vendor has been rated already
+          checkExistingRating(vendorId);
+          
+          // Also check and display average vendor rating
+          checkAverageRating(vendorId);
+          
+          // Add event listeners to stars
+          ratingStars.forEach(star => {
+            // Hover effect
+            star.addEventListener('mouseover', function() {
+              const rating = parseInt(this.getAttribute('data-rating'));
+              highlightStars(rating);
+            });
+            
+            // Click to rate
+            star.addEventListener('click', function() {
+              const rating = parseInt(this.getAttribute('data-rating'));
+              submitRating(vendorId, rating);
+            });
+          });
+          
+          // Reset stars on mouse out
+          ratingContainer.addEventListener('mouseout', function() {
+            const currentRating = ratingContainer.getAttribute('data-current-rating');
+            if (currentRating) {
+              highlightStars(parseInt(currentRating));
+            } else {
+              resetStars();
+            }
+          });
+        }
+        
+        // Highlight stars up to the selected rating
+        function highlightStars(rating) {
+          ratingStars.forEach(star => {
+            const starRating = parseInt(star.getAttribute('data-rating'));
+            if (starRating <= rating) {
+              star.classList.remove('far');
+              star.classList.add('fas');
+            } else {
+              star.classList.remove('fas');
+              star.classList.add('far');
+            }
+          });
+        }
+        
+        // Reset stars to unselected state
+        function resetStars() {
+          ratingStars.forEach(star => {
+            star.classList.remove('fas');
+            star.classList.add('far');
+          });
+        }
+        
+        // Check if user has already rated this vendor
+        async function checkExistingRating(vendorId) {
+          try {
+            const response = await fetch(`/api/ratings/vendor/${vendorId}/user`, {
+              credentials: 'include'
+            });
+            
+            if (response.ok) {
+              const data = await response.json();
+              if (data.rating) {
+                // Set current rating
+                ratingContainer.setAttribute('data-current-rating', data.rating);
+                highlightStars(data.rating);
+                ratingMessage.textContent = `You rated this vendor ${data.rating}/5`;
+                ratingMessage.className = 'rating-message success';
+              }
+            } else {
+              console.log('No existing rating or user not authenticated');
+              ratingMessage.textContent = 'Rate this vendor (1-5 stars)';
+              ratingMessage.className = 'rating-message';
+            }
+          } catch (error) {
+            console.error('Error checking existing rating:', error);
+            ratingMessage.textContent = 'Unable to load your rating data. Please try again.';
+            ratingMessage.className = 'rating-message error';
+          }
+        }
+        
+        // Check and display the average vendor rating
+        async function checkAverageRating(vendorId) {
+          try {
+            const response = await fetch(`/api/ratings/vendor/${vendorId}/average`, {
+              credentials: 'include'
+            });
+            
+            if (response.ok) {
+              const data = await response.json();
+              if (data.rating) {
+                // Create or update the vendor average rating display
+                const vendorMetaItem = document.querySelector('.meta-item[data-vendor-id="' + vendorId + '"]');
+                if (!vendorMetaItem) {
+                  const metaDiv = document.createElement('div');
+                  metaDiv.className = 'meta-item';
+                  metaDiv.setAttribute('data-vendor-id', vendorId);
+                  metaDiv.innerHTML = `
+                    <i class="fas fa-star"></i> 
+                    <span>Average Rating: <strong>${data.rating}/5</strong></span>
+                  `;
+                  document.querySelector('.product-meta').appendChild(metaDiv);
+                } else {
+                  const ratingSpan = vendorMetaItem.querySelector('span');
+                  if (ratingSpan) {
+                    ratingSpan.innerHTML = `Average Rating: <strong>${data.rating}/5</strong>`;
+                  }
+                }
+              }
+            }
+          } catch (error) {
+            console.error('Error checking average rating:', error);
+          }
+        }
+        
+        // Submit rating to the backend
+        async function submitRating(vendorId, rating) {
+          try {
+            ratingMessage.textContent = 'Submitting rating...';
+            ratingMessage.className = 'rating-message info';
+            
+            const response = await fetch(`/api/ratings/vendor/${vendorId}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              credentials: 'include',
+              body: JSON.stringify({ rating: rating })
+            });
+            
+            if (response.ok) {
+              // Update UI
+              ratingContainer.setAttribute('data-current-rating', rating);
+              ratingMessage.textContent = `Thank you! You rated this vendor ${rating}/5`;
+              ratingMessage.className = 'rating-message success';
+              
+              // Refresh the average rating
+              checkAverageRating(vendorId);
+            } else {
+              // Try to get error details from response
+              try {
+                const error = await response.json();
+                throw new Error(error.message || 'Failed to submit rating');
+              } catch (jsonError) {
+                throw new Error('Failed to submit rating. Status: ' + response.status);
+              }
+            }
+          } catch (error) {
+            console.error('Error submitting rating:', error);
+            ratingMessage.textContent = error.message || 'Failed to submit rating. Please try again.';
+            ratingMessage.className = 'rating-message error';
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
 <!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
 <!--  <head>    <meta charset="UTF-8" />-->
 <!--    <meta name="viewport" content="width=device-width, initial-scale=1.0" />-->
@@ -253,9 +851,9 @@
 <!--          <div class="product-price" th:text="${'$' + product.price}">$0.00</div>-->
 <!--        </div>-->
 <!--        -->
-<!--        <div class="product-description" th:text="${product.productDescription}">-->
-<!--          Product description will be displayed here.-->
-<!--        </div>-->
+        <div class="product-description" th:text="${product.description}">
+          Product description will be displayed here.
+        </div>
 <!--        -->
 <!--        <div class="product-meta">-->
 <!--          <div class="meta-item">-->
@@ -294,18 +892,17 @@
 <!--    </div>-->
 
 <!--    &lt;!&ndash; JavaScript &ndash;&gt;-->
-<!--    <script th:inline="javascript">-->
-<!--      // Get product data from Thymeleaf-->
-<!--      const product = {-->
-<!--        id: /*[[${product.productId}]]*/ 0,-->
-<!--        name: /*[[${product.name}]]*/ 'Product Name',-->
-<!--        price: /*[[${product.price}]]*/ 0.00,-->
-<!--        maxQuantity: /*[[${product.quantity}]]*/ 0,-->
-<!--        category: /*[[${product.category}]]*/ 'Category',-->
-<!--        vendorId: /*[[${product.vendorId}]]*/ null,-->
-<!--        vendorName: /*[[${product.vendorUsername}]]*/ 'Vendor Name',-->
-<!--        description: /*[[${product.productDescription}]]*/ 'Product Description'-->
-<!--      };-->
+    <script th:inline="javascript">
+      // Get product data from Thymeleaf
+      const product = {
+        id: /*[[${product.productId}]]*/ 0,
+        name: /*[[${product.name}]]*/ 'Product Name',
+        price: /*[[${product.price}]]*/ 0.00,
+        maxQuantity: /*[[${product.quantity}]]*/ 0,
+        category: /*[[${product.category}]]*/ 'Category',
+        vendorId: /*[[${product.vendorId}]]*/ null,
+        description: /*[[${product.description}]]*/ 'Product Description'
+      };
 <!--        document.addEventListener('DOMContentLoaded', function() {-->
 <!--        const quantityInput = document.getElementById('quantity');-->
 <!--        const decreaseBtn = document.getElementById('decreaseQuantity');-->
