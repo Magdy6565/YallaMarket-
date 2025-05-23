@@ -83,7 +83,8 @@
         display: flex;
         gap: 15px;
         margin-top: 20px;
-      }      .stock-info {
+      }
+      .stock-info {
         display: flex;
         align-items: center;
         gap: 10px;
@@ -158,7 +159,8 @@
         <!-- Mobile menu toggle button -->
         <button class="menu-toggle" id="menuToggle">
           <i class="fas fa-bars"></i>
-        </button>        <!-- Navigation Links -->
+        </button>
+        <!-- Navigation Links -->
         <ul class="navbar-links" id="navbarLinks">
           <li><a href="/supermarket/home">Home</a></li>
           <li><a href="/supermarket/orders">Orders</a></li>
@@ -219,12 +221,11 @@
               >In Stock:
               <strong th:text="${product.quantity}">0</strong> items</span
             >
-          </div>
-          <div class="meta-item" th:if="${product.vendorId != null}">
+          </div>          <div class="meta-item" th:if="${product.vendorId != null}">
             <i class="fas fa-store"></i>
             <span
               >Vendor:
-              <strong th:text="${product.vendorId}">Vendor ID</strong></span
+              <strong th:text="${vendorName != null ? vendorName : 'Unknown Vendor'}">Vendor Name</strong></span
             >
           </div>
 
@@ -245,9 +246,14 @@
             <div class="rating-message" id="ratingMessage">
               Click on a star to rate this vendor
             </div>
-          </div>        </div>        <div class="product-actions">
+          </div>
+        </div>
+        <div class="product-actions">
           <div class="stock-info">
-            <span>Quantity Available: <strong th:text="${product.quantity}">0</strong> items</span>
+            <span
+              >Quantity Available:
+              <strong th:text="${product.quantity}">0</strong> items</span
+            >
           </div>
         </div>
       </div>
@@ -264,7 +270,9 @@
         category: /*[[${product.category}]]*/ "Category",
         vendorId: /*[[${product.vendorId}]]*/ null,
         description: /*[[${product.description}]]*/ "Product Description",
-      };      document.addEventListener("DOMContentLoaded", function () {
+      };
+      console.log(product);
+      document.addEventListener("DOMContentLoaded", function () {
         const backToProducts = document.getElementById("backToProducts");
         const backToOrder = document.getElementById("backToOrder");
 
@@ -303,7 +311,8 @@
             document
               .querySelector(".user-menu-dropdown")
               .classList.remove("active");
-          }        });
+          }
+        });
       });
 
       // Vendor Rating functionality

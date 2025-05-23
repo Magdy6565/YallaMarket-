@@ -317,7 +317,9 @@ document.addEventListener("DOMContentLoaded", function () {
                       !isOutOfStock
                         ? `<button class="add-to-cart-btn" data-product='${JSON.stringify(
                             product
-                          )}' data-product-id="${product.productId}">Add to Cart</button>`
+                          )}' data-product-id="${
+                            product.productId
+                          }">Add to Cart</button>`
                         : `<button class="out-of-stock-btn" disabled>Out of Stock</button>`
                     }
                     <button class="view-product-btn" data-product-id="${
@@ -326,19 +328,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             `;
       productsGrid.appendChild(productCard);
-    });    // Attach event listeners for "Add to Cart" buttons
+    }); // Attach event listeners for "Add to Cart" buttons
     document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
       button.addEventListener("click", function () {
         const product = JSON.parse(this.getAttribute("data-product"));
         const productId = product.productId || product.id;
-        
+
         // Check if item is already in cart
         if (isProductInCart(productId)) {
           // Redirect to cart page
-          window.location.href = '/supermarket/basket';
+          window.location.href = "/supermarket/basket";
           return;
         }
-        
+
         addToCart(product);
       });
     });
@@ -411,9 +413,10 @@ document.addEventListener("DOMContentLoaded", function () {
       };
       cartItems.push(newItem);
       console.log(`Added new item to cart:`, newItem);
-    }    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    }
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
     updateCartBadge();
-    
+
     // Update all add to cart buttons
     updateAllAddToCartButtons();
 
@@ -431,17 +434,17 @@ document.addEventListener("DOMContentLoaded", function () {
       (total, item) => total + item.quantity,
       0
     );
-    cartBadge.textContent = totalItems;    // Hide badge if cart is empty
+    cartBadge.textContent = totalItems; // Hide badge if cart is empty
     cartBadge.style.display = totalItems > 0 ? "flex" : "none";
   }
-  
+
   /**
    * Check if a product is in the cart
    */
   function isProductInCart(productId) {
-    return cartItems.some(item => String(item.id) === String(productId));
+    return cartItems.some((item) => String(item.id) === String(productId));
   }
-  
+
   /**
    * Update all add to cart buttons based on cart contents
    */
@@ -449,21 +452,21 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
       const productData = JSON.parse(button.getAttribute("data-product"));
       const productId = productData.productId || productData.id;
-      
+
       if (isProductInCart(productId)) {
         // Item is in cart - change button to "View Cart"
         button.innerHTML = '<i class="fas fa-shopping-cart"></i> View Cart';
-        button.style.backgroundColor = '#2ecc71';
-        button.title = 'Item is in cart. Click to view cart.';
+        button.style.backgroundColor = "#2ecc71";
+        button.title = "Item is in cart. Click to view cart.";
       } else {
         // Item not in cart - normal "Add to Cart" button
         button.innerHTML = '<i class="fas fa-cart-plus"></i> Add to Cart';
-        button.style.backgroundColor = '#f39c12';
-        button.title = 'Add this item to your cart';
+        button.style.backgroundColor = "#f39c12";
+        button.title = "Add this item to your cart";
       }
     });
   }
-  
+
   /**
    * View product details - redirects to product details page
    */
