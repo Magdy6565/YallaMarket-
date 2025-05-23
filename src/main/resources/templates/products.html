@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
+<head>    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cross-Origin-Embedder-Policy" content="credentialless">
     <title>YallaMarket - My Products</title>
     <!-- Link to CSS file -->
     <link rel="stylesheet" th:href="@{/css/products.css}">
@@ -59,10 +59,16 @@
         <!-- Products Grid -->
         <div class="products-grid" th:if="${!products.empty}">
             <!-- Product Card (Repeated for each product) -->
-            <div class="product-card" th:each="product : ${products}">
-                <div class="product-image">
-                    <!-- Placeholder image, replace with actual product image if available -->
-                    <img src="https://via.placeholder.com/250" alt="Product Image">
+            <div class="product-card" th:each="product : ${products}">                <div class="product-image">
+                    <!-- Use the imageUrl getter method to display product images with CORS-friendly settings -->
+                    <img th:if="${product.imageUrl} != null"
+                         th:src="${product.imageUrl}"
+                         crossorigin="anonymous"
+                         loading="lazy"
+                         alt="Product Image">
+                    <img th:if="${product.imageUrl} == null"
+                         src="https://via.placeholder.com/250"
+                         alt="Product Image">
                 </div>
                 <div class="product-info">
                     <h3 class="product-name" th:text="${product.name}">Product Name</h3>
@@ -105,8 +111,8 @@
             </a>
         </div>
     </div>
-    
-    <!-- JavaScript for UI interactions -->
+      <!-- JavaScript for UI interactions -->
+    <script th:src="@{/js/cloudinary-helper.js}"></script>
     <script th:src="@{/js/products.js}"></script>
     <!-- Highlight active nav link -->
     <script>

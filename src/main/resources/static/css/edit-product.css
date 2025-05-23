@@ -60,3 +60,21 @@ body {
   display: block;
   margin-top: 10px;
 }
+
+.image-option-container {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+
+.image-option-container input[type="radio"] {
+  width: auto;
+  margin-right: 8px;
+}
+
+.image-option-container label {
+  margin-bottom: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}

@@ -213,5 +213,38 @@ public class ProductServiceImpl implements ProductService {
         }
         
         return Optional.empty();
+    }    @Override
+    @Transactional
+    public Product addProductWithImageUrl(Long userId, ProductRequest productRequest, String imageUrl) {
+        Product product = new Product();
+        product.setName(productRequest.getName());
+        product.setDescription(productRequest.getDescription());
+        product.setPrice(productRequest.getPrice());
+        product.setQuantity(productRequest.getQuantity());
+        product.setVendorId(userId);
+        product.setCategory(productRequest.getCategory());
+        product.setImageUrl(imageUrl);
+        product.setDeletedAt(null);
+        return productRepository.save(product);
+    }
+
+    @Override
+    @Transactional
+    public Optional<Product> updateProductWithImageUrl(Long productId, Long userId, ProductRequest productRequest, String imageUrl) {
+        Optional<Product> existingProductOptional = productRepository.findByProductIdAndVendorIdAndDeletedAtIsNull(productId, userId);
+
+        if (existingProductOptional.isPresent()) {
+            Product existingProduct = existingProductOptional.get();
+            existingProduct.setName(productRequest.getName());
+            existingProduct.setDescription(productRequest.getDescription());
+            existingProduct.setPrice(productRequest.getPrice());
+            existingProduct.setQuantity(productRequest.getQuantity());
+            existingProduct.setCategory(productRequest.getCategory());
+            existingProduct.setImageUrl(imageUrl);
+            
+            return Optional.of(productRepository.save(existingProduct));
+        } else {
+            return Optional.empty();
+        }
     }
 }

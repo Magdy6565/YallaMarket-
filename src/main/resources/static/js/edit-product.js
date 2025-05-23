@@ -18,13 +18,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       }
       return res.json();
-    })
-    .then((product) => {
+    })    .then((product) => {
       document.getElementById("name").value = product.name || "";
       document.getElementById("description").value = product.description || "";
       document.getElementById("price").value = product.price || 0;
       document.getElementById("quantity").value = product.quantity || 0;
       document.getElementById("category").value = product.category || "";
+      document.getElementById("imageUrl").value = product.imageUrl || "";
     })
     .catch((error) => {
       console.error("Error fetching product details:", error);
@@ -34,7 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
         error.message || error
       }`;
     });
-
   // Handle form submission
   document
     .getElementById("editProductForm")
@@ -51,11 +50,34 @@ document.addEventListener("DOMContentLoaded", function () {
         category: document.getElementById("category").value.trim(),
       };
 
-      fetch(`/api/my-products/${productId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedProduct),
-      })
+      const imageUrl = document.getElementById("imageUrl").value.trim();
+      let fetchPromise;
+      
+      if (imageUrl) {
+        // Use the new endpoint for image URL updates
+        const params = new URLSearchParams();
+        params.append("name", updatedProduct.name);
+        params.append("description", updatedProduct.description);
+        params.append("price", updatedProduct.price);
+        params.append("quantity", updatedProduct.quantity);
+        params.append("category", updatedProduct.category);
+        params.append("imageUrl", imageUrl);
+
+        fetchPromise = fetch(`/api/my-products/${productId}/url`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: params,
+        });
+      } else {
+        // Use the original endpoint for regular updates
+        fetchPromise = fetch(`/api/my-products/${productId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedProduct),
+        });
+      }
+
+      fetchPromise
         .then((res) => {
           if (res.ok) {
             document.getElementById("successMsg").textContent =
