@@ -21,7 +21,7 @@
             </button>
               <!-- Navigation Links -->
             <ul class="navbar-links" id="navbarLinks">
-                <li><a href="/products" class="active">My Products</a></li>
+                <li><a href="/products">My Products</a></li>
                 <li><a href="/vendor-orders">Orders</a></li>
                 <li><a href="/vendor-refunds">Refunds</a></li>
             </ul>
@@ -108,5 +108,14 @@
     
     <!-- JavaScript for UI interactions -->
     <script th:src="@{/js/products.js}"></script>
+    <!-- Highlight active nav link -->
+    <script>
+      (function() {
+        const path = window.location.pathname;
+        document.querySelectorAll('.navbar-links a').forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === path);
+        });
+      })();
+    </script>
 </body>
 </html>
