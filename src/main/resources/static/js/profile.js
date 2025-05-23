@@ -133,26 +133,70 @@ async function fetchUserProfileAndDisplay() {
     const logoLink = document.querySelector('.navbar-logo');
     if (logoLink) {
       logoLink.href = userData.role === 2 ? '/supermarket/home' : '/products';
-    }
-
-    try {
-      // Load statistics based on user role
-      if (userData.role === 1) { // Vendor
-        await loadVendorStatistics(currentUserId);
-      } else if (userData.role === 2) { // Supermarket
-        loadSupermarketStatistics();
-      } else {
-        // Default fallback
-        updateStatsDisplay(0, 0, 0, 0, false);
+    }    // For vendor users, show statistics section and load data
+    if (userData.role === 1) { // Vendor
+      try {
+        // Add statistics section dynamically for vendor users
+        const profileContent = document.querySelector('.profile-content');
+        const accountSettingsSection = document.querySelector('.profile-content .profile-section:last-child');
+        
+        // Create statistics section
+        const statsSection = document.createElement('div');
+        statsSection.className = 'profile-section';
+        statsSection.innerHTML = `
+          <h2><i class="fas fa-chart-line"></i> Account Statistics</h2>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon products">
+                <i class="fas fa-box"></i>
+              </div>
+              <div class="stat-info">
+                <h3>Total Products</h3>
+                <p id="stats-totalProducts">0</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon orders">
+                <i class="fas fa-shopping-cart"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="stats-ordersLabel">Orders</h3>
+                <p id="stats-totalOrders">0</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon revenue">
+                <i class="fas fa-dollar-sign"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="stats-revenueLabel">Revenue</h3>
+                <p id="stats-totalRevenue">$0.00</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon rating">
+                <i class="fas fa-star"></i>
+              </div>
+              <div class="stat-info">
+                <h3>Rating</h3>
+                <p id="stats-rating">0.0/5</p>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // Insert statistics section before account settings
+        if (accountSettingsSection && profileContent) {
+          profileContent.insertBefore(statsSection, accountSettingsSection);
+          
+          // Load statistics data
+          await loadVendorStatistics(currentUserId);
+        }
+      } catch (error) {
+        console.error("Error loading vendor statistics:", error);
       }
-    } catch (error) {
-      console.error("Error fetching statistics:", error);
-      // Display error message
-      const statsContainer = document.querySelector(".products-container");
-      if (statsContainer) {
-        statsContainer.innerHTML = `<div class="error-message">Failed to load statistics: ${error.message || "Please try again later."}</div>`;
-      }
     }
+    // Statistics section is not shown for supermarket users
 
   } catch (error) {
     console.error("Critical error loading user profile:", error);
@@ -162,13 +206,14 @@ async function fetchUserProfileAndDisplay() {
     document.getElementById("profile-email").textContent = "Failed to load profile. Please ensure you are logged in and refresh.";
     document.getElementById("profile-contactInfo").textContent = "";
     document.getElementById("profile-address").textContent = "";
-//    document.getElementById("profile-memberSince").textContent = "";
-
-    // Clear stats or show error
-    document.getElementById("stats-totalProducts").textContent = "N/A";
-    document.getElementById("stats-totalOrders").textContent = "N/A";
-    document.getElementById("stats-totalRevenue").textContent = "N/A";
-    document.getElementById("stats-rating").textContent = "N/A";
+//    document.getElementById("profile-memberSince").textContent = "";    // Only clear stats for vendor users if they exist
+    if (userData.role === 1) {
+      const statsElements = ["stats-totalProducts", "stats-totalOrders", "stats-totalRevenue", "stats-rating"];
+      statsElements.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = "N/A";
+      });
+    }
 
     // Optionally disable edit buttons if data couldn't load
     if (document.getElementById("editProfileBtn")) document.getElementById("editProfileBtn").disabled = true;
@@ -212,26 +257,7 @@ async function loadVendorStatistics(vendorId) {
   }
 }
 
-/**
- * Loads supermarket statistics from local storage
- */
-function loadSupermarketStatistics() {
-  try {
-    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-    const orderHistory = JSON.parse(localStorage.getItem("orderHistory")) || [];
-    
-    const totalProducts = 0; // Supermarkets don't list products
-    const totalOrders = orderHistory.length;
-    const totalSpent = orderHistory.reduce((total, order) => total + (order.totalAmount || 0), 0);
-    const rating = 0.0; // Supermarkets don't have ratings yet
-    
-    // Update HTML elements with calculated data (isVendor = false)
-    updateStatsDisplay(totalProducts, totalOrders, totalSpent, rating, false);
-  } catch (err) {
-    console.error("Error calculating supermarket stats:", err);
-    updateStatsDisplay(0, 0, 0, 0, false);
-  }
-}
+// Supermarket statistics functionality removed as requested
 
 /**
  * Helper function to update the stats display on the profile page
