@@ -1,242 +1,281 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>YallaMarket - Product Details</title>
     <!-- Link to CSS file -->
-    <link rel="stylesheet" th:href="@{/css/products.css}">
+    <link rel="stylesheet" th:href="@{/css/products.css}" />
+    <link rel="stylesheet" th:href="@{/css/custom-alerts.css}" />
     <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <style>
-        /* Additional styles for product details page */
-        .product-detail-container {
-            background-color: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 2rem;
-            margin-top: 2rem;
-        }
-        
+      /* Additional styles for product details page */
+      .product-detail-container {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 2rem;
+        margin-top: 2rem;
+      }
+
+      .product-detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+      }
+
+      .product-detail-title h2 {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .product-detail-category {
+        display: inline-block;
+        background-color: #f1f1f1;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .product-detail-price {
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: var(--primary-color);
+      }
+
+      .product-detail-actions {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .product-detail-info {
+        margin-top: 2rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+
+      .product-detail-description {
+        line-height: 1.8;
+      }
+
+      .product-detail-meta {
+        background-color: var(--light-color);
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+      }
+
+      .meta-item {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .meta-item i {
+        margin-right: 0.8rem;
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        width: 25px;
+      }
+
+      .meta-label {
+        font-weight: 600;
+        margin-right: 0.5rem;
+      }
+
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        color: var(--dark-color);
+        text-decoration: none;
+        margin-bottom: 1rem;
+        transition: var(--transition);
+      }
+
+      .back-link:hover {
+        color: var(--primary-color);
+      }
+
+      .back-link i {
+        margin-right: 0.5rem;
+      }
+
+      @media (max-width: 768px) {
         .product-detail-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1.5rem;
+          flex-direction: column;
         }
-        
-        .product-detail-title h2 {
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .product-detail-category {
-            display: inline-block;
-            background-color: #f1f1f1;
-            padding: 0.3rem 0.8rem;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            color: #666;
-        }
-        
-        .product-detail-price {
-            font-size: 1.6rem;
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-        
+
         .product-detail-actions {
-            display: flex;
-            gap: 1rem;
+          margin-top: 1rem;
         }
-        
+
         .product-detail-info {
-            margin-top: 2rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+          grid-template-columns: 1fr;
         }
-        
-        .product-detail-description {
-            line-height: 1.8;
-        }
-        
-        .product-detail-meta {
-            background-color: var(--light-color);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-        }
-        
-        .meta-item {
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-        }
-        
-        .meta-item i {
-            margin-right: 0.8rem;
-            color: var(--primary-color);
-            font-size: 1.2rem;
-            width: 25px;
-        }
-        
-        .meta-label {
-            font-weight: 600;
-            margin-right: 0.5rem;
-        }
-        
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            color: var(--dark-color);
-            text-decoration: none;
-            margin-bottom: 1rem;
-            transition: var(--transition);
-        }
-        
-        .back-link:hover {
-            color: var(--primary-color);
-        }
-        
-        .back-link i {
-            margin-right: 0.5rem;
-        }
-        
-        @media (max-width: 768px) {
-            .product-detail-header {
-                flex-direction: column;
-            }
-            
-            .product-detail-actions {
-                margin-top: 1rem;
-            }
-            
-            .product-detail-info {
-                grid-template-columns: 1fr;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
-        <div class="navbar-container">
-            <a href="/" class="navbar-logo">YallaMarket</a>
-            
-            <!-- Mobile menu toggle button -->
-            <button class="menu-toggle" id="menuToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            
-            <!-- Navigation Links -->
-            <ul class="navbar-links" id="navbarLinks">
-                <li><a href="/products" class="active">My Products</a></li>
-                <li><a href="/orders">Orders</a></li>
-                <li><a href="/stats">Refunds</a></li>
-            </ul>
-            
-            <!-- User Menu -->
-            <div class="user-menu" id="userMenu">
-                <button class="user-menu-button">
-                    <span>My Account</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-                <div class="user-menu-dropdown">
-                    <a href="/profile"><i class="fas fa-user"></i> Profile</a>
-                    <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                </div>
-            </div>
+      <div class="navbar-container">
+        <a href="/" class="navbar-logo">YallaMarket</a>
+
+        <!-- Mobile menu toggle button -->
+        <button class="menu-toggle" id="menuToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Navigation Links -->
+        <ul class="navbar-links" id="navbarLinks">
+          <li><a href="/products" class="active">My Products</a></li>
+          <li><a href="/orders">Orders</a></li>
+          <li><a href="/stats">Refunds</a></li>
+        </ul>
+
+        <!-- User Menu -->
+        <div class="user-menu" id="userMenu">
+          <button class="user-menu-button">
+            <span>My Account</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="user-menu-dropdown">
+            <a href="/profile"><i class="fas fa-user"></i> Profile</a>
+            <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </div>
         </div>
+      </div>
     </nav>
-    
+
     <!-- Main Content -->
     <div class="container">
-        <!-- Back to Products Link -->
-        <a href="/products" class="back-link">
-            <i class="fas fa-arrow-left"></i> Back to Products
-        </a>
-        
-        <div class="product-detail-container">
-            <div class="product-detail-header">
-                <div class="product-detail-title">
-                    <h2 th:text="${product.name}">Product Name</h2>
-                    <span class="product-detail-category" th:text="${product.category}">Category</span>
-                </div>
-                <div class="product-detail-price" th:text="'$' + ${product.price}">$99.99</div>
-            </div>
-            
-            <div class="product-detail-actions">
-                <a th:href="@{'/edit-product/' + ${product.productId}}" class="btn">
-                    <i class="fas fa-edit"></i> Edit Product
-                </a>
-                <button class="btn" style="background-color: var(--error-color);" id="deleteProductBtn">
-                    <i class="fas fa-trash"></i> Delete Product
-                </button>
-            </div>
-            
-            <div class="product-detail-info">
-                <div class="product-detail-description">
-                    <h3>Description</h3>
-                    <p th:text="${product.description}">Product description will appear here.</p>
-                </div>
-                
-                <div class="product-detail-meta">
-                    <div class="meta-item">
-                        <i class="fas fa-box"></i>
-                        <span class="meta-label">ID:</span>
-                        <span th:text="${product.productId}">12345</span>
-                    </div>
-                    
-                    <div class="meta-item">
-                        <i class="fas fa-cubes"></i>
-                        <span class="meta-label">Stock:</span>
-                        <span th:text="${product.quantity}">100</span>
-                        <span th:if="${product.quantity <= 10 && product.quantity > 0}" 
-                              style="color: #f39c12; margin-left: 0.5rem;">
-                            (Low Stock)
-                        </span>
-                        <span th:if="${product.quantity <= 0}" 
-                              style="color: var(--error-color); margin-left: 0.5rem;">
-                            (Out of Stock)
-                        </span>
-                    </div>
-                    
-                    <div class="meta-item">
-                        <i class="fas fa-tag"></i>
-                        <span class="meta-label">Category:</span>
-                        <span th:text="${product.category}">Electronics</span>
-                    </div>
-                </div>
-            </div>
+      <!-- Back to Products Link -->
+      <a href="/products" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Products
+      </a>
+
+      <div class="product-detail-container">
+        <div class="product-detail-header">
+          <div class="product-detail-title">
+            <h2 th:text="${product.name}">Product Name</h2>
+            <span class="product-detail-category" th:text="${product.category}"
+              >Category</span
+            >
+          </div>
+          <div class="product-detail-price" th:text="'$' + ${product.price}">
+            $99.99
+          </div>
         </div>
+
+        <div class="product-detail-actions">
+          <a th:href="@{'/edit-product/' + ${product.productId}}" class="btn">
+            <i class="fas fa-edit"></i> Edit Product
+          </a>
+          <button
+            class="btn"
+            style="background-color: var(--error-color)"
+            id="deleteProductBtn"
+          >
+            <i class="fas fa-trash"></i> Delete Product
+          </button>
+        </div>
+
+        <div class="product-detail-info">
+          <div class="product-detail-description">
+            <h3>Description</h3>
+            <p th:text="${product.description}">
+              Product description will appear here.
+            </p>
+          </div>
+
+          <div class="product-detail-meta">
+            <div class="meta-item">
+              <i class="fas fa-box"></i>
+              <span class="meta-label">ID:</span>
+              <span th:text="${product.productId}">12345</span>
+            </div>
+
+            <div class="meta-item">
+              <i class="fas fa-cubes"></i>
+              <span class="meta-label">Stock:</span>
+              <span th:text="${product.quantity}">100</span>
+              <span
+                th:if="${product.quantity <= 10 && product.quantity > 0}"
+                style="color: #f39c12; margin-left: 0.5rem"
+              >
+                (Low Stock)
+              </span>
+              <span
+                th:if="${product.quantity <= 0}"
+                style="color: var(--error-color); margin-left: 0.5rem"
+              >
+                (Out of Stock)
+              </span>
+            </div>
+
+            <div class="meta-item">
+              <i class="fas fa-tag"></i>
+              <span class="meta-label">Category:</span>
+              <span th:text="${product.category}">Electronics</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    
     <!-- JavaScript for UI interactions -->
-    <script th:src="@{/js/products.js}"></script>    <script th:inline="javascript">
-        // Product deletion functionality
-        document.getElementById('deleteProductBtn').addEventListener('click', function() {
-            if (confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
-                const productId = /*[[${product.productId}]]*/ '0';
-                
-                fetch(`/api/my-products/${productId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.href = '/products';
-                    } else {
-                        alert('Failed to delete product. Please try again.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
-                });
-            }
+    <script th:src="@{/js/custom-alerts.js}"></script>
+    <script th:src="@{/js/products.js}"></script>
+    <script th:inline="javascript">
+      // Product deletion functionality
+      document
+        .getElementById("deleteProductBtn")
+        .addEventListener("click", async function () {
+          const confirmed = await customAlert.confirm(
+            "Are you sure you want to delete this product?",
+            "Delete Product",
+            "This action cannot be undone.",
+            "Delete",
+            "Cancel"
+          );
+
+          if (confirmed) {
+            const productId = /*[[${product.productId}]]*/ "0";
+
+            fetch(`/api/my-products/${productId}`, {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            })
+              .then((response) => {
+                if (response.ok) {
+                  customAlert
+                    .success("Product deleted successfully!", "Success")
+                    .then(() => {
+                      window.location.href = "/products";
+                    });
+                } else {
+                  customAlert.error(
+                    "Failed to delete product. Please try again.",
+                    "Delete Failed"
+                  );
+                }
+              })
+              .catch((error) => {
+                console.error("Error:", error);
+                customAlert.error(
+                  "An error occurred. Please try again.",
+                  "Error"
+                );
+              });
+          }
         });
     </script>
-</body>
+  </body>
 </html>

@@ -411,17 +411,18 @@ document.addEventListener("DOMContentLoaded", function () {
         throw new Error(
           `Failed to cancel order: ${response.status} - ${errorText}`
         );
-      }
-
-      // Close modal and refresh orders list
+      } // Close modal and refresh orders list
       orderDetailModal.style.display = "none";
       fetchOrders(orderStatusFilter.value);
 
       // Show success message
-      alert("Order cancelled successfully");
+      customAlert.success("Order cancelled successfully", "Order Cancelled");
     } catch (error) {
       console.error("Error cancelling order:", error);
-      alert("Failed to cancel order. Please try again later.");
+      customAlert.error(
+        "Failed to cancel order. Please try again later.",
+        "Cancellation Failed"
+      );
     }
   }
   /**
@@ -482,7 +483,10 @@ document.addEventListener("DOMContentLoaded", function () {
           '<span class="refund-status">Refund Requested</span>';
       }
 
-      alert("Refund request submitted successfully");
+      customAlert.success(
+        "Refund request submitted successfully",
+        "Refund Requested"
+      );
 
       // After a short delay, refresh the order details to show the updated state
       setTimeout(() => {
@@ -500,7 +504,10 @@ document.addEventListener("DOMContentLoaded", function () {
       }, 1500);
     } catch (error) {
       console.error("Error processing refund:", error);
-      alert("Failed to process refund. Please try again later.");
+      customAlert.error(
+        "Failed to process refund. Please try again later.",
+        "Refund Failed"
+      );
 
       // Reset button if it exists
       if (refundBtn) {

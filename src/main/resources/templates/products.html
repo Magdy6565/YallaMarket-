@@ -1,121 +1,145 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>YallaMarket - My Products</title>
     <!-- Link to CSS file -->
-    <link rel="stylesheet" th:href="@{/css/products.css}">
+    <link rel="stylesheet" th:href="@{/css/products.css}" />
+    <link rel="stylesheet" th:href="@{/css/custom-alerts.css}" />
     <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
-        <div class="navbar-container">
-            <a href="/" class="navbar-logo">YallaMarket</a>
-            
-            <!-- Mobile menu toggle button -->
-            <button class="menu-toggle" id="menuToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-              <!-- Navigation Links -->
-            <ul class="navbar-links" id="navbarLinks">
-                <li><a href="/products">My Products</a></li>
-                <li><a href="/vendor-orders">Orders</a></li>
-                <li><a href="/vendor-refunds">Refunds</a></li>
-            </ul>
-            
-            <!-- User Menu -->
-            <div class="user-menu" id="userMenu">
-                <button class="user-menu-button">
-                    <span>My Account</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-                <div class="user-menu-dropdown">
-                    <a href="/profile"><i class="fas fa-user"></i> Profile</a>
-                    <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                </div>
-            </div>
+      <div class="navbar-container">
+        <a href="/" class="navbar-logo">YallaMarket</a>
+
+        <!-- Mobile menu toggle button -->
+        <button class="menu-toggle" id="menuToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <!-- Navigation Links -->
+        <ul class="navbar-links" id="navbarLinks">
+          <li><a href="/products">My Products</a></li>
+          <li><a href="/vendor-orders">Orders</a></li>
+          <li><a href="/vendor-refunds">Refunds</a></li>
+        </ul>
+
+        <!-- User Menu -->
+        <div class="user-menu" id="userMenu">
+          <button class="user-menu-button">
+            <span>My Account</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="user-menu-dropdown">
+            <a href="/profile"><i class="fas fa-user"></i> Profile</a>
+            <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </div>
         </div>
+      </div>
     </nav>
-    
+
     <!-- Main Content -->
     <div class="container">
-        <div class="page-title">
-            <h1>My Products</h1>
-            <a href="/add-product" class="btn">
-                <i class="fas fa-plus"></i> Add New Product
-            </a>
-        </div>
-        <div class="filter-section" style="margin-top: 20px; margin-bottom: 20px;">
-            <label for="categoryFilter">Filter by Category:</label>
-            <select id="categoryFilter" class="form-control" style="display: inline-block; width: auto; margin-right: 10px;">
-                <option value="">All Categories</option> </select>
-            <button id="filterButton" class="btn btn-primary">Filter</button>
-        </div>
+      <div class="page-title">
+        <h1>My Products</h1>
+        <a href="/add-product" class="btn">
+          <i class="fas fa-plus"></i> Add New Product
+        </a>
+      </div>
+      <div class="filter-section" style="margin-top: 20px; margin-bottom: 20px">
+        <label for="categoryFilter">Filter by Category:</label>
+        <select
+          id="categoryFilter"
+          class="form-control"
+          style="display: inline-block; width: auto; margin-right: 10px"
+        >
+          <option value="">All Categories</option>
+        </select>
+        <button id="filterButton" class="btn btn-primary">Filter</button>
+      </div>
 
-
-        <!-- Products Grid -->
-        <div class="products-grid" th:if="${!products.empty}">
-            <!-- Product Card (Repeated for each product) -->
-            <div class="product-card" th:each="product : ${products}">
-                <div class="product-image">
-                    <!-- Placeholder image, replace with actual product image if available -->
-                    <img src="https://via.placeholder.com/250" alt="Product Image">
-                </div>
-                <div class="product-info">
-                    <h3 class="product-name" th:text="${product.name}">Product Name</h3>
-                    <span class="product-category" th:text="${product.category}">Category</span>
-                    <div class="product-price" th:text="'$' + ${product.price}">$99.99</div>
-                    
-                    <!-- Stock indicator based on quantity -->
-                    <div class="product-stock" 
-                         th:classappend="${product.quantity > 10} ? 'in-stock' : (${product.quantity > 0} ? 'low-stock' : 'out-of-stock')">
-                        <span th:if="${product.quantity > 10}">
-                            <i class="fas fa-check-circle"></i> In Stock
-                        </span>
-                        <span th:if="${product.quantity <= 10 && product.quantity > 0}">
-                            <i class="fas fa-exclamation-circle"></i> Low Stock: <span th:text="${product.quantity}"></span> left
-                        </span>
-                        <span th:if="${product.quantity <= 0}">
-                            <i class="fas fa-times-circle"></i> Out of Stock
-                        </span>
-                    </div>
-                    
-                    <div class="product-actions">
-                        <a th:href="@{'/products/' + ${product.productId}}" class="view-btn">
-                            <i class="fas fa-eye"></i> View
-                        </a>
-                        <a th:href="@{'/edit-product/' + ${product.productId}}" class="edit-btn">
-                            <i class="fas fa-edit"></i> Edit
-                        </a>
-                    </div>
-                </div>
+      <!-- Products Grid -->
+      <div class="products-grid" th:if="${!products.empty}">
+        <!-- Product Card (Repeated for each product) -->
+        <div class="product-card" th:each="product : ${products}">
+          <div class="product-image">
+            <!-- Placeholder image, replace with actual product image if available -->
+            <img src="https://via.placeholder.com/250" alt="Product Image" />
+          </div>
+          <div class="product-info">
+            <h3 class="product-name" th:text="${product.name}">Product Name</h3>
+            <span class="product-category" th:text="${product.category}"
+              >Category</span
+            >
+            <div class="product-price" th:text="'$' + ${product.price}">
+              $99.99
             </div>
+
+            <!-- Stock indicator based on quantity -->
+            <div
+              class="product-stock"
+              th:classappend="${product.quantity > 10} ? 'in-stock' : (${product.quantity > 0} ? 'low-stock' : 'out-of-stock')"
+            >
+              <span th:if="${product.quantity > 10}">
+                <i class="fas fa-check-circle"></i> In Stock
+              </span>
+              <span th:if="${product.quantity <= 10 && product.quantity > 0}">
+                <i class="fas fa-exclamation-circle"></i> Low Stock:
+                <span th:text="${product.quantity}"></span> left
+              </span>
+              <span th:if="${product.quantity <= 0}">
+                <i class="fas fa-times-circle"></i> Out of Stock
+              </span>
+            </div>
+
+            <div class="product-actions">
+              <a
+                th:href="@{'/products/' + ${product.productId}}"
+                class="view-btn"
+              >
+                <i class="fas fa-eye"></i> View
+              </a>
+              <a
+                th:href="@{'/edit-product/' + ${product.productId}}"
+                class="edit-btn"
+              >
+                <i class="fas fa-edit"></i> Edit
+              </a>
+            </div>
+          </div>
         </div>
-        
-        <!-- Empty State (shown when no products) -->
-        <div class="empty-state" th:if="${products.empty}">
-            <i class="fas fa-box-open"></i>
-            <h2>No products found</h2>
-            <p>You haven't added any products yet. Start selling by adding your first product.</p>
-            <a href="/add-product" class="btn">
-                <i class="fas fa-plus"></i> Add New Product
-            </a>
-        </div>
+      </div>
+
+      <!-- Empty State (shown when no products) -->
+      <div class="empty-state" th:if="${products.empty}">
+        <i class="fas fa-box-open"></i>
+        <h2>No products found</h2>
+        <p>
+          You haven't added any products yet. Start selling by adding your first
+          product.
+        </p>
+        <a href="/add-product" class="btn">
+          <i class="fas fa-plus"></i> Add New Product
+        </a>
+      </div>
     </div>
-    
     <!-- JavaScript for UI interactions -->
+    <script th:src="@{/js/custom-alerts.js}"></script>
     <script th:src="@{/js/products.js}"></script>
     <!-- Highlight active nav link -->
     <script>
-      (function() {
+      (function () {
         const path = window.location.pathname;
-        document.querySelectorAll('.navbar-links a').forEach(link => {
-          link.classList.toggle('active', link.getAttribute('href') === path);
+        document.querySelectorAll(".navbar-links a").forEach((link) => {
+          link.classList.toggle("active", link.getAttribute("href") === path);
         });
       })();
     </script>
-</body>
+  </body>
 </html>

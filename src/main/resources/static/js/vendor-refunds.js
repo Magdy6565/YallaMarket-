@@ -33,24 +33,23 @@ document.addEventListener('DOMContentLoaded', function() {
         navbarLinks.classList.toggle('active');
     });
     
-    // User menu toggle
-    const userMenuButton = document.querySelector('.user-menu-button');
-    const userMenuDropdown = document.querySelector('.user-menu-dropdown');
-    
-    userMenuButton.addEventListener('click', function() {
-        userMenuDropdown.classList.toggle('show');
+  const userMenu = document.getElementById("userMenu");
+  const userMenuButton = userMenu
+    ? userMenu.querySelector(".user-menu-button")
+    : null;
+
+  if (userMenuButton) {
+    // Toggle the dropdown when clicking the button (using class approach)
+    userMenuButton.addEventListener("click", function (event) {
+      event.preventDefault();
+      event.stopPropagation(); // Prevent click from propagating to document
+      userMenu.classList.toggle("open");
+      console.log(
+        "User menu toggled, open status:",
+        userMenu.classList.contains("open")
+      );
     });
-    
-    // Close the dropdown if clicked outside
-    window.addEventListener('click', function(event) {
-        if (!event.target.matches('.user-menu-button') && 
-            !event.target.matches('.user-menu-button *')) {
-            if (userMenuDropdown.classList.contains('show')) {
-                userMenuDropdown.classList.remove('show');
-            }
-        }
-    });
-    
+    }
     // Initialize the page
     fetchRefunds();
     

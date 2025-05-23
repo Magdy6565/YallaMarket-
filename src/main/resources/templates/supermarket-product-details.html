@@ -221,11 +221,15 @@
               >In Stock:
               <strong th:text="${product.quantity}">0</strong> items</span
             >
-          </div>          <div class="meta-item" th:if="${product.vendorId != null}">
+          </div>
+          <div class="meta-item" th:if="${product.vendorId != null}">
             <i class="fas fa-store"></i>
             <span
               >Vendor:
-              <strong th:text="${vendorName != null ? vendorName : 'Unknown Vendor'}">Vendor Name</strong></span
+              <strong
+                th:text="${vendorName != null ? vendorName : 'Unknown Vendor'}"
+                >Vendor Name</strong
+              ></span
             >
           </div>
 

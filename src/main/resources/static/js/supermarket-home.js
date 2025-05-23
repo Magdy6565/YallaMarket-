@@ -368,10 +368,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const vendorName = product.vendorName || product.vendorUsername;
     const category = product.category;
     const availableStock = product.quantity || 0;
-
     if (!productId) {
       console.error("Product ID is missing:", product);
-      alert("Error: Cannot add product to cart - missing product ID");
+      customAlert.error(
+        "Error: Cannot add product to cart - missing product ID",
+        "Error"
+      );
       return;
     }
 
@@ -384,10 +386,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (existingItemIndex > -1) {
       // If item exists, check if we can increase quantity based on available stock
       const currentQuantity = cartItems[existingItemIndex].quantity;
-
       if (currentQuantity >= availableStock) {
-        alert(
-          `Cannot add more of this product. Maximum available: ${availableStock}`
+        customAlert.warning(
+          `Cannot add more of this product. Maximum available: ${availableStock}`,
+          "Stock Limit Reached"
         );
         return;
       }
@@ -418,12 +420,13 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCartBadge();
 
     // Update all add to cart buttons
-    updateAllAddToCartButtons();
-
-    // Show more detailed confirmation
+    updateAllAddToCartButtons(); // Show more detailed confirmation
     const totalQuantity =
       cartItems.find((item) => String(item.id) === productIdStr)?.quantity || 0;
-    alert(`${productName} added to cart! (Total: ${totalQuantity})`);
+    customAlert.toast(
+      `${productName} added to cart! (Total: ${totalQuantity})`,
+      "success"
+    );
   }
 
   /**
@@ -483,11 +486,13 @@ document.addEventListener("DOMContentLoaded", function () {
         // Get selected vendor IDs from multi-select dropdown
         currentVendorFilter = getSelectedVendorIds();
         console.log("Selected vendors:", currentVendorFilter);
-
         currentOffset = 0; // Reset offset when applying vendor filter
         fetchProducts(currentCategoryId, currentVendorFilter);
       } else {
-        alert("Please select a category first.");
+        customAlert.warning(
+          "Please select a category first.",
+          "Category Required"
+        );
       }
     });
   }

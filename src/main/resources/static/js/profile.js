@@ -526,8 +526,9 @@ function showNotificationSettingsModal() {
  */
 async function updateProfile(formData) {
   if (!currentUserId) {
-    alert(
-      "Error: User ID not found for profile update. Please refresh the page."
+    customAlert.error(
+      "Error: User ID not found for profile update. Please refresh the page.",
+      "User ID Missing"
     );
     console.error("Attempted to update profile without a valid currentUserId.");
     return;
@@ -545,9 +546,8 @@ async function updateProfile(formData) {
       },
       body: JSON.stringify(Object.fromEntries(formData)), // Convert FormData to JSON object
     });
-
     if (response.ok) {
-      alert("Profile updated successfully!");
+      customAlert.success("Profile updated successfully!", "Profile Updated");
       document.querySelector(".modal").remove(); // Close the modal
       window.location.reload(true); // Forces a reload from the server (true for hard reload)
     } else {
@@ -559,7 +559,10 @@ async function updateProfile(formData) {
     }
   } catch (error) {
     console.error("Error updating profile:", error);
-    alert("Failed to update profile: " + error.message);
+    customAlert.error(
+      "Failed to update profile: " + error.message,
+      "Update Failed"
+    );
   }
 }
 
@@ -569,8 +572,9 @@ async function updateProfile(formData) {
  */
 async function updateNotificationSettings(formData) {
   if (!currentUserId) {
-    alert(
-      "Error: User ID not found for notification settings. Please refresh the page."
+    customAlert.error(
+      "Error: User ID not found for notification settings. Please refresh the page.",
+      "User ID Missing"
     );
     console.error(
       "Attempted to update notification settings without a valid currentUserId."
@@ -595,9 +599,11 @@ async function updateNotificationSettings(formData) {
         promotions: formData.get("promotions") === "on",
       }),
     });
-
     if (response.ok) {
-      alert("Notification settings updated successfully!");
+      customAlert.success(
+        "Notification settings updated successfully!",
+        "Settings Updated"
+      );
       document.querySelector(".modal").remove(); // Close modal
     } else {
       const errorData = await response.json();
@@ -608,6 +614,9 @@ async function updateNotificationSettings(formData) {
     }
   } catch (error) {
     console.error("Error updating notification settings:", error);
-    alert("Failed to update notification settings: " + error.message);
+    customAlert.error(
+      "Failed to update notification settings: " + error.message,
+      "Update Failed"
+    );
   }
 }
