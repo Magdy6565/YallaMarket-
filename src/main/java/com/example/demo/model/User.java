@@ -94,7 +94,9 @@ public class User implements UserDetails {
         // or provide a custom UserDetailsService.
         // Returning the 'username' field from your entity here.
         return this.username;
+//        return this.email;
     }
+
 
 
     // TODO: add proper boolean checks based on deletedAt and enabled

@@ -292,6 +292,34 @@
   font-size: 1rem;
 }
 
+/* Vendor rating styles for product cards */
+.product-vendorRating {
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+  font-size: 14px;
+  color: #555;
+}
+
+.product-vendorRating i {
+  color: #ffc107;
+  margin-right: 2px;
+  font-size: 12px;
+}
+
+.product-vendorRating .fa-star-half-alt {
+  color: #ffc107;
+}
+
+.product-vendorRating .far.fa-star {
+  color: #e0e0e0;
+}
+
+.product-vendorRating span {
+  margin-left: 5px;
+  font-weight: 600;
+}
+
 .modal-product-stock {
   margin-bottom: 1rem;
 }

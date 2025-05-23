@@ -1,0 +1,115 @@
+/* CSS for Vendor Rating functionality */
+.vendor-rating {
+  margin-top: 25px;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #fff8e5;
+  border: 1px solid #ffe0a3;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.vendor-rating h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 18px;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.rating-stars {
+  display: flex;
+  gap: 8px;
+  font-size: 28px;
+}
+
+.rating-stars i {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #ffc107;
+}
+
+.rating-stars i.far {
+  color: #ced4da;
+}
+
+.rating-stars i:hover {
+  transform: scale(1.2);
+  color: #ffac0b;
+}
+
+.rating-message {
+  margin-top: 12px;
+  font-size: 15px;
+  padding: 5px 0;
+}
+
+.rating-message.success {
+  color: #28a745;
+}
+
+.rating-message.error {
+  color: #dc3545;
+}
+
+.rating-message.info {
+  color: #17a2b8;
+}
+
+/* Styles for rating display */
+.vendor-meta {
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.vendor-meta .vendor-rating-display {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.vendor-meta .vendor-rating-display i {
+  color: #ffc107;
+  margin-right: 2px;
+}
+
+.vendor-meta .vendor-rating-display .rating-value {
+  font-weight: 600;
+  margin-left: 5px;
+  color: #e67e22;
+}
+
+/* Animation for rating submission */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.rating-animation {
+  animation: pulse 0.5s ease-in-out;
+}
+
+/* Hover tooltip for stars */
+.rating-stars i {
+  position: relative;
+}
+
+.rating-stars i::after {
+  content: attr(data-rating);
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.rating-stars i:hover::after {
+  opacity: 1;
+}

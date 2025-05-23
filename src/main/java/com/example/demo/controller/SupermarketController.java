@@ -56,28 +56,50 @@ public class SupermarketController {
         }
         return "supermarket-basket";
     }
-    
-    /**
-     * Display the product details page for a specific product
-     */
+
     @GetMapping("/product/{id}")
     public String showProductDetails(@PathVariable("id") Long productId, Model model, Principal principal) {
         if (principal != null) {
             model.addAttribute("username", principal.getName());
         }
-        
-        // Find the product in the full list of products
-        List<Product> allProducts = productService.getAllProducts();
-        Optional<Product> productOpt = allProducts.stream()
-            .filter(p -> p.getProductId().equals(productId))
-            .findFirst();
-        
-        if (productOpt.isPresent()) {
-            model.addAttribute("product", productOpt.get());
-            return "supermarket-product-details";
-        } else {
-            // Product not found, redirect to home
+
+        try {
+            // Directly fetch the product by ID using the public endpoint
+            Optional<Product> productOpt = Optional.empty();
+            // First try to find the product in the full list of products
+            List<Product> allProducts = productService.getAllProducts();
+            productOpt = allProducts.stream()
+                .filter(p -> p.getProductId().equals(productId))
+                .findFirst();
+
+            if (productOpt.isPresent()) {
+                // Add vendor name to the product if available
+                Product product = productOpt.get();
+
+                // Ensure the vendorId is correctly set in the model
+                if (product.getVendorId() != null) {
+                    // You might want to add more vendor information here if needed
+                    // For now, we're just ensuring the vendorId is available
+                    model.addAttribute("vendorId", product.getVendorId());
+                }
+
+                model.addAttribute("product", product);
+//                return "Hello ziad shawky" ;
+                return "supermarket-product-details";
+            } else {
+                // Product not found, redirect to home
+                return "redirect:/supermarket/home";
+            }
+        } catch (Exception e) {
+            // Log error and redirect to home
+            System.err.println("Error fetching product details: " + e.getMessage());
             return "redirect:/supermarket/home";
         }
     }
+//@GetMapping("/product/{id}")
+//public String getProductDetails(@PathVariable Long id, Model model) {
+//    Optional<Product> product = productService.getProductById(id); // Or some other way of fetching the product
+//    model.addAttribute("product", product);
+//    return "supermarket-product-details";
+//}
 }

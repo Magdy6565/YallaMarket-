@@ -40,7 +40,6 @@ public interface ProductService {
     // Admin-specific methods
     Page<Product> getAllProductsWithFilters(ProductFilterRequest filterRequest, Long vendorId, Pageable pageable);
     
-    Optional<Product> getProductById(Long productId);
     
     Optional<Product> getProductByIdAsAdmin(Long productId);
     
@@ -49,4 +48,7 @@ public interface ProductService {
     boolean deleteProductAsAdmin(Long productId);
     
     Optional<Product> restoreProductAsAdmin(Long productId);
+
+    Optional<Product> getProductById(Long productId);
+
 }

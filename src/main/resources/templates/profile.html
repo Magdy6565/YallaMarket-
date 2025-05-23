@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YallaMarket - Profile</title>
-  <link rel="stylesheet" th:href="@{/css/products.css}" />
+  <title>YallaMarket - Profile</title>  <link rel="stylesheet" th:href="@{/css/products.css}" />
   <link rel="stylesheet" th:href="@{/css/profile.css}" />
+  <link rel="stylesheet" th:href="@{/css/vendor-rating.css}" />
   <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
   />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 </head>
 <body>
@@ -76,58 +75,11 @@
 <!--            <p id="profile-memberSince">Loading...</p>-->
 <!--          </div>-->
         </div>
-      </div>
-
-      <div class="profile-section">
-        <h2><i class="fas fa-chart-line"></i> Account Statistics</h2>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon products">
-              <i class="fas fa-box"></i>
-            </div>
-            <div class="stat-info">
-              <h3>Total Products</h3>
-              <p id="stats-totalProducts">0</p>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon orders">
-              <i class="fas fa-shopping-cart"></i>
-            </div>
-            <div class="stat-info">
-              <h3 id="stats-ordersLabel">Orders</h3>
-              <p id="stats-totalOrders">0</p>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon revenue">
-              <i class="fas fa-dollar-sign"></i>
-            </div>
-            <div class="stat-info">
-              <h3 id="stats-revenueLabel">Revenue</h3>
-              <p id="stats-totalRevenue">$0.00</p>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon rating">
-              <i class="fas fa-star"></i>
-            </div>
-            <div class="stat-info">
-              <h3>Rating</h3>
-              <p id="stats-rating">0.0/5</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="profile-section">
+      </div>      <!-- Statistics section removed for supermarket users --><div class="profile-section">
         <h2><i class="fas fa-cog"></i> Account Settings</h2>
         <div class="settings-buttons">
           <button id="editProfileBtn" class="btn">
             <i class="fas fa-user-edit"></i> Edit Profile
-          </button>
-          <button id="changePasswordBtn" class="btn">
-            <i class="fas fa-lock"></i> Change Password
           </button>
         </div>
       </div>

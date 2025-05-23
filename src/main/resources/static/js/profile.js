@@ -1,3 +1,4 @@
+// filepath: c:\Users\SourcesNet\Desktop\Sw_final\YallaMarket-\src\main\resources\static\js\profile.js
 // Global variable to store the authenticated user's ID
 // Initialize to null, it will be set after a successful fetch.
 let currentUserId = null;
@@ -39,11 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (editProfileBtn) {
     editProfileBtn.addEventListener("click", showEditProfileModal);
   }
-
-  const changePasswordBtn = document.getElementById("changePasswordBtn");
-  if (changePasswordBtn) {
-    changePasswordBtn.addEventListener("click", showChangePasswordModal);
-  }
+  // Change password functionality removed as requested
 
 //  // Ensure this is uncommented if you have a Notification Settings button in your HTML
 //  const notificationSettingsBtn = document.getElementById("notificationSettingsBtn");
@@ -59,14 +56,14 @@ document.addEventListener("DOMContentLoaded", function () {
  */
 async function fetchUserProfileAndDisplay() {
   try {
-//    const token = localStorage.getItem('jwtToken'); // Get token from local storage
+    //    const token = localStorage.getItem('jwtToken'); // Get token from local storage
 
-    const response = await fetch("/users/me" , {
-        method:"GET" ,
-        headers: {
-            //        'Authorization': `Bearer ${token}` // Include Authorization header
-                'Content-Type': 'application/json'
-                  }
+    const response = await fetch("/users/me", {
+      method: "GET",
+      headers: {
+        //        'Authorization': `Bearer ${token}` // Include Authorization header
+        'Content-Type': 'application/json'
+      }
     });
 
     if (!response.ok) {
@@ -97,94 +94,114 @@ async function fetchUserProfileAndDisplay() {
     document.getElementById("profile-contactInfo").textContent = userData.contactInfo || "N/A";
     document.getElementById("profile-address").textContent = userData.address || "N/A";
 
-try {
-    // Fetch data from the endpoint. No 'localhost' prefix needed if served from the same domain.
-    const url = `/api/vendor/stats/${currentUserId}`;
+    // --- Update Navigation based on role ---
+    const navbarLinks = document.getElementById('navbarLinks');
+    if (navbarLinks) {
+      // Clear existing links
+      navbarLinks.innerHTML = '';
 
-    // Add Authorization header if your endpoint is secured (assuming JWT is stored in localStorage)
-    const token = localStorage.getItem('jwtToken');
-    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      if (userData.role === 1) { // Vendor
+        navbarLinks.innerHTML = `
+          <li><a href="/products">My Products</a></li>
+          <li><a href="/vendor-orders">Orders</a></li>
+          <li><a href="/stats">Refunds</a></li>
+        `;
+      } else if (userData.role === 2) { // Supermarket
+        navbarLinks.innerHTML = `
+          <li><a href="/supermarket/home">Home</a></li>
+          <li><a href="/supermarket/orders">Orders</a></li>
+          <li>
+            <a href="/supermarket/basket" class="cart-link">
+              <i class="fas fa-shopping-cart"></i>
+              <span class="cart-badge" id="cartBadge">0</span>
+            </a>
+          </li>
+        `;
 
-    const response = await fetch(url, { headers });
-
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || `HTTP error! status: ${response.status}`);
+        // Update cart badge if we're in supermarket view
+        const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+        const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+        const cartBadge = document.getElementById("cartBadge");
+        if (cartBadge) {
+          cartBadge.textContent = totalItems;
+          cartBadge.style.display = totalItems > 0 ? "flex" : "none";
+        }
+      }
     }
 
-    // Parse the JSON response from the backend
-    const backendData = await response.json();
-
-    // Map backend DTO properties to frontend variables, with fallbacks
-    const totalProducts = backendData.totalProductsListed !== undefined ? backendData.totalProductsListed : 0;
-    const totalOrders = backendData.totalOrdersReceived !== undefined ? backendData.totalOrdersReceived : 0;
-    const totalRevenue = backendData.totalRevenue !== undefined ? backendData.totalRevenue : 0.00;
-    const rating = backendData.rating !== undefined ? backendData.rating : 0.0; // Assuming 'rating' might come from backend later
-
-    // Update HTML elements with the fetched data
-    // Ensure these IDs exist in your HTML (e.g., in your 'stats.html' page)
-    const statsTotalProductsElement = document.getElementById("stats-totalProducts");
-    if (statsTotalProductsElement) {
-        statsTotalProductsElement.textContent = totalProducts;
-    } else {
-        console.warn("Element with ID 'stats-totalProducts' not found.");
+    // Also update the logo link based on role
+    const logoLink = document.querySelector('.navbar-logo');
+    if (logoLink) {
+      logoLink.href = userData.role === 2 ? '/supermarket/home' : '/products';
     }
 
-    const statsTotalOrdersElement = document.getElementById("stats-totalOrders");
-    if (statsTotalOrdersElement) {
-        statsTotalOrdersElement.textContent = totalOrders;
-    } else {
-        console.warn("Element with ID 'stats-totalOrders' not found.");
+    // For vendor users, show statistics section and load data
+    if (userData.role === 1) { // Vendor
+      // The original issue was here: 'try' block was opened without a closing brace before its own catch.
+      // This 'try...catch' block belongs specifically to the vendor statistics loading.
+      try {
+        // Add statistics section dynamically for vendor users
+        const profileContent = document.querySelector('.profile-content');
+        const accountSettingsSection = document.querySelector('.profile-content .profile-section:last-child');
+        // Create statistics section
+        const statsSection = document.createElement('div');
+        statsSection.className = 'profile-section';
+        statsSection.innerHTML = `
+          <h2><i class="fas fa-chart-line"></i> Account Statistics</h2>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon products">
+                <i class="fas fa-box"></i>
+              </div>
+              <div class="stat-info">
+                <h3>Total Products</h3>
+                <p id="stats-totalProducts">0</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon orders">
+                <i class="fas fa-shopping-cart"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="stats-ordersLabel">Orders</h3>
+                <p id="stats-totalOrders">0</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon revenue">
+                <i class="fas fa-dollar-sign"></i>
+              </div>
+              <div class="stat-info">
+                <h3 id="stats-revenueLabel">Revenue</h3>
+                <p id="stats-totalRevenue">$0.00</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon rating">
+                <i class="fas fa-star"></i>
+              </div>
+              <div class="stat-info">
+                <h3>Vendor Rating</h3>
+                <p id="stats-rating">0.0/5</p>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Insert statistics section before account settings
+        if (accountSettingsSection && profileContent) {
+          profileContent.insertBefore(statsSection, accountSettingsSection);
+
+          // Load statistics data
+          await loadVendorStatistics(currentUserId);
+        }
+      } catch (error) { // This catch block now correctly closes the 'try' above it.
+        console.error("Error loading vendor statistics:", error);
+      }
     }
+    // Statistics section is not shown for supermarket users
 
-    const statsTotalRevenueElement = document.getElementById("stats-totalRevenue");
-    if (statsTotalRevenueElement) {
-        statsTotalRevenueElement.textContent = `$${totalRevenue.toFixed(2)}`;
-    } else {
-        console.warn("Element with ID 'stats-totalRevenue' not found.");
-    }
-
-    const statsRatingElement = document.getElementById("stats-rating");
-    if (statsRatingElement) {
-        statsRatingElement.textContent = `${rating.toFixed(1)}/5`;
-    } else {
-        console.warn("Element with ID 'stats-rating' not found.");
-    }
-
-    // Adjust labels based on role (assuming 'role' 1 is 'vendor' and others are 'customer')
-    // This part assumes 'role' is available in backendData or determined otherwise.
-    // If 'role' is not in backendData, you'll need to fetch user role separately.
-    const isVendor = backendData.role === 1; // Adjust this logic if 'role' is not directly in backendData
-    const statsOrdersLabelElement = document.getElementById("stats-ordersLabel");
-    if (statsOrdersLabelElement) {
-        statsOrdersLabelElement.textContent = isVendor ? 'Orders Received' : 'Orders Placed';
-    } else {
-        console.warn("Element with ID 'stats-ordersLabel' not found.");
-    }
-
-    const statsRevenueLabelElement = document.getElementById("stats-revenueLabel");
-    if (statsRevenueLabelElement) {
-        statsRevenueLabelElement.textContent = isVendor ? 'Total Revenue' : 'Total Spent';
-    } else {
-        console.warn("Element with ID 'stats-revenueLabel' not found.");
-    }
-
-} catch (error) {
-    console.error("Error fetching vendor statistics:", error);
-    // You might want to display an error message on the page here,
-    // e.g., by targeting a specific error div or the main container.
-    const statsContainer = document.querySelector(".products-container"); // Assuming this is your main container
-    if (statsContainer) {
-        statsContainer.innerHTML = `<div class="error-message">Failed to load statistics: ${error.message || "Please try again later."}</div>`;
-    }
-}
-
-
-
-
-
-
-  } catch (error) {
+  } catch (error) { // This is the catch block for the outer `WorkspaceUserProfileAndDisplay` function.
     console.error("Critical error loading user profile:", error);
     // Display robust error messages on the page if data cannot be loaded
     document.getElementById("profile-username").textContent = "Error loading profile data";
@@ -192,18 +209,119 @@ try {
     document.getElementById("profile-email").textContent = "Failed to load profile. Please ensure you are logged in and refresh.";
     document.getElementById("profile-contactInfo").textContent = "";
     document.getElementById("profile-address").textContent = "";
-//    document.getElementById("profile-memberSince").textContent = "";
+    //    document.getElementById("profile-memberSince").textContent = "";    // Only clear stats for vendor users if they exist
+    // You cannot access userData.role here because userData might not be defined if the outer try failed before it was assigned.
+    // So, this part needs to be careful or moved.
+    // For now, I'll keep the check but be aware it might not always work.
+    // A more robust approach might be to set a flag.
+    // Assuming 'userData' would only be undefined if the *initial* fetch failed.
+    // If the initial fetch succeeded, 'userData' exists, and we only reach this catch if a later operation (like DOM manipulation) failed.
+    // However, the current structure means 'userData' might be undefined if the `await response.json()` or `Workspace` itself threw an error.
 
-    // Clear stats or show error
-    document.getElementById("stats-totalProducts").textContent = "N/A";
-    document.getElementById("stats-totalOrders").textContent = "N/A";
-    document.getElementById("stats-totalRevenue").textContent = "N/A";
-    document.getElementById("stats-rating").textContent = "N/A";
+    // A safer way to handle this might be to wrap the entire try block inside an if(userData) or similar.
+    // For now, removing the conditional check as it might cause an error if userData is null.
+    // Instead, just try to clear elements if they exist.
+    const statsElements = ["stats-totalProducts", "stats-totalOrders", "stats-totalRevenue", "stats-rating"];
+    statsElements.forEach(id => {
+      const element = document.getElementById(id);
+      if (element) element.textContent = "N/A";
+    });
+
 
     // Optionally disable edit buttons if data couldn't load
     if (document.getElementById("editProfileBtn")) document.getElementById("editProfileBtn").disabled = true;
-    if (document.getElementById("changePasswordBtn")) document.getElementById("changePasswordBtn").disabled = true;
-//    if (document.getElementById("notificationSettingsBtn")) document.getElementById("notificationSettingsBtn").disabled = true;
+    // We've removed the Change Password button functionality
+  }
+}
+/**
+ * Loads vendor statistics from the backend API
+ */
+async function loadVendorStatistics(vendorId) {
+  try {
+    const url = `/api/vendor/stats/${vendorId}`;
+    
+    // Add Authorization header if your endpoint is secured
+//    const token = localStorage.getItem('jwtToken');
+//    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    const headers = {}
+    const response = await fetch(url, { headers });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || `HTTP error! status: ${response.status}`);
+    }
+    
+    // Parse the JSON response from the backend
+    const backendData = await response.json();
+    // Map backend DTO properties to frontend variables, with fallbacks
+    const totalProducts = backendData.totalProductsListed !== undefined ? backendData.totalProductsListed : 0;
+    const totalOrders = backendData.totalOrdersReceived !== undefined ? backendData.totalOrdersReceived : 0;
+    const totalRevenue = backendData.totalRevenue !== undefined ? backendData.totalRevenue : 0.00;
+    
+    // Fetch vendor rating separately from the ratings API
+    let vendorRating = 0;
+    try {
+      const ratingResponse = await fetch(`/api/ratings/vendor/${vendorId}/average`, { headers });
+      if (ratingResponse.ok) {
+        const ratingData = await ratingResponse.json();
+        vendorRating = ratingData.rating || 0;
+      }
+    } catch (ratingError) {
+      console.error("Error fetching vendor rating:", ratingError);
+    }
+    
+    // Update the display with vendor data (isVendor = true)
+    updateStatsDisplay(totalProducts, totalOrders, totalRevenue, vendorRating, true);
+  } catch (error) {
+    console.error("Error fetching vendor statistics:", error);
+    // Update with default values
+    updateStatsDisplay(0, 0, 0, 0, true);
+  }
+}
+
+// Supermarket statistics functionality removed as requested
+
+/**
+ * Helper function to update the stats display on the profile page
+ */
+function updateStatsDisplay(totalProducts, totalOrders, totalAmount, rating, isVendor) {
+  try {
+    // Update HTML elements with the data
+    const statsTotalProductsElement = document.getElementById("stats-totalProducts");
+    if (statsTotalProductsElement) {
+      statsTotalProductsElement.textContent = totalProducts;
+    }
+
+    const statsTotalOrdersElement = document.getElementById("stats-totalOrders");
+    if (statsTotalOrdersElement) {
+      statsTotalOrdersElement.textContent = totalOrders;
+    }
+
+    const statsTotalRevenueElement = document.getElementById("stats-totalRevenue");
+    if (statsTotalRevenueElement) {
+      statsTotalRevenueElement.textContent = `$${totalAmount.toFixed(2)}`;
+    }
+
+    // Update the rating display with real data from vendor_ratings table
+    const statsRatingElement = document.getElementById("stats-rating");
+    if (statsRatingElement) {
+      // Format to one decimal place
+      const formattedRating = (Math.round(rating * 10) / 10).toFixed(1);
+      statsRatingElement.textContent = `${formattedRating}/5`;
+    }
+
+    // Adjust labels based on isVendor flag
+    const statsOrdersLabelElement = document.getElementById("stats-ordersLabel");
+    if (statsOrdersLabelElement) {
+      statsOrdersLabelElement.textContent = isVendor ? 'Orders Received' : 'Orders Placed';
+    }
+
+    const statsRevenueLabelElement = document.getElementById("stats-revenueLabel");
+    if (statsRevenueLabelElement) {
+      statsRevenueLabelElement.textContent = isVendor ? 'Total Revenue' : 'Total Spent';
+    }
+  } catch (err) {
+    console.error("Error updating stats display:", err);
   }
 }
 
@@ -215,7 +333,7 @@ function getRoleName(roleId) {
     case 1:
       return "Vendor";
     case 2:
-      return "Customer";
+      return "Supermarket"; // Changed from "Customer" to "Supermarket"
     default:
       return "User"; // Default if role is unknown
   }
@@ -300,37 +418,6 @@ function showEditProfileModal() {
   }
 }
 
-function showChangePasswordModal() {
-  const modal = createModal(
-    "Change Password",
-    `
-        <form id="changePasswordForm">
-            <div class="form-group">
-                <label for="currentPassword">Current Password</label>
-                <input type="password" id="currentPassword" name="currentPassword" required>
-            </div>
-            <div class="form-group">
-                <label for="newPassword">New Password</label>
-                <input type="password" id="newPassword" name="newPassword" required>
-            </div>
-            <div class="form-group">
-                <label for="confirmPassword">Confirm New Password</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required>
-            </div>
-            <button type="submit" class="btn save-btn">Change Password</button>
-        </form>
-    `
-  );
-
-  const form = modal.querySelector("form");
-  if (form) {
-    form.addEventListener("submit", async function (e) {
-      e.preventDefault();
-      await changePassword(new FormData(form));
-    });
-  }
-}
-
 function showNotificationSettingsModal() {
   const modal = createModal(
     "Notification Settings",
@@ -398,10 +485,8 @@ async function updateProfile(formData) {
 
     if (response.ok) {
       alert("Profile updated successfully!");
-//      fetchUserProfileAndDisplay(); // Re-fetch and display the latest data
       document.querySelector(".modal").remove(); // Close the modal
-//        document.querySelector(".modal").remove(); // Close the modal first
-        window.location.reload(true); // Forces a reload from the server (true for hard reload)
+      window.location.reload(true); // Forces a reload from the server (true for hard reload)
     } else {
       const errorData = await response.json(); // Attempt to read error message from backend
       throw new Error(errorData.message || `Failed to update profile: Status ${response.status}`);
@@ -409,56 +494,6 @@ async function updateProfile(formData) {
   } catch (error) {
     console.error("Error updating profile:", error);
     alert("Failed to update profile: " + error.message);
-  }
-}
-
-/**
- * Handles changing the user's password via a POST request.
- * Compares new password with confirmation and includes current user ID in the URL.
- * @param {FormData} formData - Form data containing current, new, and confirm passwords.
- */
-async function changePassword(formData) {
-  const newPassword = formData.get("newPassword");
-  const confirmPassword = formData.get("confirmPassword");
-
-  if (newPassword !== confirmPassword) {
-    alert("New passwords do not match!");
-    return;
-  }
-
-  if (!currentUserId) {
-    alert("Error: User ID not found for password change. Please refresh the page.");
-    console.error("Attempted to change password without a valid currentUserId.");
-    return;
-  }
-
-  try {
-    const token = localStorage.getItem('jwtToken');
-    // Adjust this URL to your actual change password endpoint that accepts user ID
-    const url = `/users/${currentUserId}/change-password`; // Example endpoint structure
-
-    const response = await fetch(url, {
-      method: "POST", // Often POST for password changes
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        currentPassword: formData.get("currentPassword"),
-        newPassword: newPassword, // Use the stored newPassword
-      }),
-    });
-
-    if (response.ok) {
-      alert("Password changed successfully!");
-      document.querySelector(".modal").remove(); // Close modal
-    } else {
-      const errorData = await response.json();
-      throw new Error(errorData.message || `Failed to change password: Status ${response.status}`);
-    }
-  } catch (error) {
-    console.error("Error changing password:", error);
-    alert("Failed to change password: " + error.message);
   }
 }
 
