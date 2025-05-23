@@ -9,6 +9,7 @@ import com.example.demo.enums.UserRole;
 import com.example.demo.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 /**
  * Controller for managing users by administrators or vendors
@@ -48,37 +50,49 @@ public class UserManagementController {
             }
         }
         return false;
-    }
-
-    /**
-     * Get all active users
-     * @return List of active users
+    }    /**
+     * Get all active users with pagination and filtering
+     * @param page The page number (0-indexed)
+     * @param size The page size
+     * @param role The role filter (optional)
+     * @param status The status filter (optional)
+     * @return Page of users matching the filters
      */
     @GetMapping("/users")
-    public ResponseEntity<List<UserListDTO>> getAllUsers() {
+    public ResponseEntity<?> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "-1") Integer role,
+            @RequestParam(required = false, defaultValue = "all") String status) {
+        
         if (!hasAdminOrVendorPermission()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         
-        List<UserListDTO> users = userService.getAllActiveUsers();
-        return ResponseEntity.ok(users);
-    }
-
-    /**
-     * Get users by role
+        Page<UserListDTO> userPage = userService.getPaginatedUsers(page, size, role, status);
+        
+        return ResponseEntity.ok(userPage);
+    }    /**
+     * Get users by role with pagination
      * @param roleId The role ID to filter by
-     * @return List of users with the specified role
+     * @param page The page number (0-indexed)
+     * @param size The page size
+     * @return Page of users with the specified role
      */
     @GetMapping("/users/role/{roleId}")
-    public ResponseEntity<List<UserListDTO>> getUsersByRole(@PathVariable int roleId) {
+    public ResponseEntity<?> getUsersByRole(
+            @PathVariable int roleId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        
         if (!hasAdminOrVendorPermission()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         
         try {
             UserRole role = UserRole.fromValue(roleId);
-            List<UserListDTO> users = userService.getUsersByRole(role);
-            return ResponseEntity.ok(users);
+            Page<UserListDTO> userPage = userService.getUsersByRolePaginated(role, page, size);
+            return ResponseEntity.ok(userPage);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }

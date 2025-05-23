@@ -1,5 +1,8 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +17,10 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class,
+    property = "invoiceId"
+)
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,11 +29,13 @@ public class Invoice {
 
     @OneToOne
     @JoinColumn(name = "order_id", unique = true, nullable = false)
+    @JsonIgnoreProperties({"invoice"})
     private Order order; // One-to-one with Order
 
-    @OneToOne
-    @JoinColumn(name = "payment_id", unique = true)
-    private Payment payment; // One-to-one with Payment
+    @ManyToOne
+    @JoinColumn(name = "payment_id")
+    @JsonIgnoreProperties("invoices")
+    private Payment payment; // Many-to-one with Payment
 
     @Column(name = "issue_date")
     private LocalDateTime issueDate;

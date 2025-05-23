@@ -209,6 +209,22 @@ public class WebViewController {
     }
     
     /**
+     * Display the vendor refunds page
+     */
+    @GetMapping("/vendor-refunds")
+    public String vendorRefundsPage(Model model) {
+        // Check if user is authenticated
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAuthenticated = authentication != null &&
+                authentication.isAuthenticated() &&
+                !authentication.getName().equals("anonymousUser");
+        if (!isAuthenticated) {
+            return "redirect:/login";
+        }
+        return "vendor-refunds";
+    }
+    
+    /**
      * Home page redirect to login or products
      * 
      * @return The redirect URL

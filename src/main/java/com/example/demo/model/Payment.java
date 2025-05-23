@@ -1,6 +1,9 @@
 package com.example.demo.model;
 
 import com.example.demo.enums.PaymentStatus;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +20,10 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class,
+    property = "paymentId"
+)
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +59,7 @@ public class Payment {
     private PaymentStatus status;
 
     @OneToMany(mappedBy = "payment")
+    @JsonIgnoreProperties("payment")
     private List<Invoice> invoices;
 
 }

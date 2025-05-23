@@ -41,16 +41,12 @@
                     <li th:if="${userRole == 'retailStore'}">
                         <a href="#"><i class="fas fa-dolly"></i> Deliveries</a>
                     </li>
-                    
-                    <!-- Common menu items -->
+                      <!-- Common menu items -->
                     <li>
-                        <a href="#"><i class="fas fa-credit-card"></i> Payments</a>
+                        <a href="/payments"><i class="fas fa-credit-card"></i> Payments</a>
                     </li>
                     <li>
-                        <a href="#"><i class="fas fa-bell"></i> Notifications</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fas fa-user"></i> Profile</a>
+                        <a href="/profile"><i class="fas fa-user"></i> Profile</a>
                     </li>
                     <li>
                         <a href="#"><i class="fas fa-cog"></i> Settings</a>
@@ -74,13 +70,7 @@
                     <i class="fas fa-search"></i>
                     <input type="text" placeholder="Search...">
                 </div>
-                
-                <div class="header-user">
-                    <div class="notifications">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">3</span>
-                    </div>
-                    
+                  <div class="header-user">
                     <div class="user-profile">
                         <img src="https://via.placeholder.com/40" alt="User Profile">
                         <span th:text="${username}">User</span>

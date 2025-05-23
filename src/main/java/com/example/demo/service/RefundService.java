@@ -11,11 +11,13 @@ import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.RefundRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +25,10 @@ public class RefundService {
 
     private final RefundRepository refundRepository;
     private final PaymentRepository paymentRepository;
-    private final OrderItemRepository orderItemRepository;    public RefundResponseDto createRefund(RefundRequestDto dto) {
+    private final OrderItemRepository orderItemRepository;
+    private final com.example.demo.repository.UserRepository userRepository;
+    
+    public RefundResponseDto createRefund(RefundRequestDto dto) {
         Payment payment = paymentRepository.findById(dto.getPaymentId())
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
 
@@ -49,8 +54,30 @@ public class RefundService {
 
     public List<RefundResponseDto> getRefundsByVendorId(Long vendorId) {
         List<Refund> refunds = refundRepository.findRefundsByVendorId(vendorId);
-        return refunds.stream()
-                .map(RefundResponseDto::new)
-                .collect(Collectors.toList());
+        List<RefundResponseDto> dtos = new ArrayList<>();
+        for (Refund refund : refunds) {
+            RefundResponseDto dto = new RefundResponseDto(refund);
+            // Fetch retail store (customer) username
+            Long storeId = refund.getOrderItem().getOrder().getUserId();
+            userRepository.findById(storeId)
+                .ifPresent(user -> dto.setCustomerUsername(user.getUsername()));
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+    
+    public Optional<RefundResponseDto> getRefundById(Long refundId) {
+        return refundRepository.findById(refundId)
+                .map(RefundResponseDto::new);
+    }
+    
+    @Transactional
+    public Optional<RefundResponseDto> updateRefundStatus(Long refundId, RefundStatus newStatus) {
+        return refundRepository.findById(refundId)
+            .map(refund -> {
+                refund.setStatus(newStatus);
+                Refund updated = refundRepository.save(refund);
+                return new RefundResponseDto(updated);
+            });
     }
 }

@@ -1,6 +1,9 @@
 package com.example.demo.model;
 
 import com.example.demo.enums.RefundStatus;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,6 +15,10 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class,
+    property = "refundId"
+)
 public class Refund {
 
     @Id
@@ -21,6 +28,7 @@ public class Refund {
 
     @ManyToOne
     @JoinColumn(name = "payment_id")
+    @JsonIgnoreProperties({"invoices"})
     private Payment payment;
 
     @Column(name = "refund_date")
@@ -34,11 +42,9 @@ public class Refund {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private RefundStatus status;
-
-    @Column(name = "deleted_at")
+    private RefundStatus status;    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
-
+    
     @ManyToOne
     @JoinColumn(name = "order_item_id")
     private OrderItem orderItem;

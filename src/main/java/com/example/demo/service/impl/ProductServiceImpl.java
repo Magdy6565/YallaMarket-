@@ -130,11 +130,88 @@ public class ProductServiceImpl implements ProductService {
                 category, effectiveVendorIds);
 
         return products;
-    }
-
-    @Override
+    }    @Override
     public List<VendorDTO> getVendorDetailsByCategory(String category) {
         return productRepository.findVendorsByCategory(category);
     }
+      @Override
+    public org.springframework.data.domain.Page<Product> getAllProductsWithFilters(ProductFilterRequest filterRequest, Long vendorId, org.springframework.data.domain.Pageable pageable) {
+        // Include all products (including soft-deleted ones) for admin to manage
+        if (filterRequest.getCategory() != null && !filterRequest.getCategory().isEmpty() && vendorId != null) {
+            // Filter by both category and vendor ID
+            return productRepository.findByCategoryAndVendorId(
+                    filterRequest.getCategory(), vendorId, pageable);
+        } else if (filterRequest.getCategory() != null && !filterRequest.getCategory().isEmpty()) {
+            // Filter by category only
+            return productRepository.findByCategory(filterRequest.getCategory(), pageable);
+        } else if (vendorId != null) {
+            // Filter by vendor ID only
+            return productRepository.findByVendorId(vendorId, pageable);
+        } else {
+            // No filters, get all products including soft-deleted ones
+            return productRepository.findAll(pageable);
+        }
+    }
 
+    @Override
+    public Optional<Product> getProductById(Long productId) {
+        return productRepository.findById(productId)
+                .filter(product -> product.getDeletedAt() == null);
+    }
+
+    @Override
+    public Optional<Product> getProductByIdAsAdmin(Long productId) {
+        // Admin can view any product, including soft-deleted ones
+        return productRepository.findById(productId);
+    }
+
+    @Override
+    @Transactional
+    public Optional<Product> updateProductAsAdmin(Long productId, ProductRequest productRequest) {
+        Optional<Product> existingProductOptional = productRepository.findById(productId)
+                .filter(product -> product.getDeletedAt() == null);        if (existingProductOptional.isPresent()) {
+            Product existingProduct = existingProductOptional.get();
+            existingProduct.setName(productRequest.getName());
+            existingProduct.setDescription(productRequest.getDescription());
+            existingProduct.setPrice(productRequest.getPrice());
+            existingProduct.setQuantity(productRequest.getQuantity());
+            existingProduct.setCategory(productRequest.getCategory());
+            // Product doesn't have an updatedAt field
+            
+            return Optional.of(productRepository.save(existingProduct));
+        }
+        
+        return Optional.empty();
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteProductAsAdmin(Long productId) {
+        Optional<Product> productOptional = productRepository.findById(productId)
+                .filter(product -> product.getDeletedAt() == null);
+        
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+            product.setDeletedAt(LocalDateTime.now());
+            productRepository.save(product);
+            return true;
+        }
+        
+        return false;
+    }
+
+    @Override
+    @Transactional
+    public Optional<Product> restoreProductAsAdmin(Long productId) {
+        Optional<Product> productOptional = productRepository.findById(productId)
+                .filter(product -> product.getDeletedAt() != null);
+          if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+            product.setDeletedAt(null); // Clear the deletedAt field to restore
+            // Product doesn't have an updatedAt field
+            return Optional.of(productRepository.save(product));
+        }
+        
+        return Optional.empty();
+    }
 }

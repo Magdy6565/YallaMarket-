@@ -1,0 +1,453 @@
+/* Admin User Management specific styles */
+:root {
+  --primary-color: #3e8ed0;
+  --secondary-color: #48c78e;
+  --accent-color: #f14668;
+  --dark-color: #363636;
+  --light-color: #f5f5f5;
+  --success-color: #48c78e;
+  --warning-color: #ffe08a;
+  --danger-color: #f14668;
+  --info-color: #3e8ed0;
+  --border-radius: 8px;
+  --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+}
+
+/* Page Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+  display: flex;
+  align-items: center;
+}
+
+.role-badge.admin {
+  background-color: rgba(241, 70, 104, 0.1);
+  color: var(--accent-color);
+}
+
+/* Filter Section */
+.filter-section {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.filter-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--dark-color);
+}
+
+.filter-group select {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  background-color: white;
+  color: var(--dark-color);
+  transition: var(--transition);
+}
+
+.filter-group select:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+/* Users Table */
+.users-section {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 1.5rem;
+}
+
+.users-table-container {
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+
+.users-table th,
+.users-table td {
+  padding: 1rem;
+  text-align: left;
+}
+
+.users-table th {
+  background-color: var(--light-color);
+  font-weight: 500;
+  color: var(--dark-color);
+}
+
+.users-table tr {
+  border-bottom: 1px solid #eee;
+  transition: var(--transition);
+}
+
+.users-table tr:hover {
+  background-color: rgba(62, 142, 208, 0.05);
+}
+
+.users-table tr:last-child {
+  border-bottom: none;
+}
+
+/* Status indicators */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.status-active {
+  background-color: rgba(72, 199, 142, 0.1);
+  color: var(--success-color);
+}
+
+.status-inactive {
+  background-color: rgba(255, 224, 138, 0.2);
+  color: #856404;
+}
+
+.status-deleted {
+  background-color: rgba(241, 70, 104, 0.1);
+  color: var(--danger-color);
+}
+
+/* Action buttons */
+.action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-right: 0.5rem;
+  padding: 0.3rem;
+  color: var(--dark-color);
+  transition: var(--transition);
+}
+
+.action-btn:hover {
+  transform: scale(1.1);
+}
+
+.action-btn.edit {
+  color: var(--primary-color);
+}
+
+.action-btn.assign {
+  color: var(--secondary-color);
+}
+
+.action-btn.delete {
+  color: var(--danger-color);
+}
+
+.action-btn.restore {
+  color: var(--success-color);
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.pagination-btn {
+  background-color: var(--light-color);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--dark-color);
+  transition: var(--transition);
+}
+
+.pagination-btn:not(:disabled):hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#pageInfo {
+  margin: 0 1.5rem;
+  font-size: 0.9rem;
+}
+
+/* Loading indicator */
+.loading-indicator {
+  text-align: center;
+  padding: 2rem;
+  color: var(--primary-color);
+  font-size: 1rem;
+}
+
+.loading-indicator i {
+  margin-right: 0.5rem;
+}
+
+/* No data message */
+.no-data {
+  text-align: center;
+  padding: 2rem;
+  color: #777;
+}
+
+.no-data i {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #ddd;
+}
+
+/* Button styles */
+.btn {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2d7bb9;
+}
+
+.btn-secondary {
+  background-color: var(--light-color);
+  color: var(--dark-color);
+}
+
+.btn-secondary:hover {
+  background-color: #e5e5e5;
+}
+
+.btn-danger {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #dc3545;
+}
+
+.btn-success {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #3aa876;
+}
+
+/* Modal styles */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.modal-content {
+  position: relative;
+  background-color: white;
+  width: 90%;
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #777;
+  transition: var(--transition);
+}
+
+.modal-close:hover {
+  color: var(--primary-color);
+}
+
+.modal h2 {
+  margin-bottom: 1.5rem;
+  color: var(--dark-color);
+  display: flex;
+  align-items: center;
+}
+
+.modal h2 i {
+  margin-right: 0.5rem;
+  color: var(--primary-color);
+}
+
+/* Form styles */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--dark-color);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(62, 142, 208, 0.2);
+}
+
+.form-actions {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.delete-actions {
+  justify-content: center;
+}
+
+/* Toast notification */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  z-index: 2000;
+}
+
+.toast.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.toast-icon {
+  font-size: 1.2rem;
+}
+
+.toast-icon.success {
+  color: var(--success-color);
+}
+
+.toast-icon.error {
+  color: var(--danger-color);
+}
+
+.toast-message {
+  font-weight: 500;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .filter-section {
+    flex-direction: column;
+  }
+  
+  .filter-group {
+    width: 100%;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Sidebar overrides for admin role */
+.sidebar-nav ul li a i.fa-users {
+  color: var(--accent-color);
+}
+
+.sidebar-nav ul li.active a i.fa-users {
+  color: var(--accent-color);
+}
+
+.sidebar-nav ul li.active a[href*="user-management"] {
+  background-color: rgba(241, 70, 104, 0.1);
+  color: var(--accent-color);
+  border-left-color: var(--accent-color);
+}

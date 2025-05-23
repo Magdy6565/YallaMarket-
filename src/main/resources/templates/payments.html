@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YallaMarket - Payments</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/payments.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>YallaMarket</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="/dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
+                    </li>
+                    
+                    <!-- Admin-specific menu items -->
+                    <li>
+                        <a href="/user-management"><i class="fas fa-users"></i> User Management</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fas fa-store"></i> Store Management</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fas fa-boxes"></i> Product Management</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fas fa-shopping-cart"></i> Order Management</a>
+                    </li>
+                    
+                    <!-- Common menu items -->
+                    <li class="active">
+                        <a href="/payments"><i class="fas fa-credit-card"></i> Payments</a>
+                    </li>
+                    <li>
+                        <a href="/profile"><i class="fas fa-user"></i> Profile</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search payments...">
+                </div>
+                
+                <div class="header-user">
+                    <div class="user-profile">
+                        <img src="https://via.placeholder.com/40" alt="User Profile">
+                        <span th:text="${username}">Admin</span>
+                    </div>
+                </div>
+            </header>
+            
+            <div class="dashboard-content">
+                <div class="page-header">
+                    <h1>Payments Management <span class="role-badge admin">Admin</span></h1>
+                </div>
+                
+                <div class="filter-section">
+                    <div class="filter-group">
+                        <label for="paymentIdFilter">Payment ID</label>
+                        <input type="number" id="paymentIdFilter" min="1" placeholder="e.g., 1234">
+                    </div>
+                    <div class="filter-group">
+                        <label for="orderIdFilter">Order ID</label>
+                        <input type="number" id="orderIdFilter" min="1" placeholder="e.g., 5678">
+                    </div>
+                    <div class="filter-group">
+                        <label for="userIdFilter">User ID</label>
+                        <input type="number" id="userIdFilter" min="1" placeholder="e.g., 42">
+                    </div>
+                    <div class="filter-group filter-row">
+                        <div class="filter-subgroup">
+                            <label for="minAmountFilter">Min Amount ($)</label>
+                            <input type="number" id="minAmountFilter" min="0" step="0.01" placeholder="e.g., 10.00">
+                        </div>
+                        <div class="filter-subgroup">
+                            <label for="maxAmountFilter">Max Amount ($)</label>
+                            <input type="number" id="maxAmountFilter" min="0" step="0.01" placeholder="e.g., 1000.00">
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label for="statusFilter">Status</label>
+                        <select id="statusFilter">
+                            <option value="">All Statuses</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="COMPLETED">Completed</option>
+                            <option value="FAILED">Failed</option>
+                            <option value="REFUNDED">Refunded</option>
+                        </select>
+                    </div>
+                    <button id="filterBtn" class="btn btn-secondary">Apply Filters</button>
+                    <button id="clearFilterBtn" class="btn btn-outline">Clear Filters</button>
+                </div>
+                
+                <div class="payments-section">
+                    <div class="payments-table-container">
+                        <table class="payments-table">
+                            <thead>
+                                <tr>
+                                    <th>Payment ID</th>
+                                    <th>Order ID</th>
+                                    <th>User ID</th>
+                                    <th>Date & Time</th>
+                                    <th>Amount</th>
+                                    <th>Payment Method</th>
+                                    <th>Status</th>
+                                    <th>Transaction ID</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentsTableBody">
+                                <!-- Payment rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="paymentsLoadingIndicator" class="loading-indicator">
+                        <i class="fas fa-spinner fa-pulse"></i> Loading payments...
+                    </div>
+                    
+                    <div id="noPaymentsMessage" class="no-data" style="display: none;">
+                        <i class="fas fa-credit-card"></i>
+                        <p>No payments found matching the current filters.</p>
+                    </div>
+                    
+                    <div class="pagination">
+                        <button id="prevPage" class="pagination-btn" disabled>
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                        <span id="pageInfo">Page 1 of 1</span>
+                        <button id="nextPage" class="pagination-btn" disabled>
+                            Next <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Payment Details Modal -->
+    <div id="paymentDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2><i class="fas fa-receipt"></i> Payment Details</h2>
+            <div id="paymentDetailsContent">
+                <!-- Payment details will be populated here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="toast">
+        <div id="toastIcon" class="toast-icon"><i class="fas fa-check-circle"></i></div>
+        <div id="toastMessage" class="toast-message">Action completed successfully!</div>
+    </div>
+
+    <script th:src="@{/js/payments.js}"></script>
+</body>
+</html>

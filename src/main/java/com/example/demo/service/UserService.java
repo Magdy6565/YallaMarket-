@@ -7,10 +7,13 @@ import com.example.demo.dto.UserUpdateRequestDTO;
 import com.example.demo.model.User;
 import com.example.demo.enums.UserRole;
 import com.example.demo.repository.UserRepository;
-// Import PasswordEncoder if you have methods that use it (like password change or verification)
-// import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,18 +25,13 @@ import java.util.stream.Collectors;
 
 
 @Service
-public class UserService {
+public class UserService {    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    private final UserRepository userRepository;
-    // Inject PasswordEncoder if needed for other methods
-    // private final PasswordEncoder passwordEncoder;
-
-    // Adjust constructor based on injected dependencies
     @Autowired
-    public UserService(UserRepository userRepository /*, Optional<PasswordEncoder> passwordEncoder */) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        // Initialize passwordEncoder if injected
-        // this.passwordEncoder = passwordEncoder.orElse(null); // Handle optional injection if needed
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<User> allUsers() {
@@ -122,18 +120,15 @@ public class UserService {
      * Future implementation may need to track which vendor manages which users
      * @param assignmentDTO DTO containing user and vendor IDs
      * @return true if the assignment was successful, false otherwise
-     */
-    @Transactional
+     */    @Transactional
     public boolean assignUserToVendor(UserAssignmentDTO assignmentDTO) {
         // This is a placeholder implementation that would need to be adjusted
         // based on how user-vendor relationships are tracked in your system
         Optional<User> userOptional = userRepository.findById(assignmentDTO.getUserId());
         if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            // In a real implementation, you might set a vendorId field or create a relationship
-            // entity between users and vendors
-            
-            // For now, just validating that the user exists
+            // User exists, so assignment can proceed
+            // In a real implementation, you would set a relationship between
+            // the user and vendor/store in the database
             return true;
         }
         return false;
@@ -184,17 +179,13 @@ public class UserService {
         if (userRepository.findByEmail(userCreateDTO.getEmail()).isPresent()) {
             return Optional.empty(); // Email already exists
         }
-        
-        // Create new user
+          // Create new user
         User newUser = new User();
         newUser.setUsername(userCreateDTO.getUsername());
         newUser.setEmail(userCreateDTO.getEmail());
         
-        // Assuming we have a passwordEncoder autowired
-        // newUser.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
-        
-        // If passwordEncoder is not available, store password directly (not recommended for production)
-        newUser.setPassword(userCreateDTO.getPassword());
+        // Hash the password before storing
+        newUser.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
         
         newUser.setRole(userCreateDTO.getRole());
         newUser.setAddress(userCreateDTO.getAddress());
@@ -221,5 +212,65 @@ public class UserService {
         dto.setEnabled(user.isEnabled());
         dto.setIsDeleted(user.getDeletedAt() != null);
         return dto;
+    }
+
+    /**
+     * Get a paginated list of active users
+     * @param pageNumber The page number to retrieve (0-indexed)
+     * @param pageSize The number of users per page
+     * @return A page of active users
+     */
+    public Page<UserListDTO> getPaginatedActiveUsers(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<User> userPage = userRepository.findAllActive(pageable);
+        
+        // Convert to DTO page
+        List<UserListDTO> userDTOs = userPage.getContent().stream()
+                .map(this::convertToUserListDTO)
+                .collect(Collectors.toList());
+        
+        return new PageImpl<>(userDTOs, pageable, userPage.getTotalElements());
+    }
+    
+    /**
+     * Get paginated users with filters
+     * @param page The page number (0-based)
+     * @param size The page size
+     * @param roleFilter The role to filter by (-1 for all roles)
+     * @param statusFilter The status to filter by ("all", "active", "inactive", "deleted")
+     * @return Page of users matching the filters
+     */
+    public Page<UserListDTO> getPaginatedUsers(int page, int size, int roleFilter, String statusFilter) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> userPage = userRepository.findUsersByFilters(roleFilter, statusFilter, pageable);
+        
+        return userPage.map(this::convertToUserListDTO);
+    }
+    
+    /**
+     * Get all active users with pagination
+     * @param page The page number (0-based)
+     * @param size The page size
+     * @return Page of active users
+     */
+    public Page<UserListDTO> getAllActiveUsersPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> userPage = userRepository.findAllActive(pageable);
+        
+        return userPage.map(this::convertToUserListDTO);
+    }
+    
+    /**
+     * Get users by role with pagination
+     * @param role The role to filter by
+     * @param page The page number (0-based)
+     * @param size The page size
+     * @return Page of users with the specified role
+     */
+    public Page<UserListDTO> getUsersByRolePaginated(UserRole role, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> userPage = userRepository.findAllActiveByRole(role.getValue(), pageable);
+        
+        return userPage.map(this::convertToUserListDTO);
     }
 }

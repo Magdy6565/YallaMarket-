@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YallaMarket - Admin User Management</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/admin-user-management.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>YallaMarket</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="/dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
+                    </li>
+                    
+                    <!-- Admin-specific menu items -->
+                    <li class="active">
+                        <a href="#"><i class="fas fa-users"></i> User Management</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fas fa-store"></i> Store Management</a>
+                    </li>                    <li>
+                        <a href="/admin/products"><i class="fas fa-boxes"></i> Product Management</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fas fa-shopping-cart"></i> Order Management</a>
+                    </li>
+                      <!-- Common menu items -->
+                    <li>
+                        <a href="/payments"><i class="fas fa-credit-card"></i> Payments</a>
+                    </li>
+                    <li>
+                        <a href="/profile"><i class="fas fa-user"></i> Profile</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">            <header class="main-header">
+                <div class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search users...">
+                </div>
+                
+                <div class="header-user">
+                    <div class="user-profile">
+                        <img src="https://via.placeholder.com/40" alt="User Profile">
+                        <span th:text="${username}">Admin</span>
+                    </div>
+                </div>
+            </header>
+            
+            <div class="dashboard-content">
+                <div class="page-header">
+                    <h1>User Management <span class="role-badge admin">Admin</span></h1>
+                    <button id="addUserBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add New User
+                    </button>
+                </div>
+                
+                <div class="filter-section">                    <div class="filter-group">
+                        <label for="roleFilter">Filter by Role</label>
+                        <select id="roleFilter">
+                            <option value="all">All Roles</option>
+                            <option value="0">Admin</option>
+                            <option value="1">Vendor</option>
+                            <option value="2">Retail Store</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="statusFilter">Filter by Status</label>
+                        <select id="statusFilter">
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="deleted">Deleted</option>
+                        </select>
+                    </div>
+                    <button id="filterBtn" class="btn btn-secondary">Apply Filter</button>
+                </div>
+                
+                <div class="users-section">
+                    <div class="users-table-container">
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Store/Vendor</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- User rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="usersLoadingIndicator" class="loading-indicator">
+                        <i class="fas fa-spinner fa-pulse"></i> Loading users...
+                    </div>
+                    
+                    <div id="noUsersMessage" class="no-data" style="display: none;">
+                        <i class="fas fa-users-slash"></i>
+                        <p>No users found matching the current filters.</p>
+                    </div>
+                    
+                    <div class="pagination">
+                        <button id="prevPage" class="pagination-btn" disabled>
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                        <span id="pageInfo">Page 1 of 1</span>
+                        <button id="nextPage" class="pagination-btn" disabled>
+                            Next <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2><i class="fas fa-user-plus"></i> Add New User</h2>
+            
+            <form id="addUserForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                  <div class="form-group">
+                    <label for="role">Role</label>
+                    <select id="role" name="role" required>
+                        <option value="0">Admin</option>
+                        <option value="1">Vendor</option>
+                        <option value="2">Retail Store</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contactInfo">Contact Info</label>
+                    <input type="text" id="contactInfo" name="contactInfo">
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <textarea id="address" name="address" rows="2"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Create User</button>
+                    <button type="button" id="cancelAddUser" class="btn btn-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2><i class="fas fa-user-edit"></i> Edit User</h2>
+            
+            <form id="editUserForm">
+                <input type="hidden" id="editUserId" name="id">
+                
+                <div class="form-group">
+                    <label for="editUsername">Username</label>
+                    <input type="text" id="editUsername" name="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editEmail">Email</label>
+                    <input type="email" id="editEmail" name="email" required>
+                </div>
+                  <div class="form-group">
+                    <label for="editRole">Role</label>
+                    <select id="editRole" name="role" required>
+                        <option value="0">Admin</option>
+                        <option value="1">Vendor</option>
+                        <option value="2">Retail Store</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editContactInfo">Contact Info</label>
+                    <input type="text" id="editContactInfo" name="contactInfo">
+                </div>
+                
+                <div class="form-group">
+                    <label for="editAddress">Address</label>
+                    <textarea id="editAddress" name="address" rows="2"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editStatus">Status</label>
+                    <select id="editStatus" name="status">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" id="cancelEditUser" class="btn btn-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Assign Store/Vendor Modal -->
+    <div id="assignUserModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2><i class="fas fa-link"></i> Assign to Store/Vendor</h2>
+            
+            <form id="assignUserForm">
+                <input type="hidden" id="assignUserId" name="id">
+                
+                <div class="form-group">
+                    <label id="assignUserLabel" for="assignEntityId">Select Entity</label>
+                    <select id="assignEntityId" name="entityId" required>
+                        <!-- Options will be dynamically populated based on user role -->
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Assign</button>
+                    <button type="button" id="cancelAssign" class="btn btn-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Delete User Confirmation Modal -->
+    <div id="deleteUserModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2><i class="fas fa-trash-alt"></i> Delete User</h2>
+            
+            <p>Are you sure you want to delete user <strong id="deleteUserName"></strong>?</p>
+            <p>This will soft-delete the user (update deleted_at timestamp). The user data will remain in the system but the user won't be able to log in.</p>
+            
+            <div class="form-actions delete-actions">
+                <button id="confirmDeleteUser" class="btn btn-danger">Delete User</button>
+                <button id="cancelDeleteUser" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Restore User Confirmation Modal -->
+    <div id="restoreUserModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2><i class="fas fa-trash-restore"></i> Restore User</h2>
+            
+            <p>Are you sure you want to restore user <strong id="restoreUserName"></strong>?</p>
+            <p>This will clear the deleted_at timestamp and allow the user to log in again.</p>
+            
+            <div class="form-actions">
+                <button id="confirmRestoreUser" class="btn btn-success">Restore User</button>
+                <button id="cancelRestoreUser" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="toast">
+        <div id="toastIcon" class="toast-icon"><i class="fas fa-check-circle"></i></div>
+        <div id="toastMessage" class="toast-message">User updated successfully!</div>
+    </div>
+
+    <script th:src="@{/js/admin-user-management.js}"></script>
+</body>
+</html>

@@ -1,7 +1,8 @@
 package com.example.demo.enums;
 
 public enum RefundStatus {
-requested,
+    requested,
     processed,
+    approved,
     rejected
 }

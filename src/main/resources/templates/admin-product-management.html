@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YallaMarket - Admin Product Management</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/admin-product-management.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>YallaMarket</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="/dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
+                    </li>
+                    
+                    <!-- Admin-specific menu items -->
+                    <li>
+                        <a href="/admin/users"><i class="fas fa-users"></i> User Management</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fas fa-store"></i> Store Management</a>
+                    </li>
+                    <li class="active">
+                        <a href="/admin/products"><i class="fas fa-boxes"></i> Product Management</a>
+                    </li>
+                    <li>
+                        <a href="/order-management"><i class="fas fa-shopping-cart"></i> Order Management</a>
+                    </li>
+                    <!-- Common menu items -->
+                    <li>
+                        <a href="/payments"><i class="fas fa-credit-card"></i> Payments</a>
+                    </li>
+                    <li>
+                        <a href="/profile"><i class="fas fa-user"></i> Profile</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">            <header class="main-header">
+                <div class="header-user">
+                    <div class="user-profile">
+                        <img src="https://via.placeholder.com/40" alt="User Profile">
+                        <span th:text="${username}">Admin</span>
+                    </div>
+                </div>
+            </header>
+            
+            <div class="dashboard-content">
+                <div class="page-header">
+                    <h1>Product Management <span class="role-badge admin">Admin</span></h1>
+                </div>
+                
+                <div class="filter-section">
+                    <div class="filter-group">
+                        <label for="categoryFilter">Filter by Category</label>
+                        <select id="categoryFilter">
+                            <option value="">All Categories</option>
+                            <!-- Categories will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="productIdFilter">Product ID</label>
+                        <input type="number" id="productIdFilter" min="1" placeholder="Enter product ID">
+                    </div>
+                    <button id="filterBtn" class="btn btn-secondary">Apply Filter</button>
+                    <button id="clearFilterBtn" class="btn btn-outline">Clear Filters</button>
+                </div>
+                
+                <div class="products-section">
+                    <div class="products-table-container">
+                        <table class="products-table">
+                            <thead>                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody">
+                                <!-- Product rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="productsLoadingIndicator" class="loading-indicator">
+                        <i class="fas fa-spinner fa-pulse"></i> Loading products...
+                    </div>
+                    
+                    <div id="noProductsMessage" class="no-data" style="display: none;">
+                        <i class="fas fa-box-open"></i>
+                        <p>No products found matching the current filters.</p>
+                    </div>
+                    
+                    <div class="pagination">
+                        <button id="prevPage" class="pagination-btn" disabled>
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                        <span id="pageInfo">Page 1 of 1</span>
+                        <button id="nextPage" class="pagination-btn" disabled>
+                            Next <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Edit Product Modal -->
+    <div id="editProductModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2><i class="fas fa-edit"></i> Edit Product</h2>
+            
+            <form id="editProductForm">
+                <input type="hidden" id="editProductId" name="productId">
+                
+                <div class="form-group">
+                    <label for="editName">Product Name</label>
+                    <input type="text" id="editName" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editDescription">Description</label>
+                    <textarea id="editDescription" name="description" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editPrice">Price ($)</label>
+                    <input type="number" id="editPrice" name="price" min="0.01" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editQuantity">Quantity</label>
+                    <input type="number" id="editQuantity" name="quantity" min="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editCategory">Category</label>
+                    <select id="editCategory" name="category" required>
+                        <option value="">Select Category</option>
+                        <!-- Categories will be populated by JavaScript -->
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" id="cancelEditProduct" class="btn btn-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+      <!-- Product Details Modal -->
+    <div id="productDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2><i class="fas fa-box"></i> Product Details</h2>
+            <div id="productDetailsContent">
+                <!-- Product details will be populated by JavaScript -->
+            </div>
+            <div class="form-actions">
+                <button id="closeProductDetails" class="btn btn-secondary">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="toast">
+        <div id="toastIcon" class="toast-icon"><i class="fas fa-check-circle"></i></div>
+        <div id="toastMessage" class="toast-message">Product updated successfully!</div>
+    </div>
+
+    <script th:src="@{/js/admin-product-management-clean.js}"></script>
+</body>
+</html>

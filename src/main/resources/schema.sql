@@ -63,3 +63,20 @@ CREATE TABLE IF NOT EXISTS notifications (
     is_read BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS refunds (
+    refund_id BIGSERIAL PRIMARY KEY,
+    payment_id BIGINT NOT NULL,
+    order_item_id BIGINT NOT NULL,
+    refund_date TIMESTAMP NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    reason TEXT,
+    status VARCHAR(50) NOT NULL,
+    deleted_at TIMESTAMP,
+    processed_date TIMESTAMP,
+    FOREIGN KEY (payment_id) REFERENCES payments(payment_id),
+    FOREIGN KEY (order_item_id) REFERENCES order_items(order_item_id)
+);
+
+-- If the processed_date column is missing, add it
+ALTER TABLE refunds ADD COLUMN IF NOT EXISTS processed_date TIMESTAMP;

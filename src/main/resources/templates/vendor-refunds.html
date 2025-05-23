@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YallaMarket - Refunds</title>
+    <!-- Link to CSS file -->
+    <link rel="stylesheet" th:href="@{/css/vendor-refunds.css}">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-logo">YallaMarket</a>
+            
+            <!-- Mobile menu toggle button -->
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <!-- Navigation Links -->
+            <ul class="navbar-links" id="navbarLinks">
+                <li><a href="/products">My Products</a></li>
+                <li><a href="/vendor-orders">Orders</a></li>
+                <li><a href="/vendor-refunds" class="active">Refunds</a></li>
+            </ul>
+            
+            <!-- User Menu -->
+            <div class="user-menu" id="userMenu">
+                <button class="user-menu-button">
+                    <span>My Account</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="user-menu-dropdown">
+                    <a href="/profile"><i class="fas fa-user"></i> Profile</a>
+                    <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-title">
+            <h1>Refunds</h1>
+        </div>
+        
+        <!-- Refunds Data -->
+        <div class="refunds-container">
+            <!-- Loading Indicator -->
+            <div id="loadingIndicator" class="loading-indicator">
+                <i class="fas fa-spinner fa-spin"></i> Loading refunds...
+            </div>
+            
+            <!-- No Refunds Message -->
+            <div id="noRefundsMessage" class="no-data-message" style="display: none;">
+                <i class="fas fa-info-circle"></i>
+                <p>No refunds found.</p>
+            </div>
+            
+            <!-- Refunds Table -->
+            <div class="refunds-table-container">
+                <table class="refunds-table">
+                    <thead>
+                        <tr>
+                            <th>Refund ID</th>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Amount</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="refundsTableBody">
+                        <!-- Refunds will be populated here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Refund Detail Modal -->
+        <div id="refundDetailModal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close">&times;</span>
+                <h2><i class="fas fa-undo-alt"></i> Refund Details</h2>
+                <div id="refundDetailContent">
+                    <!-- Refund details will be populated by JavaScript -->
+                </div>
+                <div class="form-actions">
+                    <button id="approveRefundBtn" class="btn btn-success">Approve Refund</button>
+                    <button id="rejectRefundBtn" class="btn btn-danger">Reject Refund</button>
+                    <button id="closeRefundDetail" class="btn btn-secondary">Close</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Toast Notification -->
+        <div id="toastNotification" class="toast">
+            <div id="toastIcon" class="toast-icon"><i class="fas fa-check-circle"></i></div>
+            <div id="toastMessage" class="toast-message">Operation successful!</div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script th:src="@{/js/vendor-refunds.js}"></script>
+</body>
+</html>

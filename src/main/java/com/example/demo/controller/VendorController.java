@@ -37,6 +37,13 @@ public class VendorController {
         List<UserListDTO> vendors = userService.getAllVendorsIncludingDeleted();
         return ResponseEntity.ok(vendors);
     }
+    
+    // For admin product management: simplified endpoint to get all vendors
+    @GetMapping("/admin")
+    public ResponseEntity<List<UserListDTO>> getVendorsForAdmin() {
+        List<UserListDTO> vendors = userService.getAllVendorsIncludingDeleted();
+        return ResponseEntity.ok(vendors);
+    }
 
     // Admin: Add a new vendor
     @PostMapping("/admin")

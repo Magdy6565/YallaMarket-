@@ -5,6 +5,8 @@ import com.example.demo.dto.ProductRequest;
 import com.example.demo.dto.ProductWithVendorDTO;
 import com.example.demo.dto.VendorDTO;
 import com.example.demo.model.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,4 +36,17 @@ public interface ProductService {
     List<ProductWithVendorDTO> findProductsByCategoryAndVendors(String category, List<Long> vendorIds);
 
     List<VendorDTO> getVendorDetailsByCategory(String category);
+    
+    // Admin-specific methods
+    Page<Product> getAllProductsWithFilters(ProductFilterRequest filterRequest, Long vendorId, Pageable pageable);
+    
+    Optional<Product> getProductById(Long productId);
+    
+    Optional<Product> getProductByIdAsAdmin(Long productId);
+    
+    Optional<Product> updateProductAsAdmin(Long productId, ProductRequest productRequest);
+    
+    boolean deleteProductAsAdmin(Long productId);
+    
+    Optional<Product> restoreProductAsAdmin(Long productId);
 }

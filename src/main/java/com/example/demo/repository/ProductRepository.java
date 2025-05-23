@@ -57,11 +57,26 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("category") String category,
             @Param("vendorIds") List<Long> vendorIds
 
-    );
-    @Query("SELECT DISTINCT new com.example.demo.dto.VendorDTO(u.id, u.username) " +
+    );    @Query("SELECT DISTINCT new com.example.demo.dto.VendorDTO(u.id, u.username) " +
             "FROM Product p JOIN User u ON p.vendorId = u.id " +
             "WHERE p.category = :category AND p.deletedAt IS NULL AND u.deletedAt IS NULL")
     List<VendorDTO> findVendorsByCategory(@Param("category") String category);
 
-
+    // Admin methods for product management
+    org.springframework.data.domain.Page<Product> findByDeletedAtIsNull(org.springframework.data.domain.Pageable pageable);
+    
+    org.springframework.data.domain.Page<Product> findByCategoryAndDeletedAtIsNull(String category, org.springframework.data.domain.Pageable pageable);
+    
+    org.springframework.data.domain.Page<Product> findByVendorIdAndDeletedAtIsNull(Long vendorId, org.springframework.data.domain.Pageable pageable);
+    
+    org.springframework.data.domain.Page<Product> findByCategoryAndVendorIdAndDeletedAtIsNull(String category, Long vendorId, org.springframework.data.domain.Pageable pageable);
+    
+    // Admin methods for including soft-deleted products
+    org.springframework.data.domain.Page<Product> findAll(org.springframework.data.domain.Pageable pageable);
+    
+    org.springframework.data.domain.Page<Product> findByCategory(String category, org.springframework.data.domain.Pageable pageable);
+    
+    org.springframework.data.domain.Page<Product> findByVendorId(Long vendorId, org.springframework.data.domain.Pageable pageable);
+    
+    org.springframework.data.domain.Page<Product> findByCategoryAndVendorId(String category, Long vendorId, org.springframework.data.domain.Pageable pageable);
 }

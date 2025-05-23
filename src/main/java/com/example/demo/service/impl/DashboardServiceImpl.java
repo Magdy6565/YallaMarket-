@@ -124,11 +124,12 @@ public class DashboardServiceImpl implements DashboardService {
             return BigDecimal.ZERO;
         }
         
+        // Use the repository directly to get just the payment amounts
         List<com.example.demo.model.Payment> payments = paymentRepository.findByStatusAndOrderIdIn(
                 PaymentStatus.COMPLETED, orderIds);
         
         return payments.stream()
-                .map(com.example.demo.model.Payment::getAmount)
+                .map(payment -> payment.getAmount())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
     

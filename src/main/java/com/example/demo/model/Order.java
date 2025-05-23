@@ -2,6 +2,9 @@ package com.example.demo.model;
 
 import com.example.demo.enums.DeliveryStatus;
 import com.example.demo.enums.PaymentStatus;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +21,10 @@ import java.util.List;
 @Setter
 @Getter
 @NoArgsConstructor
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class,
+    property = "orderId"
+)
 public class Order {
 
     @Id
@@ -52,11 +59,14 @@ public class Order {
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
-
-    // Relationship to OrderItems (One Order can have many OrderItems)
+    private LocalDateTime updatedAt;    // Relationship to OrderItems (One Order can have many OrderItems)
     // Use mappedBy to indicate the owning side is OrderItem
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("order")
     private List<OrderItem> orderItems = new ArrayList<>();
+    
+    @OneToOne(mappedBy = "order")
+    @JsonIgnoreProperties("order")
+    private Invoice invoice;
 
 }
