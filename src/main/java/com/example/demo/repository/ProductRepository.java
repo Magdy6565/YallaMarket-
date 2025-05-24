@@ -39,11 +39,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<String> findDistinctCategories();
 
     @Query("SELECT p FROM Product p WHERE p.id = :productId AND p.deletedAt IS NULL AND p.quantity >= :quantityRequested")
-    Optional<Product> findByProductIdAndAvailableQuantity(@Param("productId") Long productId, @Param("quantityRequested") Integer quantityRequested);
-
-    @Query("""
+    Optional<Product> findByProductIdAndAvailableQuantity(@Param("productId") Long productId, @Param("quantityRequested") Integer quantityRequested);    @Query("""
                 SELECT new com.example.demo.dto.ProductWithVendorDTO(
-                    p.productId, p.name, p.description, p.price, p.quantity, p.category,
+                    p.productId, p.name, p.description, p.price, p.quantity, p.category, p.imageUrl,
                     u.id, u.username, u.email, u.address, u.rating
                 )
                 FROM Product p

@@ -16,6 +16,7 @@ public class ProductWithVendorDTO {
     private BigDecimal price;
     private Integer quantity;
     private String category;
+    private String imageUrl;  // Added imageUrl field
 
     private Long vendorId;
     private String vendorUsername;
