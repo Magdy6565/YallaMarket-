@@ -6,6 +6,7 @@
     <title>YallaMarket - Supermarket Orders</title>
     <link rel="stylesheet" th:href="@{/css/products.css}" />
     <link rel="stylesheet" th:href="@{/css/supermarket.css}" />
+    <link rel="stylesheet" th:href="@{/css/custom-alerts.css}" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -52,14 +53,15 @@
     <div class="container">
       <div class="page-title">
         <h1>My Orders</h1>
-      </div>      <div class="filter-section">
+      </div>
+      <div class="filter-section">
         <div class="filter-controls">
           <div class="filter-group">
             <label for="orderStatusFilter">Filter by Status:</label>
             <select id="orderStatusFilter" class="form-control">
               <option value="">All Statuses</option>
               <option value="PENDING">Pending</option>
-<!--              <option value="PLACED">Placed</option>-->
+              <!--              <option value="PLACED">Placed</option>-->
               <option value="APPROVED">Approved</option>
               <option value="SHIPPED">Shipped</option>
               <option value="DELIVERED">Delivered</option>
@@ -101,8 +103,8 @@
         </div>
       </div>
     </div>
-
     <!-- JavaScript -->
+    <script th:src="@{/js/custom-alerts.js}"></script>
     <script th:src="@{/js/supermarket-orders.js}"></script>
   </body>
 </html>

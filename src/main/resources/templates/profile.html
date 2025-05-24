@@ -1,92 +1,95 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YallaMarket - Profile</title>  <link rel="stylesheet" th:href="@{/css/products.css}" />
-  <link rel="stylesheet" th:href="@{/css/profile.css}" />
-  <link rel="stylesheet" th:href="@{/css/vendor-rating.css}" />
-  <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-  />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YallaMarket - Profile</title>
+    <link rel="stylesheet" th:href="@{/css/products.css}" />
+    <link rel="stylesheet" th:href="@{/css/profile.css}" />
+    <link rel="stylesheet" th:href="@{/css/vendor-rating.css}" />
+    <link rel="stylesheet" th:href="@{/css/custom-alerts.css}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="/" class="navbar-logo">YallaMarket</a>
 
-</head>
-<body>
-<nav class="navbar">
-  <div class="navbar-container">
-    <a href="/" class="navbar-logo">YallaMarket</a>
+        <button class="menu-toggle" id="menuToggle">
+          <i class="fas fa-bars"></i>
+        </button>
 
-    <button class="menu-toggle" id="menuToggle">
-      <i class="fas fa-bars"></i>
-    </button>
+        <ul class="navbar-links" id="navbarLinks">
+          <li><a href="/products">My Products</a></li>
+          <li><a href="/vendor-orders">Orders</a></li>
+          <li><a href="/stats">Refunds</a></li>
+        </ul>
 
-    <ul class="navbar-links" id="navbarLinks">
-      <li><a href="/products">My Products</a></li>
-      <li><a href="/vendor-orders">Orders</a></li>
-      <li><a href="/stats">Refunds</a></li>
-    </ul>
-
-    <div class="user-menu" id="userMenu">
-      <button class="user-menu-button">
-        <span>My Account</span>
-        <i class="fas fa-chevron-down"></i>
-      </button>
-      <div class="user-menu-dropdown">
-        <a href="/profile" class="active"
-        ><i class="fas fa-user"></i> Profile</a
-        >
-        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-      </div>
-    </div>
-  </div>
-</nav>
-
-<div class="container">
-  <div class="profile-container">
-    <div class="profile-header">
-      <div class="profile-avatar">
-        <i class="fas fa-user-circle"></i>
-      </div>
-      <div class="profile-info">
-        <h1 id="profile-username">Loading...</h1>
-        <span class="role-badge" id="profile-role"></span>
-      </div>
-    </div>
-
-    <div class="profile-content">
-      <div class="profile-section">
-        <h2><i class="fas fa-info-circle"></i> Basic Information</h2>
-        <div class="info-grid">
-          <div class="info-item">
-            <label>Email</label>
-            <p id="profile-email">Loading...</p>
-          </div>
-          <div class="info-item">
-            <label>Contact Info</label>
-            <p id="profile-contactInfo">Loading...</p>
-          </div>
-          <div class="info-item">
-            <label>Address</label>
-            <p id="profile-address">Loading...</p>
-          </div>
-<!--          <div class="info-item">-->
-<!--            <label>Member Since</label>-->
-<!--            <p id="profile-memberSince">Loading...</p>-->
-<!--          </div>-->
-        </div>
-      </div>      <!-- Statistics section removed for supermarket users --><div class="profile-section">
-        <h2><i class="fas fa-cog"></i> Account Settings</h2>
-        <div class="settings-buttons">
-          <button id="editProfileBtn" class="btn">
-            <i class="fas fa-user-edit"></i> Edit Profile
+        <div class="user-menu" id="userMenu">
+          <button class="user-menu-button">
+            <span>My Account</span>
+            <i class="fas fa-chevron-down"></i>
           </button>
+          <div class="user-menu-dropdown">
+            <a href="/profile" class="active"
+              ><i class="fas fa-user"></i> Profile</a
+            >
+            <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="profile-container">
+        <div class="profile-header">
+          <div class="profile-avatar">
+            <i class="fas fa-user-circle"></i>
+          </div>
+          <div class="profile-info">
+            <h1 id="profile-username">Loading...</h1>
+            <span class="role-badge" id="profile-role"></span>
+          </div>
+        </div>
+
+        <div class="profile-content">
+          <div class="profile-section">
+            <h2><i class="fas fa-info-circle"></i> Basic Information</h2>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Email</label>
+                <p id="profile-email">Loading...</p>
+              </div>
+              <div class="info-item">
+                <label>Contact Info</label>
+                <p id="profile-contactInfo">Loading...</p>
+              </div>
+              <div class="info-item">
+                <label>Address</label>
+                <p id="profile-address">Loading...</p>
+              </div>
+              <!--          <div class="info-item">-->
+              <!--            <label>Member Since</label>-->
+              <!--            <p id="profile-memberSince">Loading...</p>-->
+              <!--          </div>-->
+            </div>
+          </div>
+          <!-- Statistics section removed for supermarket users -->
+          <div class="profile-section">
+            <h2><i class="fas fa-cog"></i> Account Settings</h2>
+            <div class="settings-buttons">
+              <button id="editProfileBtn" class="btn">
+                <i class="fas fa-user-edit"></i> Edit Profile
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
-
-<script th:src="@{/js/profile.js}"></script>
-</body>
+    <script th:src="@{/js/custom-alerts.js}"></script>
+    <script th:src="@{/js/profile.js}"></script>
+  </body>
 </html>

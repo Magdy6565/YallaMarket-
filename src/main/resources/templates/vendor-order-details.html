@@ -254,9 +254,9 @@
 
     <!-- Navigation Links -->
     <ul class="navbar-links" id="navbarLinks">
-      <li><a href="/products" class="active">My Products</a></li>
-      <li><a href="/vendor-orders">Orders</a></li>
-      <li><a href="/stats">Refunds</a></li>
+      <li><a href="/products">My Products</a></li>
+      <li><a href="/vendor-orders" class="active">Orders</a></li>
+      <li><a href="/vendor-refunds">Refunds</a></li>
     </ul>
 
     <!-- User Menu -->
@@ -273,6 +273,8 @@
   </div>
 </nav>
 
+
+
 <div class="container">
   <a href="/vendor-orders" class="btn back-btn">
     <i class="fas fa-arrow-left"></i> Back to Orders
@@ -284,31 +286,39 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     // Mobile menu toggle functionality
-    const menuToggle = document.getElementById('menuToggle');
-    const navbarLinks = document.getElementById('navbarLinks');
+      // --- DOM Element Selections ---
+  const ordersList = document.getElementById("ordersList"); // Main container for orders
+  const orderStatusFilterSelect = document.getElementById("orderStatusFilter"); // The status dropdown
+  const filterOrdersButton = document.getElementById("filterOrdersButton"); // The filter button
 
-    if (menuToggle && navbarLinks) {
-        menuToggle.addEventListener('click', function() {
-            navbarLinks.classList.toggle('active');
-        });
-    }
+  // Mobile menu toggle
+  const menuToggle = document.getElementById("menuToggle");
+  const navbarLinks = document.getElementById("navbarLinks");
+  if (menuToggle && navbarLinks) {
+    menuToggle.addEventListener("click", function () {
+      navbarLinks.classList.toggle("active");
+    });
+  }
 
-    // User menu dropdown functionality
-    const userMenu = document.getElementById('userMenu');
-    const userMenuButton = userMenu ? userMenu.querySelector('.user-menu-button') : null;
+  // User menu dropdown functionality
+  const userMenu = document.getElementById("userMenu");
+  const userMenuButton = userMenu
+    ? userMenu.querySelector(".user-menu-button")
+    : null;
 
-    if (userMenuButton) {
-        userMenuButton.addEventListener('click', function() {
-            userMenu.classList.toggle('open');
-        });
+  if (userMenuButton) {
+    userMenuButton.addEventListener("click", function () {
+      userMenu.classList.toggle("open"); // Use 'open' class for visibility
+    });
 
-        // Close the dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            if (!userMenu.contains(event.target)) {
-                userMenu.classList.remove('open');
-            }
-        });
-    }
+    // Close the dropdown when clicking outside
+    document.addEventListener("click", function (event) {
+      if (!userMenu.contains(event.target)) {
+        userMenu.classList.remove("open");
+      }
+    });
+  }
+
       // Get orderId from URL path (e.g., /vendor-orders/6)
       const pathParts = window.location.pathname.split("/");
       const orderId = pathParts[pathParts.length - 1]; // Gets the last part of the URL

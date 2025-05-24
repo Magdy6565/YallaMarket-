@@ -244,11 +244,12 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const productDetails = await response.json();
-      const availableStock = productDetails.quantity || 0;
-
-      // Limit quantity to available stock
+      const availableStock = productDetails.quantity || 0; // Limit quantity to available stock
       if (newQuantity > availableStock) {
-        alert(`Only ${availableStock} items available in stock.`);
+        customAlert.warning(
+          `Only ${availableStock} items available in stock.`,
+          "Stock Limit"
+        );
         newQuantity = availableStock;
       }
 
@@ -326,15 +327,20 @@ document.addEventListener("DOMContentLoaded", function () {
     // Validate form
     const shippingAddress = shippingAddressInput.value.trim();
     const paymentMethod = paymentMethodSelect.value;
-
     if (!shippingAddress) {
-      alert("Please enter a shipping address");
+      customAlert.warning(
+        "Please enter a shipping address",
+        "Missing Information"
+      );
       shippingAddressInput.focus();
       return;
     }
 
     if (!paymentMethod) {
-      alert("Please select a payment method");
+      customAlert.warning(
+        "Please select a payment method",
+        "Missing Information"
+      );
       paymentMethodSelect.focus();
       return;
     }
@@ -361,11 +367,11 @@ document.addEventListener("DOMContentLoaded", function () {
           quantity: item.quantity,
         }))
         .filter((item) => !isNaN(item.productId)); // Filter out items with NaN productId
-      //            console.log(orderItems);
-      // Check if there are any valid items to order
+      //            console.log(orderItems);      // Check if there are any valid items to order
       if (orderItems.length === 0 && cartItems.length > 0) {
-        alert(
-          "Some items in your cart have invalid product IDs. Please remove them and try again."
+        customAlert.error(
+          "Some items in your cart have invalid product IDs. Please remove them and try again.",
+          "Invalid Cart Items"
         );
         // Re-enable checkout button
         checkoutBtn.disabled = false;
@@ -440,8 +446,9 @@ document.addEventListener("DOMContentLoaded", function () {
       orderConfirmationModal.style.display = "block";
     } catch (error) {
       console.error("Error placing order:", error);
-      alert(
-        `Order placement failed: ${error.message || "Please try again later"}`
+      customAlert.error(
+        `Order placement failed: ${error.message || "Please try again later"}`,
+        "Order Failed"
       );
 
       // Re-enable checkout button

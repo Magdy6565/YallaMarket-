@@ -17,7 +17,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // User menu dropdown functionality
   const userMenu = document.getElementById("userMenu");
-  const userMenuButton = userMenu ? userMenu.querySelector(".user-menu-button") : null;
+  const userMenuButton = userMenu
+    ? userMenu.querySelector(".user-menu-button")
+    : null;
 
   if (userMenuButton) {
     userMenuButton.addEventListener("click", function () {
@@ -38,17 +40,19 @@ document.addEventListener("DOMContentLoaded", function () {
    * @param {string} statusCode - The status code (1-6) to filter by. Empty string for all orders.
    */
   async function fetchAndDisplayOrders(statusCode = "") {
-    ordersList.innerHTML = '<p>Loading orders...</p>'; // Show loading message
+    ordersList.innerHTML = "<p>Loading orders...</p>"; // Show loading message
 
-    let url = '/api/vendor/orders'; // Default: get all orders
+    let url = "/api/vendor/orders"; // Default: get all orders
     if (statusCode) {
-      url = `/api/vendor/orders/filter?status=${encodeURIComponent(statusCode)}`;
+      url = `/api/vendor/orders/filter?status=${encodeURIComponent(
+        statusCode
+      )}`;
     }
 
     try {
       // Add Authorization header if your order endpoints are secured
-      const token = localStorage.getItem('jwtToken'); // Assuming you store JWT in localStorage
-      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      const token = localStorage.getItem("jwtToken"); // Assuming you store JWT in localStorage
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
       const response = await fetch(url, { headers });
 
@@ -61,17 +65,18 @@ document.addEventListener("DOMContentLoaded", function () {
       renderOrders(orders); // Call function to render products
     } catch (error) {
       console.error("Error loading orders:", error);
-      ordersList.innerHTML = `<div class="error-message">Failed to load orders: ${error.message || error}.</div>`;
+      ordersList.innerHTML = `<div class="error-message">Failed to load orders: ${
+        error.message || error
+      }.</div>`;
     }
   }
-
 
   /**
    * Renders a list of orders into the ordersList container.
    * @param {Array<Object>} orders - An array of order objects.
    */
   function renderOrders(orders) {
-    ordersList.innerHTML = ''; // Clear previous orders
+    ordersList.innerHTML = ""; // Clear previous orders
 
     if (orders.length === 0) {
       // If no orders, inject the empty state HTML directly into ordersList
@@ -85,20 +90,29 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     ordersList.innerHTML = orders
-      .map(
-        (order) => {
-          // Determine status class for styling
-          const statusClass = `status-${order.status ? order.status.toUpperCase() : 'UNKNOWN'}`;
+      .map((order) => {
+        // Determine status class for styling
+        const statusClass = `status-${
+          order.status ? order.status.toUpperCase() : "UNKNOWN"
+        }`;
 
-          return `
+        return `
             <div class="product-card">
                 <div class="product-info">
-                    <h3>Order #${order.orderId || 'N/A'}</h3>
-                    <p><strong>Status:</strong> <span class="order-status-display ${statusClass}">${order.status || 'N/A'}</span></p>
+                    <h3>Order #${order.orderId || "N/A"}</h3>
+                    <p><strong>Status:</strong> <span class="order-status-display ${statusClass}">${
+          order.status || "N/A"
+        }</span></p>
                     <p><strong>Total:</strong> $${
-                      order.totalAmount !== null ? order.totalAmount.toFixed(2) : "N/A"
+                      order.totalAmount !== null
+                        ? order.totalAmount.toFixed(2)
+                        : "N/A"
                     }</p>
-                    <p><strong>Date:</strong> ${order.orderDate ? new Date(order.orderDate).toLocaleString() : "N/A"}</p>
+                    <p><strong>Date:</strong> ${
+                      order.orderDate
+                        ? new Date(order.orderDate).toLocaleString()
+                        : "N/A"
+                    }</p>
 
                     <h4>Order Items:</h4>
                     <ul class="order-items-list">
@@ -108,10 +122,14 @@ document.addEventListener("DOMContentLoaded", function () {
                                 .map(
                                   (item) => `
                                 <li>
-                                    <strong>${item.productName || "N/A"}</strong>
+                                    <strong>${
+                                      item.productName || "N/A"
+                                    }</strong>
                                     (Category: ${item.productCategory || "N/A"},
                                     Quantity: ${item.quantity || 0},
-                                    Price: $${item.price ? item.price.toFixed(2) : 'N/A'})
+                                    Price: $${
+                                      item.price ? item.price.toFixed(2) : "N/A"
+                                    })
                                 </li>
                               `
                                 )
@@ -126,8 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             </div>
           `;
-        }
-      )
+      })
       .join("");
   }
 
@@ -137,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // --- Event Listeners for Filtering ---
   if (filterOrdersButton) {
-    filterOrdersButton.addEventListener('click', () => {
+    filterOrdersButton.addEventListener("click", () => {
       const selectedStatusCode = orderStatusFilterSelect.value;
       fetchAndDisplayOrders(selectedStatusCode);
     });
@@ -148,14 +165,14 @@ document.addEventListener("DOMContentLoaded", function () {
    * Uses the endpoint /api/vendor/orders/15
    */
   async function viewSpecificOrder() {
-    ordersList.innerHTML = '<p>Loading specific order...</p>'; // Show loading message
-    
+    ordersList.innerHTML = "<p>Loading specific order...</p>"; // Show loading message
+
     try {
       // Add Authorization header if your order endpoints are secured
-      const token = localStorage.getItem('jwtToken'); // Assuming you store JWT in localStorage
-      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      const token = localStorage.getItem("jwtToken"); // Assuming you store JWT in localStorage
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-      const response = await fetch('/api/vendor/orders/15', { headers });
+      const response = await fetch("/api/vendor/orders/15", { headers });
 
       if (!response.ok) {
         const errorText = await response.text(); // Get raw text for non-OK responses
@@ -167,7 +184,9 @@ document.addEventListener("DOMContentLoaded", function () {
       renderSpecificOrder(order);
     } catch (error) {
       console.error("Error loading specific order:", error);
-      ordersList.innerHTML = `<div class="error-message">Failed to load specific order: ${error.message || error}.</div>`;
+      ordersList.innerHTML = `<div class="error-message">Failed to load specific order: ${
+        error.message || error
+      }.</div>`;
     }
   }
 
@@ -176,7 +195,7 @@ document.addEventListener("DOMContentLoaded", function () {
    * @param {Object} order - An order object.
    */
   function renderSpecificOrder(order) {
-    ordersList.innerHTML = ''; // Clear previous orders
+    ordersList.innerHTML = ""; // Clear previous orders
 
     if (!order) {
       // If no order, inject the empty state HTML directly into ordersList
@@ -190,18 +209,26 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Determine status class for styling
-    const statusClass = `status-${order.status ? order.status.toUpperCase() : 'UNKNOWN'}`;
+    const statusClass = `status-${
+      order.status ? order.status.toUpperCase() : "UNKNOWN"
+    }`;
 
     // Create a detailed order view
-    const orderCard = document.createElement('div');
-    orderCard.className = 'product-card detailed';
+    const orderCard = document.createElement("div");
+    orderCard.className = "product-card detailed";
     orderCard.innerHTML = `
       <div class="product-info">
-        <h3>Order #${order.orderId || 'N/A'}</h3>
-        <p><strong>Status:</strong> <span class="order-status-display ${statusClass}">${order.status || 'N/A'}</span></p>
-        <p><strong>Total:</strong> $${order.totalAmount !== null ? order.totalAmount.toFixed(2) : "N/A"}</p>
-        <p><strong>Date:</strong> ${order.orderDate ? new Date(order.orderDate).toLocaleString() : "N/A"}</p>
-        <p><strong>Store ID:</strong> ${order.storeId || 'N/A'}</p>
+        <h3>Order #${order.orderId || "N/A"}</h3>
+        <p><strong>Status:</strong> <span class="order-status-display ${statusClass}">${
+      order.status || "N/A"
+    }</span></p>
+        <p><strong>Total:</strong> $${
+          order.totalAmount !== null ? order.totalAmount.toFixed(2) : "N/A"
+        }</p>
+        <p><strong>Date:</strong> ${
+          order.orderDate ? new Date(order.orderDate).toLocaleString() : "N/A"
+        }</p>
+        <p><strong>Store ID:</strong> ${order.storeId || "N/A"}</p>
         
         <h4>Order Items:</h4>
         <ul class="order-items-list">
@@ -214,9 +241,17 @@ document.addEventListener("DOMContentLoaded", function () {
                     <strong>${item.productName || "N/A"}</strong>
                     <p>Category: ${item.productCategory || "N/A"}</p>
                     <p>Quantity: ${item.quantity || 0}</p>
-                    <p>Price: $${item.priceEach ? item.priceEach.toFixed(2) : 'N/A'}</p>
-                    <p>Subtotal: $${item.quantity && item.priceEach ? (item.quantity * item.priceEach).toFixed(2) : 'N/A'}</p>
-                    <button class="view-product-btn" data-product-id="${item.productId}">View Product</button>
+                    <p>Price: $${
+                      item.priceEach ? item.priceEach.toFixed(2) : "N/A"
+                    }</p>
+                    <p>Subtotal: $${
+                      item.quantity && item.priceEach
+                        ? (item.quantity * item.priceEach).toFixed(2)
+                        : "N/A"
+                    }</p>
+                    <button class="view-product-btn" data-product-id="${
+                      item.productId
+                    }">View Product</button>
                   </li>
                 `
                   )
@@ -232,9 +267,9 @@ document.addEventListener("DOMContentLoaded", function () {
     ordersList.appendChild(orderCard);
 
     // Add event listeners to the view product buttons
-    ordersList.querySelectorAll('.view-product-btn').forEach(button => {
-      button.addEventListener('click', function() {
-        const productId = this.getAttribute('data-product-id');
+    ordersList.querySelectorAll(".view-product-btn").forEach((button) => {
+      button.addEventListener("click", function () {
+        const productId = this.getAttribute("data-product-id");
         // Navigate to product details page
         window.location.href = `/products/${productId}`;
       });
@@ -242,17 +277,17 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Add a button to view the specific order with ID 15
-//  const viewSpecificOrderBtn = document.createElement('button');
-//  viewSpecificOrderBtn.className = 'btn view-specific-btn';
-//  viewSpecificOrderBtn.innerText = 'View Order #15';
-//  viewSpecificOrderBtn.addEventListener('click', viewSpecificOrder);
-//
+  //  const viewSpecificOrderBtn = document.createElement('button');
+  //  viewSpecificOrderBtn.className = 'btn view-specific-btn';
+  //  viewSpecificOrderBtn.innerText = 'View Order #15';
+  //  viewSpecificOrderBtn.addEventListener('click', viewSpecificOrder);
+  //
   // Insert the button after the filter button
-//  if (filterOrdersButton && filterOrdersButton.parentNode) {
-//    filterOrdersButton.parentNode.insertBefore(viewSpecificOrderBtn, filterOrdersButton.nextSibling);
-//  } else {
-//    // If filter button doesn't exist, add to the beginning of the page
-//    const firstElement = ordersList.parentNode.firstChild;
-//    ordersList.parentNode.insertBefore(viewSpecificOrderBtn, firstElement);
-//  }
+  //  if (filterOrdersButton && filterOrdersButton.parentNode) {
+  //    filterOrdersButton.parentNode.insertBefore(viewSpecificOrderBtn, filterOrdersButton.nextSibling);
+  //  } else {
+  //    // If filter button doesn't exist, add to the beginning of the page
+  //    const firstElement = ordersList.parentNode.firstChild;
+  //    ordersList.parentNode.insertBefore(viewSpecificOrderBtn, firstElement);
+  //  }
 }); // End DOMContentLoaded

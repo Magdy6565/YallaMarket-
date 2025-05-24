@@ -297,23 +297,29 @@ document.addEventListener("DOMContentLoaded", function () {
                   product.imageUrl || "https://via.placeholder.com/150"
                 }" alt="${product.name}">
                 <h3 class="product-name">${product.name}</h3>
-//                <h3 class="data-product-id">${product.productId}</h3>
                 <p class="product-price">$${parseFloat(product.price).toFixed(
                   2
                 )}</p>
                 <p class="product-quantity">${
                   product.quantity || "Out Of Stock"
-                }</p>                <p class="product-vendor">${product.vendorUsername || "N/A"}</p>
+                }</p>                <p class="product-vendor">${
+        product.vendorUsername || "N/A"
+      }</p>
                 <p class="product-vendorRating">
                   ${displayRatingStars(product.vendorRating || 0)}
-                  <span>${product.vendorRating ? parseFloat(product.vendorRating).toFixed(1) + '/5' : 'Not rated yet'}</span>
-                </p>
-                <div class="product-actions">
+                  <span>${
+                    product.vendorRating
+                      ? parseFloat(product.vendorRating).toFixed(1) + "/5"
+                      : "Not rated yet"
+                  }</span>
+                </p>                <div class="product-actions">
                     ${
                       !isOutOfStock
                         ? `<button class="add-to-cart-btn" data-product='${JSON.stringify(
                             product
-                          )}'>Add to Cart</button>`
+                          )}' data-product-id="${
+                            product.productId
+                          }">Add to Cart</button>`
                         : `<button class="out-of-stock-btn" disabled>Out of Stock</button>`
                     }
                     <button class="view-product-btn" data-product-id="${
@@ -322,15 +328,25 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             `;
       productsGrid.appendChild(productCard);
-    });
-
-    // Attach event listeners for "Add to Cart" buttons
+    }); // Attach event listeners for "Add to Cart" buttons
     document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
       button.addEventListener("click", function () {
         const product = JSON.parse(this.getAttribute("data-product"));
+        const productId = product.productId || product.id;
+
+        // Check if item is already in cart
+        if (isProductInCart(productId)) {
+          // Redirect to cart page
+          window.location.href = "/supermarket/basket";
+          return;
+        }
+
         addToCart(product);
       });
     });
+
+    // Update button states based on cart contents
+    updateAllAddToCartButtons();
 
     // Attach event listeners for "View Product" buttons
     document.querySelectorAll(".view-product-btn").forEach((button) => {
@@ -352,10 +368,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const vendorName = product.vendorName || product.vendorUsername;
     const category = product.category;
     const availableStock = product.quantity || 0;
-
     if (!productId) {
       console.error("Product ID is missing:", product);
-      alert("Error: Cannot add product to cart - missing product ID");
+      customAlert.error(
+        "Error: Cannot add product to cart - missing product ID",
+        "Error"
+      );
       return;
     }
 
@@ -368,10 +386,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (existingItemIndex > -1) {
       // If item exists, check if we can increase quantity based on available stock
       const currentQuantity = cartItems[existingItemIndex].quantity;
-
       if (currentQuantity >= availableStock) {
-        alert(
-          `Cannot add more of this product. Maximum available: ${availableStock}`
+        customAlert.warning(
+          `Cannot add more of this product. Maximum available: ${availableStock}`,
+          "Stock Limit Reached"
         );
         return;
       }
@@ -398,14 +416,17 @@ document.addEventListener("DOMContentLoaded", function () {
       cartItems.push(newItem);
       console.log(`Added new item to cart:`, newItem);
     }
-
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
     updateCartBadge();
 
-    // Show more detailed confirmation
+    // Update all add to cart buttons
+    updateAllAddToCartButtons(); // Show more detailed confirmation
     const totalQuantity =
       cartItems.find((item) => String(item.id) === productIdStr)?.quantity || 0;
-    alert(`${productName} added to cart! (Total: ${totalQuantity})`);
+    customAlert.toast(
+      `${productName} added to cart! (Total: ${totalQuantity})`,
+      "success"
+    );
   }
 
   /**
@@ -416,11 +437,39 @@ document.addEventListener("DOMContentLoaded", function () {
       (total, item) => total + item.quantity,
       0
     );
-    cartBadge.textContent = totalItems;
-
-    // Hide badge if cart is empty
+    cartBadge.textContent = totalItems; // Hide badge if cart is empty
     cartBadge.style.display = totalItems > 0 ? "flex" : "none";
   }
+
+  /**
+   * Check if a product is in the cart
+   */
+  function isProductInCart(productId) {
+    return cartItems.some((item) => String(item.id) === String(productId));
+  }
+
+  /**
+   * Update all add to cart buttons based on cart contents
+   */
+  function updateAllAddToCartButtons() {
+    document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
+      const productData = JSON.parse(button.getAttribute("data-product"));
+      const productId = productData.productId || productData.id;
+
+      if (isProductInCart(productId)) {
+        // Item is in cart - change button to "View Cart"
+        button.innerHTML = '<i class="fas fa-shopping-cart"></i> View Cart';
+        button.style.backgroundColor = "#2ecc71";
+        button.title = "Item is in cart. Click to view cart.";
+      } else {
+        // Item not in cart - normal "Add to Cart" button
+        button.innerHTML = '<i class="fas fa-cart-plus"></i> Add to Cart';
+        button.style.backgroundColor = "#f39c12";
+        button.title = "Add this item to your cart";
+      }
+    });
+  }
+
   /**
    * View product details - redirects to product details page
    */
@@ -437,11 +486,13 @@ document.addEventListener("DOMContentLoaded", function () {
         // Get selected vendor IDs from multi-select dropdown
         currentVendorFilter = getSelectedVendorIds();
         console.log("Selected vendors:", currentVendorFilter);
-
         currentOffset = 0; // Reset offset when applying vendor filter
         fetchProducts(currentCategoryId, currentVendorFilter);
       } else {
-        alert("Please select a category first.");
+        customAlert.warning(
+          "Please select a category first.",
+          "Category Required"
+        );
       }
     });
   }
@@ -879,33 +930,33 @@ homeStyle.textContent = `
 document.head.appendChild(homeStyle);
 
 /**
-   * Display star rating based on the given rating value
-   * @param {number} rating The rating value (0-5)
-   * @returns {string} HTML string with star icons
-   */
-  function displayRatingStars(rating) {
-    if (!rating || isNaN(rating)) rating = 0;
-    
-    const fullStars = Math.floor(rating);
-    const halfStar = rating % 1 >= 0.5 ? 1 : 0;
-    const emptyStars = 5 - fullStars - halfStar;
-    
-    let starsHtml = '';
-    
-    // Add full stars
-    for (let i = 0; i < fullStars; i++) {
-      starsHtml += '<i class="fas fa-star"></i>';
-    }
-    
-    // Add half star if needed
-    if (halfStar) {
-      starsHtml += '<i class="fas fa-star-half-alt"></i>';
-    }
-    
-    // Add empty stars
-    for (let i = 0; i < emptyStars; i++) {
-      starsHtml += '<i class="far fa-star"></i>';
-    }
-    
-    return starsHtml;
+ * Display star rating based on the given rating value
+ * @param {number} rating The rating value (0-5)
+ * @returns {string} HTML string with star icons
+ */
+function displayRatingStars(rating) {
+  if (!rating || isNaN(rating)) rating = 0;
+
+  const fullStars = Math.floor(rating);
+  const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+  const emptyStars = 5 - fullStars - halfStar;
+
+  let starsHtml = "";
+
+  // Add full stars
+  for (let i = 0; i < fullStars; i++) {
+    starsHtml += '<i class="fas fa-star"></i>';
   }
+
+  // Add half star if needed
+  if (halfStar) {
+    starsHtml += '<i class="fas fa-star-half-alt"></i>';
+  }
+
+  // Add empty stars
+  for (let i = 0; i < emptyStars; i++) {
+    starsHtml += '<i class="far fa-star"></i>';
+  }
+
+  return starsHtml;
+}

@@ -1,8 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Product;
+import com.example.demo.model.User;
 import com.example.demo.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,13 +17,12 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("/supermarket")
-public class SupermarketController {
-
-    private final ProductService productService;
+public class SupermarketController {    private final ProductService productService;
+    private final UserService userService;
     
-    @Autowired
-    public SupermarketController(ProductService productService) {
+    public SupermarketController(ProductService productService, UserService userService) {
         this.productService = productService;
+        this.userService = userService;
     }
 
     /**
@@ -55,9 +55,7 @@ public class SupermarketController {
             model.addAttribute("username", principal.getName());
         }
         return "supermarket-basket";
-    }
-
-    @GetMapping("/product/{id}")
+    }    @GetMapping("/product/{id}")
     public String showProductDetails(@PathVariable("id") Long productId, Model model, Principal principal) {
         if (principal != null) {
             model.addAttribute("username", principal.getName());
@@ -73,18 +71,19 @@ public class SupermarketController {
                 .findFirst();
 
             if (productOpt.isPresent()) {
-                // Add vendor name to the product if available
                 Product product = productOpt.get();
 
-                // Ensure the vendorId is correctly set in the model
+                // Fetch vendor name if vendorId is available
                 if (product.getVendorId() != null) {
-                    // You might want to add more vendor information here if needed
-                    // For now, we're just ensuring the vendorId is available
+                    Optional<User> vendorOpt = userService.findById(product.getVendorId());
+                    if (vendorOpt.isPresent()) {
+                        String vendorName = vendorOpt.get().getUsername();
+                        model.addAttribute("vendorName", vendorName);
+                    }
                     model.addAttribute("vendorId", product.getVendorId());
                 }
 
                 model.addAttribute("product", product);
-//                return "Hello ziad shawky" ;
                 return "supermarket-product-details";
             } else {
                 // Product not found, redirect to home
