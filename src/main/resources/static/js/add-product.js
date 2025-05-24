@@ -4,17 +4,23 @@ document.addEventListener("DOMContentLoaded", function () {
     e.preventDefault();
     document.getElementById("successMsg").textContent = "";
     document.getElementById("errorMsg").textContent = "";
-    const newProduct = {
-      name: document.getElementById("name").value.trim(),
-      description: document.getElementById("description").value.trim(),
-      price: parseFloat(document.getElementById("price").value),
-      quantity: parseInt(document.getElementById("quantity").value, 10),
-      category: document.getElementById("category").value.trim(),
-    };
+    
+    // Build form data as URL parameters
+    const formData = new FormData(form);
+    const params = new URLSearchParams();
+    
+    for (let [key, value] of formData.entries()) {
+      if (value) { // Only add non-empty values
+        params.append(key, value);
+      }
+    }
+    
     fetch("/api/my-products", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newProduct),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: params,
     })
       .then((res) => {
         if (res.ok) {

@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,12 +37,20 @@ public class Product {
 
     // This column is named 'vendor_id' in the database, but stores the User's ID
     @Column(name = "vendor_id", nullable = false) // Keep the column name as 'vendor_id'
-    private Long vendorId; // Use Long type to match User.id
-
-    @Column(name = "category")
+    private Long vendorId; // Use Long type to match User.id    @Column(name = "category")
     private String category;
-
+    
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt; // Using soft delete
-
+    
+    @Column(name = "image_url")
+    private String imageUrl;
+    
+    /**
+     * JSON-friendly getter for the image URL
+     */
+    @JsonProperty("imageUrl")
+    public String getImageUrl() {
+        return imageUrl;
+    }
 }

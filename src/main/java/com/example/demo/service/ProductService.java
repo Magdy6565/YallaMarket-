@@ -49,6 +49,13 @@ public interface ProductService {
     
     Optional<Product> restoreProductAsAdmin(Long productId);
 
-    Optional<Product> getProductById(Long productId);
+    Optional<Product> getProductById(Long productId);    /**
+     * Add a product with an image URL
+     */
+    Product addProductWithImageUrl(Long userId, ProductRequest productRequest, String imageUrl);
 
+    /**
+     * Update a product with an image URL
+     */
+    Optional<Product> updateProductWithImageUrl(Long productId, Long userId, ProductRequest productRequest, String imageUrl);
 }

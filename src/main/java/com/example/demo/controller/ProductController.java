@@ -16,41 +16,50 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 
 @RestController
 @RequestMapping("/api/my-products")
-public class ProductController {
-
-    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+public class ProductController {    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
     private final ProductService productService;
 
     @Autowired
     public ProductController(ProductService productService) {
         this.productService = productService;
-    }
-
-
-    // Add a product
-    // POST /api/my-products
+    }    /**
+     * Add a product with image URL
+     */
     @PostMapping
-    public ResponseEntity<Product> addProduct(@Valid @RequestBody ProductRequest productRequest) {
-
-        logger.info("We enetred add product NOWWOWOWO");
-        Long userId = AuthUtil.getAuthenticatedUserId(); // Get userId (Long) from authenticated user
-        logger.info("Received POST request to add product for userId (stored as vendorId): {}", userId);
-        logger.debug("Product Request Body: {}", productRequest);
-
-        // Pass the userId (Long) to the service
-        Product newProduct = productService.addProduct(userId, productRequest);
-
-        logger.info("Product added successfully with ID: {}", newProduct.getProductId());
-
-        return new ResponseEntity<>(newProduct, HttpStatus.CREATED); // Should return 201 Created
+    public ResponseEntity<Product> addProduct(@RequestParam("name") String name,
+                                              @RequestParam(value = "description", required = false) String description,
+                                              @RequestParam("price") BigDecimal price,
+                                              @RequestParam("quantity") Integer quantity,
+                                              @RequestParam(value = "category", required = false) String category,
+                                              @RequestParam(value = "imageUrl", required = false) String imageUrl) {
+        Long userId = AuthUtil.getAuthenticatedUserId();
+        
+        try {
+            logger.info("Adding product with image URL: {}", imageUrl);
+            
+            // Build request
+            ProductRequest req = new ProductRequest();
+            req.setName(name);
+            req.setDescription(description);
+            req.setPrice(price);
+            req.setQuantity(quantity);
+            req.setCategory(category);
+            
+            // Save product with image URL
+            Product saved = productService.addProductWithImageUrl(userId, req, imageUrl);
+            return new ResponseEntity<>(saved, HttpStatus.CREATED);
+        } catch (Exception e) {
+            logger.error("Failed to add product with image URL: {}", e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-
     // Edit an existing product
     // PUT /api/my-products/{productId}
     @PutMapping("/{productId}")
@@ -66,6 +75,42 @@ public class ProductController {
 
         return updatedProduct.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build()); // 404 if not found or not owned
+    }
+
+    /**
+     * Update a product with image URL
+     */
+    @PutMapping("/{productId}/url")
+    public ResponseEntity<Product> updateProductWithUrl(
+            @PathVariable Long productId,
+            @RequestParam("name") String name,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam("quantity") Integer quantity,
+            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "imageUrl", required = false) String imageUrl) {
+
+        Long userId = AuthUtil.getAuthenticatedUserId();
+        logger.info("Received PUT request to update product {} with image URL for userId: {}", productId, userId);
+
+        try {
+            // Build request
+            ProductRequest req = new ProductRequest();
+            req.setName(name);
+            req.setDescription(description);
+            req.setPrice(price);
+            req.setQuantity(quantity);
+            req.setCategory(category);
+
+            // Update product with image URL
+            Optional<Product> updatedProduct = productService.updateProductWithImageUrl(productId, userId, req, imageUrl);
+
+            return updatedProduct.map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            logger.error("Failed to update product with image URL: {}", e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Show all products for a user
