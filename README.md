@@ -1,4 +1,4 @@
-# YallaMarket - B2B E-commerce Platform
+# YallaMarket
 
 YallaMarket is a comprehensive Business-to-Business (B2B) e-commerce platform that facilitates seamless transactions between vendors and supermarkets. Built with modern Java technologies, the platform provides role-based access control, comprehensive order management, and integrated payment processing.
 
